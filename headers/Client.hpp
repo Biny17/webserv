@@ -1,21 +1,24 @@
 #pragma once
-#include "HTTP.hpp"
+#include "Http.hpp"
 #include <chrono>
 
 enum ClientState {
-    RD_HEADER,
-    RD_BODY,
-    WRITING
+    READING,
+    WRITE,
+    CLOSED
 };
 
 struct Client {
     ClientState state;
-    int socker_fd;
+    int fd;
     std::chrono::time_point<std::chrono::system_clock> ts;
-
-    std::string read_buff;
-    size_t rdi;
     std::string write_buff;
+    std::string tmp;
     size_t wdi;
+    HttpReq request;
+    bool keep_alive;
 
+
+    Client(int socket_fd);
+    void Parse(const std::string& buff);
 };

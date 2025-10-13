@@ -1,7 +1,16 @@
 #include "webserv.hpp"
 
-int	main(void)
+int	main(int ac, char **av)
 {
-	std::cout << "Ceci est un serveur web, felicitation" << std::endl;
+	(void)ac;
+	(void)av;
+	try {
+		// Get config file
+		launch_server();
+	}
+	catch (std::exception& e) {
+		std::cout << "An error has occured: " << e.what() << std::endl;
+		return (1);
+	}
 	return (0);
 }

@@ -20,4 +20,8 @@ void	launch_server(void)
 		perror("bind");
 		return ;
 	}
+
+	
+
+	close(sockfd);
 }

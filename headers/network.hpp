@@ -13,6 +13,7 @@
 
 # define LISTENING_PORT 8080
 # define MAX_EVENTS 1024
+# define REQUEST_BUFF_SIZE 1024
 
 void	launch_server(void);
 void	accept_new_client(int epfd, int sockfd, std::map<int, int>& fd_map);

@@ -26,11 +26,30 @@ int	init_epoll(int sockfd)
 }
 
 // Event loop of epoll
-void	event_loop(int epfd)
+void	event_loop(int epfd, int sockfd)
 {
+	struct epoll_event events[MAX_EVENTS];
+
 	while (true)
 	{
-		// epoll wait
+		// Search tracked socket events
+		int event_amount = epoll_wait(epfd, events, MAX_EVENTS, -1);	// Get events (blocking)
+		if (event_amount == -1)
+		{
+			perror("epoll_wait");
+			break;
+		}
+
+		// Iterate over events
+		for (int i = 0; i < event_amount; i++)
+		{
+			int fd = events[i].data.fd;									// Get the fd of the socket of the event
+
+			if (fd == sockfd)											// New client
+				accept_new_client(epfd, sockfd);
+			else														// Received form existing client
+				read_client_data(epfd, fd);
+		}
 	}
 }
 
@@ -69,7 +88,7 @@ void	launch_server(void)
 		return ;
 
 	// Start the epoll event loop (wait for connections)
-	event_loop(epfd);
+	event_loop(epfd, sockfd);
 
 	// Close when the server stop
 	close(epfd);

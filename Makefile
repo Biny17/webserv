@@ -8,8 +8,9 @@ OBJ_DIR		= ./objs/
 CXXFLAGS += -I$(HEADERS)
 
 SRCS		=	main.cpp					\
-				network/server.cpp			\
-				network/handle_clients.cpp
+				network/exit_signal.cpp		\
+				network/handle_clients.cpp	\
+				network/server.cpp
 
 OBJS		= $(patsubst %.cpp, $(OBJ_DIR)%.o, $(SRCS))
 DEPS		= $(OBJS:.o=.d)

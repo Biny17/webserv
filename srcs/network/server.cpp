@@ -1,4 +1,4 @@
-#include "network.hpp"
+#include "webserv.hpp"
 
 // Creation and initialisation of the epoll instance to track new clients
 int	init_epoll(int sockfd)
@@ -25,20 +25,28 @@ int	init_epoll(int sockfd)
 	return (epfd);
 }
 
+// Close all open client fds
+void	clear_fdmap(std::map<int, int>& fd_map)
+{
+	for (std::map<int, int>::iterator it = fd_map.begin(); it != fd_map.end(); it++)
+	{
+		if (it->second >= 0)
+			close(it->second);
+	}
+}
+
 // Event loop of epoll
 void	event_loop(int epfd, int sockfd)
 {
-	struct epoll_event events[MAX_EVENTS];
+	struct epoll_event	events[MAX_EVENTS];
+	std::map<int, int>	fd_map;
 
-	while (true)
+	while (!shutdown_serv)
 	{
 		// Search tracked socket events
 		int event_amount = epoll_wait(epfd, events, MAX_EVENTS, -1);	// Get events (blocking)
 		if (event_amount == -1)
-		{
-			perror("epoll_wait");
 			break;
-		}
 
 		// Iterate over events
 		for (int i = 0; i < event_amount; i++)
@@ -46,11 +54,14 @@ void	event_loop(int epfd, int sockfd)
 			int fd = events[i].data.fd;									// Get the fd of the socket of the event
 
 			if (fd == sockfd)											// New client
-				accept_new_client(epfd, sockfd);
+				accept_new_client(epfd, sockfd, fd_map);
 			else														// Received form existing client
-				read_client_data(epfd, fd);
+				read_client_data(epfd, fd, fd_map);
 		}
 	}
+
+	// Close clients on exit
+	clear_fdmap(fd_map);
 }
 
 // Setup the server and call the event loop
@@ -86,6 +97,9 @@ void	launch_server(void)
 	int epfd = init_epoll(sockfd);
 	if (epfd == -1)
 		return ;
+
+	// Set the signal to stop the server
+	signal(SIGINT, &handle_shutdown);
 
 	// Start the epoll event loop (wait for connections)
 	event_loop(epfd, sockfd);

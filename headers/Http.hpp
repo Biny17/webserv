@@ -2,20 +2,12 @@
 #include <map>
 #include <string>
 
-enum Method {
-    ERROR,
-    GET,
-    POST,
-    DELETE
-};
-
 enum p_state {
     INIT,
-    REQUEST_LINE,
+    METHOD,
+    PATH,
+    VERSION,
     HEADERS,
-    HEADER_NAME,
-    HEADER_VALUE,
-    HEADERS_END,
     BODY,
     CHUNK_SIZE,
     CHUNK_DATA,
@@ -25,13 +17,15 @@ enum p_state {
 };
 
 struct HttpReq {
-    Method method;
+    std::string method;
     p_state state;
-    std::string target;
+    bool in_token;
+    std::string path;
     std::string version;
     std::map<std::string, std::string> headers;
     size_t content_len;
     std::string body;
 };
 
-void FillReq(HttpReq& req, const std::string &buf);
+void FillReq(HttpReq& req, const std::string& buf);
+void Method(HttpReq&req, const std::string& buf);

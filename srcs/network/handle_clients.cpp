@@ -25,17 +25,26 @@ void	disconnect_client(int epfd, int clifd, std::map<int, int>& fd_map)
 // Handle client request
 void	read_client_data(int epfd, int clifd, std::map<int, int>& fd_map)
 {
-	(void)epfd;
-	(void)clifd;
-	(void)fd_map;
-	// start parsing request
+	std::string	request;
+	char		buf[1024];
+	int			bytes = recv(clifd, buf, sizeof(buf) - 1, 0);
 
-	/* if (bytes <= 0) // Client exiting
+	buf[bytes] = '\0';
+	request = buf;
+	while (bytes == sizeof(buf) - 1)
+	{
+		int current_bytes = recv(clifd, buf, sizeof(buf), 0);
+		buf[current_bytes] = '\0';
+		request += buf;
+		bytes += current_bytes;
+	}
+
+	if (bytes <= 0) // Client exiting
 	{
 		disconnect_client(epfd, clifd, fd_map);
 		return ;
-	} */
+	}
 
 	// Handle request
-	// send(clifd, buf, bytes, 0);
+	parse_request(request, clifd);
 }

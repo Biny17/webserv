@@ -10,15 +10,8 @@ bool	Server::hasFD(int fd) const
 	if (fd == this->socket)
 		return (true);
 
-	std::map<int, Client>::const_iterator it;
-	std::map<int, Client>::const_iterator ite = this->clients.end();
-
-	for (it = this->clients.begin(); it != ite; it++)
-	{
-		if (it->first == fd)
-			return (true);
-	}
-
+	if (this->clients.find(fd) != this->clients.end())
+		return (true);
 	return (false);
 }
 

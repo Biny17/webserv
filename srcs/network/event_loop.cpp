@@ -3,8 +3,8 @@
 // Return the fd of the server where the client fd is assigned to
 Server&	fetch_server(std::vector<Server>& servers, int fd)
 {
-	std::vector<Server>::iterator it;
-	std::vector<Server>::iterator ite = servers.end();
+	std::vector<Server>::iterator	it;
+	std::vector<Server>::iterator	ite = servers.end();
 
 	for (it = servers.begin(); it != ite; it++)
 	{

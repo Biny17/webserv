@@ -6,6 +6,8 @@
 # include <vector>
 # include <stdint.h>
 # include <unistd.h>
+# include <csignal>
+# include <cstdio>
 # include "Client.hpp"
 # include "Server.hpp"
 # include "network.hpp"

@@ -4,26 +4,31 @@ Server::Server(void) {}
 
 Server::~Server(void) {}
 
+// Search for the FD in the server (including himself)
 bool	Server::hasFD(int fd) const
 {
-	(void)fd;
 	if (fd == this->socket)
 		return (true);
+
 	std::map<int, Client>::const_iterator it;
 	std::map<int, Client>::const_iterator ite = this->clients.end();
+
 	for (it = this->clients.begin(); it != ite; it++)
 	{
 		if (it->first == fd)
 			return (true);
 	}
+
 	return (false);
 }
 
+// Add a client to the server's client map
 void	Server::addClient(int clifd)
 {
 	this->clients[clifd] = Client(clifd);
 }
 
+// Remove the client form the server's client map
 void	Server::removeClient(int clifd)
 {
 	this->clients.erase(clifd);

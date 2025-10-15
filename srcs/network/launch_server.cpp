@@ -26,7 +26,7 @@ int	init_epoll(std::vector<Server>& servers)
 	}
 
 	// If all servers have failed to connect to epoll
-	if (servers.size() == 0)
+	if (servers.empty())
 	{
 		close(epfd);
 		return (-1);
@@ -66,7 +66,7 @@ bool	init_server(Server& server)
 	return (true);
 }
 
-// Setup the server and call the event loop
+// Setup the servers and call the event loop
 void	launch_server(std::vector<Server>& servers)
 {
 	// Initialise all servers
@@ -80,7 +80,7 @@ void	launch_server(std::vector<Server>& servers)
 	}
 
 	// Quit if all servers have failed their initialisation
-	if (servers.size() == 0)
+	if (servers.empty())
 		return ;
 
 	// Create epoll instance and initialise it

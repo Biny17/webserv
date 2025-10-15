@@ -5,11 +5,13 @@ Server&	fetch_server(std::vector<Server>& servers, int fd)
 {
 	std::vector<Server>::iterator it;
 	std::vector<Server>::iterator ite = servers.end();
+
 	for (it = servers.begin(); it != ite; it++)
 	{
 		if (it->hasFD(fd) == true)
 			return (*it);
 	}
+
 	return (servers[0]);
 }
 
@@ -20,7 +22,7 @@ void	event_loop(int epfd, std::vector<Server>& servers)
 
 	while (!shutdown_serv)
 	{
-		// Search tracked socket events
+		// Search for events from tracked sockets
 		int event_amount = epoll_wait(epfd, events, MAX_EVENTS, -1);	// Get events (blocking)
 		if (event_amount == -1)
 			break;
@@ -37,8 +39,7 @@ void	event_loop(int epfd, std::vector<Server>& servers)
 				read_client_data(epfd, fd, server_request);
 		}
 	}
+
 	if (!shutdown_serv)
 		perror("epoll_wait");
-
-	// Close clients on exit
 }

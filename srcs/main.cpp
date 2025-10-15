@@ -2,9 +2,10 @@
 
 std::vector<Server> parse_config(int ac, char** av)
 {
-	std::vector<Server> servers;
 	(void)ac;
 	(void)av;
+	std::vector<Server> servers;
+	servers.push_back(Server());
 	return (servers);
 }
 

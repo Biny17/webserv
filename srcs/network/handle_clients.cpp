@@ -29,6 +29,9 @@ void	read_client_data(int epfd, int clifd, Server& server)
 	char	buf[REQUEST_BUFF_SIZE];
 	int		bytes = recv(clifd, buf, sizeof(buf), 0);
 
+	if (bytes == -1)
+		perror("recv");
+
 	if (bytes <= 0) // Client disconnecting
 	{
 		disconnect_client(epfd, clifd, server);

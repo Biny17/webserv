@@ -7,7 +7,6 @@ class Client {
 
 	public:
 		Client(void);
-		Client(int fd);
 		~Client(void);
 
 		int	fd;

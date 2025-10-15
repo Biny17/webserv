@@ -6,7 +6,8 @@ int	main(int ac, char **av)
 	(void)av;
 	try {
 		// Get config file
-		launch_server();
+		std::vector<Server> servers;
+		launch_server(servers);
 	}
 	catch (std::exception& e) {
 		std::cout << "An error has occured: " << e.what() << std::endl;

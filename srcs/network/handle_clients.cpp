@@ -23,6 +23,27 @@ void	disconnect_client(int epfd, int clifd, Server& server)
 	epoll_ctl(epfd, EPOLL_CTL_DEL, clifd, NULL);
 }
 
+std::string read_file(const std::string &path) {
+	std::ifstream file(path.c_str());
+	std::string content((std::istreambuf_iterator<char>(file)),
+						std::istreambuf_iterator<char>());
+	return content;
+}
+
+void send_index(int client_fd)
+{
+	std::string body = read_file("html/index.html");
+	std::string response =
+		"HTTP/1.1 200 OK\r\n"
+		"Content-Type: text/html\r\n"
+		"Content-Length: " + std::to_string(body.size()) + "\r\n"
+		"Connection: close\r\n"
+		"\r\n" +
+		body;
+	send(client_fd, response.c_str(), response.size(), 0);
+	close(client_fd);
+}
+
 // Handle client request
 void	read_client_data(int epfd, int clifd, Server& server)
 {
@@ -40,4 +61,5 @@ void	read_client_data(int epfd, int clifd, Server& server)
 
 	// Handle request
 	// parse_request(request, clifd);
+	send_index(clifd);
 }

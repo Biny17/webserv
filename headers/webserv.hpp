@@ -8,6 +8,8 @@
 # include <unistd.h>
 # include <csignal>
 # include <cstdio>
+# include <fstream>
+# include <sstream>
 # include "Client.hpp"
 # include "Server.hpp"
 # include "network.hpp"

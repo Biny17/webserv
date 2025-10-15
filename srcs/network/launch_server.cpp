@@ -11,8 +11,10 @@ int	init_epoll(std::vector<Server>& servers)
 		return (-1);
 	}
 
+	std::vector<Server>::iterator it;
+	std::vector<Server>::iterator ite = servers.end();
 	// Iterate over servers to track new clients on their socket
-	for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); it++)
+	for (it = servers.begin(); it != ite; it++)
 	{
 		struct epoll_event event;
 		event.events = EPOLLIN;		// Set for reading
@@ -39,12 +41,13 @@ int	init_epoll(std::vector<Server>& servers)
 bool	init_server(Server& server)
 {
 	// Create IPv4 TCP socket
-	server.socket = socket(AF_INET, SOCK_STREAM, 0);
-	if (server.socket == -1)
+	int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+	if (sockfd == -1)
 	{
 		perror("socket");
 		return (false);
 	}
+	server.socket = sockfd;
 
 	// Bind socket to port
 	struct sockaddr_in addr;			// Address representation
@@ -63,6 +66,7 @@ bool	init_server(Server& server)
 		perror("listen");
 		return (false);
 	}
+
 	return (true);
 }
 
@@ -70,7 +74,9 @@ bool	init_server(Server& server)
 void	launch_server(std::vector<Server>& servers)
 {
 	// Initialise all servers
-	for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); it++)
+	std::vector<Server>::iterator it;
+	std::vector<Server>::iterator ite = servers.end();
+	for (it = servers.begin(); it != ite; ++it)
 	{
 		if (init_server(*it) == false)
 		{

@@ -4,6 +4,7 @@ Server::Server(void)
 {
 	this->port = 8080;
 	this->socket = -1;
+	this->name = "Best server";
 }
 
 Server::~Server(void)

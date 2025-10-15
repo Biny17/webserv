@@ -9,7 +9,9 @@ CXXFLAGS += -I$(HEADERS)
 
 SRCS		=	main.cpp					\
 				network/server.cpp			\
-				network/handle_clients.cpp
+				network/handle_clients.cpp	\
+				conf_parsing.cpp			\
+				server_func.cpp
 
 OBJS		= $(patsubst %.cpp, $(OBJ_DIR)%.o, $(SRCS))
 DEPS		= $(OBJS:.o=.d)

@@ -7,7 +7,7 @@ Server&	fetch_server(std::vector<Server>& servers, int fd)
 	std::vector<Server>::iterator ite = servers.end();
 	for (it = servers.begin(); it != ite; it++)
 	{
-		if (it->has_fd(fd) == true)
+		if (it->hasFD(fd) == true)
 			return (*it);
 	}
 	return (servers[0]);

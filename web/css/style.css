@@ -5,8 +5,7 @@
 }
 
 html, body {
-	background-image: url("../images/mouli.jpg");
-	background-color: rgba(255, 255, 255, 0.144);
+	background: rgba(255, 255, 255, 0.144) url("../images/mouli2.jpg") no-repeat top center fixed;
 	height: 100%;
 	display: flex;
 	flex-direction: column;
@@ -58,6 +57,7 @@ div.header {
 
 main {
 	height: 100%;
+	display: flex;
 }
 
 a {

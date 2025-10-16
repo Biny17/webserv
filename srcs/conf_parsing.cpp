@@ -6,13 +6,15 @@
 /*   By: tpinton <tpinton@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/15 11:57:33 by tpinton           #+#    #+#             */
-/*   Updated: 2025/10/16 16:48:33 by tpinton          ###   ########.fr       */
+/*   Updated: 2025/10/16 17:18:45 by tpinton          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include"config.hpp"
 #include<cstdlib>
 
+
+//reproduit le fonctionnement de emplace_back() pour les vector
 template <typename T>
 static void construct_back(std::vector<T> &container) {
 	T	thing;
@@ -20,6 +22,7 @@ static void construct_back(std::vector<T> &container) {
 	container.push_back(thing);
 }
 
+//remplie un bloc server
 static void	parse_param(std::vector<std::string> const &words, Server &server) {
 
 	std::vector<std::string>::const_iterator	it = words.begin();
@@ -70,6 +73,8 @@ static void	parse_param(std::vector<std::string> const &words, Server &server) {
 		throw std::runtime_error("unknown command " + *it);
 }
 
+
+//remplie un bloc location
 static void	parse_param(std::vector<std::string> const &words, Location &location) {
 
 	std::vector<std::string>::const_iterator	it = words.begin();
@@ -109,10 +114,11 @@ static void	parse_param(std::vector<std::string> const &words, Location &locatio
 		throw std::runtime_error("unknown command " + *it);
 }
 
+//point de passage de toute les ligne, sert a savoir si on entre dans un bloc ou si on quite un bloc, ou alors si on a un argument de bloc
 static void	parse_line(std::vector<std::string> const &words, std::vector<Server> &servers) {
 
 	std::vector<std::string>::const_iterator	it = words.begin();
-	static int	level = 0;
+	static int									level = 0;			//sert a definir si a quel niveau on est : 1 = dans server, 2 = dans location, 0 = dans rien
 
 	if (*it == "server") {
 		if (level != 0 || words.size() != 2 || *(it + 1) != "{")
@@ -133,27 +139,28 @@ static void	parse_line(std::vector<std::string> const &words, std::vector<Server
 		level--;
 	}
 	else {
-		if (level == 1)
+		if (level == 1)											//level = 1 -> on est dans un bloc server
 			parse_param(words, servers.back());
-		else if (level == 2)
+		else if (level == 2)									//level = 2 -> on est dans un bloc locaton
 			parse_param(words, servers.back().locations.back());
 		else
-			throw std::runtime_error("something wrong");
+			throw std::runtime_error("something wrong");		//si level ]1;2[ a ce moment la, alors erreur
 	}
 }
 
+//fonction de parsing du fichier .conf
 void	parse_conf(std::string filename, std::vector<Server> &servers) {
 
 	std::ifstream				file(filename.c_str());
 	std::string					line;
-	std::vector<std::string>	words;
+	std::vector<std::string>	words;									//vector de decoupe en mots
 
 	(void)servers;
 	if (!file.is_open())
 		throw std::runtime_error("invalid file or not right access");
-	while(std::getline(file, line))
+	while(std::getline(file, line))										//parsing ligne par ligne
 	{
-		words.clear();
+		words.clear();													//a chaque ligne on vide words
 		std::string				buffer;
 		std::string::iterator	its = line.begin();
 		for (its = line.begin(); its != line.end(); ++its)
@@ -163,7 +170,7 @@ void	parse_conf(std::string filename, std::vector<Server> &servers) {
 				if (!buffer.empty())
 					words.push_back(buffer);
 				buffer.clear();
-				if (*its == ';' || *its == '#')
+				if (*its == ';' || *its == '#')							//caractere d'arret de ligne
 					break;
 			}
 			else if (*its == '{' || *its == '}')
@@ -177,7 +184,7 @@ void	parse_conf(std::string filename, std::vector<Server> &servers) {
 			else
 				buffer.push_back(*its);
 		}
-		if (!words.empty())
+		if (!words.empty())												//on ignore les ligne vide
 			parse_line(words, servers);
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: tpinton <tpinton@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/15 11:57:33 by tpinton           #+#    #+#             */
-/*   Updated: 2025/10/16 17:18:45 by tpinton          ###   ########.fr       */
+/*   Updated: 2025/10/16 17:23:40 by tpinton          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ static void	parse_param(std::vector<std::string> const &words, Server &server) {
 		server.err_page.insert(err);
 	}
 	else
-		throw std::runtime_error("unknown command " + *it);
+		throw std::runtime_error("server unknown command : " + *it);
 }
 
 
@@ -81,8 +81,6 @@ static void	parse_param(std::vector<std::string> const &words, Location &locatio
 	std::vector<std::string>::const_iterator	ite = words.end();
 	int											size = (int)words.size();
 
-	if (size <= 1)
-		throw std::runtime_error("error");
 	if (*it == "autoindex") {
 		if (size != 2)
 			throw std::runtime_error(*it + " argument error");
@@ -111,7 +109,7 @@ static void	parse_param(std::vector<std::string> const &words, Location &locatio
 			location.methods.push_back(*it);
 		}
 	else
-		throw std::runtime_error("unknown command " + *it);
+		throw std::runtime_error("location unknown command : " + *it);
 }
 
 //point de passage de toute les ligne, sert a savoir si on entre dans un bloc ou si on quite un bloc, ou alors si on a un argument de bloc

@@ -6,7 +6,7 @@
 /*   By: tpinton <tpinton@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/15 11:08:12 by tpinton           #+#    #+#             */
-/*   Updated: 2025/10/15 13:16:01 by tpinton          ###   ########.fr       */
+/*   Updated: 2025/10/16 14:03:49 by tpinton          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 //Location
 
-Location::Location(void) : autoindex(0) {
+Location::Location(void) : autoindex(0), path(NULL), index(NULL), root(NULL), redirect(NULL), upload_dir(NULL) {
 	return ;
 }
 
@@ -46,7 +46,7 @@ std::ostream	&operator<<(std::ostream &o, Location const &loc) {
 
 //Server
 
-Server::Server(void) : listen(0), max_upload(0) {
+Server::Server(void) : server_name(NULL), max_upload(0), index_page(NULL) {
 	return ;
 }
 
@@ -55,7 +55,7 @@ Server::~Server(void) {
 }
 
 std::ostream	&operator<<(std::ostream &o, Server const &serv) {
-	o << "listen : " << serv.listen << std::endl;
+	o << "listen : " << serv.listen[0] << std::endl;
 	if (!serv.server_name.empty())
 		o << "server_name : " << serv.server_name << std::endl;
 	o << "max_upload : " << serv.max_upload << std::endl;

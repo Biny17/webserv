@@ -6,7 +6,7 @@
 /*   By: tpinton <tpinton@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/15 10:30:17 by tpinton           #+#    #+#             */
-/*   Updated: 2025/10/16 15:25:36 by tpinton          ###   ########.fr       */
+/*   Updated: 2025/10/16 16:20:40 by tpinton          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ struct Location {
 	// std::string					redirect;
 	std::string					upload_dir;
 	std::vector<std::string>	methods;
+	std::vector<Location>		locations;
 };
 
 struct Server {

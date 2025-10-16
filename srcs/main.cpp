@@ -9,10 +9,17 @@ int	main(int ac, char **av)
 	{
 		parse_conf(av[1], servers);
 	}
-	catch(std::exception& e)
+	catch(std::runtime_error& e)
 	{
-		std::cerr << "Error in parcing" << '\n';
+		std::cerr << "Error in parcing : " << e.what() << '\n';
+		return (0);
 	}
+	std::vector<Server>::iterator	it = servers.begin();
+	for (it = servers.begin(); it != servers.end(); ++it)
+	{
+		std::cout << *it << std::endl;
+	}
+	
 	// try {
 	// 	// Get config file
 	// 	launch_server();

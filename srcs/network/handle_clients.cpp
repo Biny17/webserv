@@ -32,7 +32,7 @@ std::string read_file(const std::string &path) {
 
 void send_index(int client_fd)
 {
-	std::string body = read_file("html/index.html");
+	std::string body = read_file("web/html/index.html");
 	std::string response =
 		"HTTP/1.1 200 OK\r\n"
 		"Content-Type: text/html\r\n"

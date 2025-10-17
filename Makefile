@@ -1,5 +1,5 @@
 CXX			= c++
-CXXFLAGS	= -Wall -Werror -Wextra -std=c++98
+CXXFLAGS	= -Wall -Werror -Wextra -std=c++98 -g
 
 HEADERS		= ./headers/
 SRC_DIR		= ./srcs/
@@ -7,7 +7,12 @@ OBJ_DIR		= ./objs/
 
 CXXFLAGS += -I$(HEADERS)
 
-SRCS		= main.cpp
+SRCS		=	main.cpp					\
+				network/server.cpp			\
+				network/handle_clients.cpp	\
+				conf_parsing.cpp			\
+				server_func.cpp
+
 OBJS		= $(patsubst %.cpp, $(OBJ_DIR)%.o, $(SRCS))
 DEPS		= $(OBJS:.o=.d)
 

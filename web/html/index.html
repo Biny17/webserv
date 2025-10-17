@@ -21,29 +21,28 @@
 			<p>Upload file</p>
 			<form method="POST" id="upload-form">
 				<input type="file" required id="file-select" name="file-name"/>
-				<input type="submit" value="Upload" class="buttons">
+				<input type="submit" id="upload-button" value="Upload" class="buttons">
 			</form>
 		</section>
 		<section class="delete-file">
 			<p>Delete file</p>
 			<div id="delete-div">
 				<input type="text" id="delete-input" name="delete-name" placeholder="Name of the file to delete"/>
-				<input type="submit" value="Delete" class="buttons">
+				<input type="submit" id="delete-button" value="Delete" class="buttons">
 			</div>
 		</section>
 		<section class="cgi">
 			<p>CGI</p>
-			<div id="cgi-forms">
-				<form method="GET" id="search-form">
-					<input id="fetch-cgi" type="submit" value="Search" class="buttons">
-				</form>
-				<form method="GET" id="cgi-select-form">
-					<select id="cgi-list" name="cgi-name" required class="buttons">
+			<form method="GET" id="cgi-forms">
+				<div id="cgi-list-container">
+					<select id="cgi-list" name="cgi-name" class="buttons" required>
+						<option value="" selected disabled hidden>Select CGI</option>
 						<!-- <option></option> -->
 					</select>
-					<input type="submit" value="Launch" class="buttons">
-				</form>
-			</div>
+					<input id="fetch-cgi" type="submit" value="Refresh" class="buttons" formnovalidate>
+				</div>
+				<input type="submit" id="launch-cgi" value="Launch" class="buttons">
+			</form>
 		</section>
 		<section class="upload-cgi">
 			<p>Upload CGI</p>

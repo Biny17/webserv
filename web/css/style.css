@@ -36,8 +36,8 @@ header {
 	font-weight: 1000;
 	font-family: sans-serif;
 	border-width: 0px;
-	width: 5vh;
-	height: 5vh;
+	width: 4em;
+	height: 4em;
 	transition:
 		width 0.2s,
 		height 0.2s,
@@ -47,8 +47,8 @@ header {
 }
 
 #cat-btn:hover {
-	width: 5.5vh;
-	height: 5.5vh;
+	width: 4.5em;
+	height: 4.5em;
 	color: rgb(221, 25, 232);
 	text-shadow:
 		1px 1px 2px rgba(187, 0, 255, 0.426),
@@ -108,8 +108,9 @@ section {
 #upload-form, #delete-div, #upload-cgi-form, #cgi-forms {
 	display: flex;
 	flex-direction: column;
-	padding-top: 5%;
-	height: 20%;
+	margin-top: 5%;
+	height: 90%;
+	margin-bottom: 10%;
 	width: 60%;
 	justify-content: space-around;
 	align-items: center;
@@ -120,7 +121,6 @@ input {
 }
 
 .buttons {
-	height: 100%;
 	background-color: rgba(192, 119, 238, 0.393);
 	border-radius: 10px;
 	border-style: solid;
@@ -134,16 +134,18 @@ input {
 	background-color: rgba(192, 119, 238, 0.504);
 }
 
+#upload-button, #delete-button, #launch-cgi, #upload-cgi-button {
+	height: 50%;
+}
+
 #delete-input {
 	width: 96%;
 }
 
-#cgi-select-form {
+#cgi-list-container {
 	display: flex;
 	width: 100%;
 }
-
-#cgi-select-form
 
 #fetch-cgi {
 	width: 100%;
@@ -174,6 +176,10 @@ select {
 		1px 1px 2px rgba(187, 0, 255, 0.426),
 		0 0 1em rgb(102, 0, 255),
 		0 0 0.2em rgba(85, 0, 255, 0.853);
+}
+
+p {
+	margin: 6%;
 }
 
 footer {

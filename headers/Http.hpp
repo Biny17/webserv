@@ -18,8 +18,6 @@ enum p_state {
 
 struct HttpReq {
     std::string method;
-    p_state state;
-    bool in_token;
     std::string path;
     std::string version;
     std::map<std::string, std::string> headers;
@@ -27,5 +25,7 @@ struct HttpReq {
     std::string body;
 };
 
-void FillReq(HttpReq& req, const std::string& buf);
-void Method(HttpReq&req, const std::string& buf);
+struct HttpError {
+    int error_code;
+    std::string msg;
+};

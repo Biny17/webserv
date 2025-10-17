@@ -1,0 +1,5 @@
+Request line:
+    ✔ look the origin form/absolute path syntax @done (10/17/2025, 8:14:15 PM)
+    ☐ implement the absolute path parsing
+    ☐ fo what to do with the query argument
+    ☐ fo more about the role of the protocol version

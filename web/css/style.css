@@ -5,12 +5,19 @@
 }
 
 html, body {
-	background: rgba(255, 255, 255, 0.144) url("../images/mouli2.jpg") no-repeat top center fixed;
 	height: 100%;
 	display: flex;
 	flex-direction: column;
 	overflow: hidden;
 	margin: 0;
+}
+
+body.mouli1 {
+	background: url("../images/mouli.jpg") no-repeat top center fixed;
+}
+
+body.mouli2 {
+	background: url("../images/mouli2.jpg") no-repeat top center fixed;
 }
 
 header {
@@ -21,19 +28,35 @@ header {
 	background-color: rgba(0, 0, 0, 0.187);
 }
 
-#theme-btn {
+#cat-btn {
 	background-color: rgba(0, 0, 23, 0.886);
 	border-radius: 100%;
-	font-size: 0.5em;
+	font-size: 0.8em;
 	color: white;
 	font-weight: 1000;
 	font-family: sans-serif;
 	border-width: 0px;
 	width: 5vh;
 	height: 5vh;
+	transition:
+		width 0.2s,
+		height 0.2s,
+		color 0.2s,
+		text-shadow 0.3s,
+		transform 0.3s;
 }
 
-#theme-div {
+#cat-btn:hover {
+	width: 5.5vh;
+	height: 5.5vh;
+	color: rgb(221, 25, 232);
+	text-shadow:
+		1px 1px 2px rgba(187, 0, 255, 0.426),
+		0 0 1em rgb(251, 0, 255),
+		0 0 0.2em rgba(85, 0, 255, 0.853);
+}
+
+#cat-div {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -58,13 +81,98 @@ div.header {
 main {
 	height: 100%;
 	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+	align-items: center;
 }
 
-a {
+section {
+	padding-top: 0.8%;
+	height: 27%;
+	background-color: rgba(21, 15, 37, 0.266);
+	width: 17%;
+	border: thick double #973dd0;
+	border-radius: 15px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	font-size: 2.5em;
+	color: rgb(221, 25, 232);
+	font-family: 'Courier New', Courier, monospace;
+	text-shadow:
+		1px 1px 2px rgba(187, 0, 255, 0.426),
+		0 0 1em rgb(251, 0, 255),
+		0 0 0.2em rgba(85, 0, 255, 0.853);
+}
+
+#upload-form, #delete-div, #upload-cgi-form, #cgi-forms {
+	display: flex;
+	flex-direction: column;
+	padding-top: 5%;
+	height: 20%;
+	width: 60%;
+	justify-content: space-around;
+	align-items: center;
+}
+
+input {
+	width: 100%;
+}
+
+.buttons {
+	height: 100%;
+	background-color: rgba(192, 119, 238, 0.393);
+	border-radius: 10px;
+	border-style: solid;
+	border-color: black;
+	transition:
+		background-color 0.3s,
+		transform 0.3s;
+}
+
+.buttons:hover {
+	background-color: rgba(192, 119, 238, 0.504);
+}
+
+#delete-input {
+	width: 96%;
+}
+
+#cgi-select-form {
+	display: flex;
+	width: 100%;
+}
+
+#cgi-select-form
+
+#fetch-cgi {
+	width: 100%;
+}
+
+#search-form {
+	width: 100%;
+	display:flex;
+}
+
+select {
+	width: 200%;
+}
+
+#credits {
 	color: rgb(183, 39, 231);
 	text-shadow:
 		1px 1px 2px rgba(187, 0, 255, 0.426),
 		0 0 1em rgb(251, 0, 255),
+		0 0 0.2em rgba(85, 0, 255, 0.853);
+	transition:
+		text-shadow 0.3s,
+		transform 0.3s;
+}
+
+#credits:hover {
+	text-shadow:
+		1px 1px 2px rgba(187, 0, 255, 0.426),
+		0 0 1em rgb(102, 0, 255),
 		0 0 0.2em rgba(85, 0, 255, 0.853);
 }
 
@@ -76,15 +184,3 @@ footer {
 	font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 	text-decoration: none;
 }
-
-/* div {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	text-align: center;
-	border-radius: 10px;
-	transition: all 0.45s ease-in-out, background-color 0s;
-	color: white;
-	cursor: pointer;
-	padding: 0.8vh;
-} */

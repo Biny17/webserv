@@ -6,7 +6,7 @@
 /*   By: tpinton <tpinton@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/15 11:08:12 by tpinton           #+#    #+#             */
-/*   Updated: 2025/10/16 17:00:12 by tpinton          ###   ########.fr       */
+/*   Updated: 2025/10/17 12:29:21 by tpinton          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,12 @@ std::ostream	&operator<<(std::ostream &o, Location const &loc) {
 	// 	o << "redirect : " << loc.path << std::endl;
 	if (!loc.upload_dir.empty())
 		o << "upload_dir : " << loc.path << std::endl;
+	if (!loc.index.empty())
+		o << "index : " << loc.index << std::endl;
+	if (!loc.cgi_path.empty())
+		o << "cgi_path : " << loc.cgi_path << std::endl;
+	if (!loc.cgi_extension.empty())
+		o << "cgi_path : " << loc.cgi_extension << std::endl;
 	if (!loc.methods.empty())
 	{
 		o << "methods : ";

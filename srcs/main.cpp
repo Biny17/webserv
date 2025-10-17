@@ -5,13 +5,11 @@ int	main(int ac, char **av)
 	(void)ac;
 	(void)av;
 	std::vector<Server>	servers;
-	try
-	{
+	try {
 		parse_conf(av[1], servers);
 	}
-	catch(std::runtime_error& e)
-	{
-		std::cerr << "Error in parcing : " << e.what() << '\n';
+	catch(std::runtime_error& e) {
+		std::cerr << "Error while parcing : " << e.what() << '\n';
 		return (0);
 	}
 	std::vector<Server>::iterator	it = servers.begin();

@@ -6,7 +6,7 @@
 /*   By: tpinton <tpinton@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/15 11:57:33 by tpinton           #+#    #+#             */
-/*   Updated: 2025/10/16 17:23:40 by tpinton          ###   ########.fr       */
+/*   Updated: 2025/10/17 12:34:30 by tpinton          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,7 @@ static void	parse_param(std::vector<std::string> const &words, Server &server) {
 	int											size = (int)words.size();
 
 	if (*it == "listen")
-		for (it = words.begin() + 1; it != ite; ++it)
-		{
+		for (it = words.begin() + 1; it != ite; ++it) {
 			for (size_t i = 0; i < (*it).size(); i++)
 				if (!std::isdigit((*it)[i]))
 					throw std::runtime_error(*it + " argument error");
@@ -102,21 +101,30 @@ static void	parse_param(std::vector<std::string> const &words, Location &locatio
 		location.root = *(it + 1);
 	}
 	else if (*it == "allow_methods")
-		for (it = words.begin() + 1; it != ite; ++it)
-		{
+		for (it = words.begin() + 1; it != ite; ++it) {
 			if (*it != "GET" && *it != "POST" && *it != "DELETE")
 				throw std::runtime_error(*it + " argument error");
 			location.methods.push_back(*it);
 		}
+	else if (*it == "cgi_path") {
+		if (size != 2)
+			throw std::runtime_error(*it + " argument error");
+		location.cgi_path = *(it + 1);
+	}
+	else if (*it == "cgi_extension") {
+		if (size != 2)
+			throw std::runtime_error(*it + " argument error");
+		location.cgi_extension = *(it + 1);
+	}
 	else
 		throw std::runtime_error("location unknown command : " + *it);
 }
 
 //point de passage de toute les ligne, sert a savoir si on entre dans un bloc ou si on quite un bloc, ou alors si on a un argument de bloc
-static void	parse_line(std::vector<std::string> const &words, std::vector<Server> &servers) {
+static void	parse_line(std::vector<std::string> const &words, std::vector<Server> &servers, int &level) {
 
 	std::vector<std::string>::const_iterator	it = words.begin();
-	static int									level = 0;			//sert a definir si a quel niveau on est : 1 = dans server, 2 = dans location, 0 = dans rien
+	// static int									level = 0;			//sert a definir si a quel niveau on est : 1 = dans server, 2 = dans location, 0 = dans rien
 
 	if (*it == "server") {
 		if (level != 0 || words.size() != 2 || *(it + 1) != "{")
@@ -151,28 +159,28 @@ void	parse_conf(std::string filename, std::vector<Server> &servers) {
 
 	std::ifstream				file(filename.c_str());
 	std::string					line;
-	std::vector<std::string>	words;									//vector de decoupe en mots
+	int							level = 0;
 
-	(void)servers;
 	if (!file.is_open())
 		throw std::runtime_error("invalid file or not right access");
-	while(std::getline(file, line))										//parsing ligne par ligne
+	while(std::getline(file, line))											//parsing ligne par ligne
 	{
-		words.clear();													//a chaque ligne on vide words
-		std::string				buffer;
-		std::string::iterator	its = line.begin();
-		for (its = line.begin(); its != line.end(); ++its)
+		bool						endline = 0;
+		std::vector<std::string>	words;									//vector de decoupe en mots
+		std::string					buffer;
+		for (std::string::iterator its = line.begin(); its != line.end(); ++its)
 		{
-			if (std::isspace(*its) || *its == ';' || *its == '#')
-			{
+			if (std::isspace(*its) || *its == ';' || *its == '#') {
 				if (!buffer.empty())
 					words.push_back(buffer);
 				buffer.clear();
-				if (*its == ';' || *its == '#')							//caractere d'arret de ligne
+				if (*its == ';' || *its == '#')	{							//caractere d'arret de ligne
+					endline = 1;
 					break;
+				}
 			}
-			else if (*its == '{' || *its == '}')
-			{
+			else if (*its == '{' || *its == '}') {
+				endline = 1;
 				if (!buffer.empty())
 					words.push_back(buffer);
 				buffer.clear();
@@ -182,7 +190,14 @@ void	parse_conf(std::string filename, std::vector<Server> &servers) {
 			else
 				buffer.push_back(*its);
 		}
-		if (!words.empty())												//on ignore les ligne vide
-			parse_line(words, servers);
+		if (!buffer.empty())
+			throw std::runtime_error(buffer + " : bad syntax or unknown commands");
+		if (!words.empty())	{												//on ignore les ligne vide
+			if (!endline)
+				throw std::runtime_error("bad line");
+			parse_line(words, servers, level);
+		}
 	}
+	if (level != 0)
+		throw std::runtime_error("{ not close error");
 }

@@ -6,7 +6,7 @@
 /*   By: tpinton <tpinton@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/15 11:57:33 by tpinton           #+#    #+#             */
-/*   Updated: 2025/10/17 12:34:30 by tpinton          ###   ########.fr       */
+/*   Updated: 2025/10/17 15:10:00 by tpinton          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,16 +35,15 @@ static void	parse_param(std::vector<std::string> const &words, Server &server) {
 				if (!std::isdigit((*it)[i]))
 					throw std::runtime_error(*it + " argument error");
 			server.listen.push_back(std::atoi((*it).c_str()));
-		}
+	}
 	else if (*it == "server_name") {
 		if (size != 2)
 			throw std::runtime_error(*it + " argument error");
 		server.server_name = *(it + 1);
 	}
 	else if (*it == "index") {
-		if (size != 2)
-			throw std::runtime_error(*it + " argument error");
-		server.index_page = *(it + 1);
+		for (it = words.begin() + 1; it != words.end(); ++it)
+			server.index_page.push_back(*it);
 	}
 	else if (*it == "client_max_body_size") {
 		if (size != 2)
@@ -91,9 +90,8 @@ static void	parse_param(std::vector<std::string> const &words, Location &locatio
 			throw std::runtime_error(*it + " argument error");
 	}
 	else if (*it == "index") {
-		if (size != 2)
-			throw std::runtime_error(*it + " argument error");
-		location.index = *(it + 1);
+		for (it = words.begin() + 1; it != words.end(); ++it)
+			location.index.push_back(*it);
 	}
 	else if (*it == "root") {
 		if (size != 2)

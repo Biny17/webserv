@@ -6,7 +6,7 @@
 /*   By: tpinton <tpinton@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/15 11:08:12 by tpinton           #+#    #+#             */
-/*   Updated: 2025/10/17 12:29:21 by tpinton          ###   ########.fr       */
+/*   Updated: 2025/10/17 15:12:57 by tpinton          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,12 @@ std::ostream	&operator<<(std::ostream &o, Location const &loc) {
 	if (!loc.upload_dir.empty())
 		o << "upload_dir : " << loc.path << std::endl;
 	if (!loc.index.empty())
-		o << "index : " << loc.index << std::endl;
+	{
+		o << "index : ";
+		for (std::vector<std::string>::const_iterator it = loc.index.begin(); it != loc.index.end(); ++it)
+			o << *it << " ";
+		o << std::endl;
+	}
 	if (!loc.cgi_path.empty())
 		o << "cgi_path : " << loc.cgi_path << std::endl;
 	if (!loc.cgi_extension.empty())
@@ -65,12 +70,23 @@ Server::~Server(void) {
 
 std::ostream	&operator<<(std::ostream &o, Server const &serv) {
 	o << "---------------------------------server----------------------------------" << std::endl;
-	o << "listen : " << serv.listen[0] << std::endl;
+	if (!serv.listen.empty())
+	{
+		o << "listen : ";
+		for (std::vector<int>::const_iterator it = serv.listen.begin(); it != serv.listen.end(); ++it)
+			o << *it << " ";
+		o << std::endl;
+	}
 	if (!serv.server_name.empty())
 		o << "server_name : " << serv.server_name << std::endl;
 	o << "max_upload : " << serv.max_upload << std::endl;
 	if (!serv.index_page.empty())
-		o << "index : " << serv.index_page << std::endl;
+	{
+		o << "index : ";
+		for (std::vector<std::string>::const_iterator it = serv.index_page.begin(); it != serv.index_page.end(); ++it)
+			o << *it << " ";
+		o << std::endl;
+	}
 	if (!serv.err_page.empty())
 		o << "error_page amount : " << serv.err_page.size() << std::endl;
 	if (!serv.locations.empty())

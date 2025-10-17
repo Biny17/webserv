@@ -6,7 +6,7 @@
 /*   By: tpinton <tpinton@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/15 10:30:17 by tpinton           #+#    #+#             */
-/*   Updated: 2025/10/17 12:26:08 by tpinton          ###   ########.fr       */
+/*   Updated: 2025/10/17 14:55:09 by tpinton          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ struct Location {
 
 	int							autoindex;
 	std::string					path;
-	std::string					index;
+	std::vector<std::string>	index;
 	std::string					root;
 	// std::string					redirect;
 	std::string					cgi_path;
@@ -42,7 +42,7 @@ struct Server {
 	std::string					server_name;
 	std::string					root;
 	unsigned long				max_upload;
-	std::string					index_page;
+	std::vector<std::string>	index_page;
 	std::vector<Location>		locations;
 	std::map<int, std::string>	err_page;
 };

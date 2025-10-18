@@ -1,6 +1,21 @@
 #pragma once
 #include "Http.hpp"
 
+enum p_state {
+    INIT,
+    METHOD,
+    PATH,
+    QUERY,
+    VERSION,
+    HEADERS,
+    BODY,
+    CHUNK_SIZE,
+    CHUNK_DATA,
+    CHUNK_DATA_CRLF,
+    COMPLETE,
+    ERROR
+};
+
 struct ParseResult {
     bool ok;
     HttpReq req;

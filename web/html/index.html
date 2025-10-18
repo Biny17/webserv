@@ -16,42 +16,41 @@
 			<button id="cat-btn">Chat</button>
 		</div>
 	</header>
-	<main>
-		<section class="upload-file">
-			<p>Upload file</p>
+	<main id="main-id">
+		<section class="index-sections" id="upload-file">
+			<p class="titles">Upload file</p>
 			<form method="POST" id="upload-form">
-				<input type="file" required id="file-select" name="file-name"/>
-				<input type="submit" id="upload-button" value="Upload" class="buttons">
+				<input type="file" required id="file-select" name="file-name" class="inputs"/>
+				<input type="submit" id="upload-button" value="Upload" class="buttons inputs">
 			</form>
 		</section>
-		<section class="delete-file">
-			<p>Delete file</p>
+		<section class="index-sections" id="delete-file">
+			<p class="titles">Delete file</p>
 			<div id="delete-div">
-				<input type="text" id="delete-input" name="delete-name" placeholder="Name of the file to delete"/>
-				<input type="submit" id="delete-button" value="Delete" class="buttons">
+				<input type="text" id="delete-input" name="delete-name" placeholder="Name of the file to delete" class="inputs"/>
+				<input type="submit" id="delete-button" value="Delete" class="buttons inputs">
 			</div>
 		</section>
-		<section class="cgi">
-			<p>CGI</p>
+		<section class="index-sections" id="cgi">
+			<p class="titles">CGI</p>
 			<form method="GET" id="cgi-forms">
 				<div id="cgi-list-container">
 					<select id="cgi-list" name="cgi-name" class="buttons" required>
 						<option value="" selected disabled hidden>Select CGI</option>
-						<!-- <option></option> -->
 					</select>
-					<input id="fetch-cgi" type="submit" value="Refresh" class="buttons" formnovalidate>
+					<input id="fetch-cgi" type="submit" value="Refresh" class="buttons inputs" formnovalidate>
 				</div>
-				<input type="submit" id="launch-cgi" value="Launch" class="buttons">
+				<input type="submit" id="launch-cgi" value="Launch" class="buttons inputs">
 			</form>
 		</section>
-		<section class="upload-cgi">
-			<p>Upload CGI</p>
+		<section class="index-sections" id="upload-cgi">
+			<p class="titles">Upload CGI</p>
 			<form method="POST" id="upload-cgi-form">
-				<input type="file" id="cgi-select" name="cgi-name" required/>
-				<input type="submit" id="upload-cgi-button" value="Upload CGI" class="buttons">
+				<input type="file" id="cgi-select" name="cgi-name" class="inputs" required/>
+				<input type="submit" id="upload-cgi-button" value="Upload CGI" class="buttons inputs">
 			</form>
 		</section>
 	</main>
-	<footer><a id="credits" href="credit.html">Credits</a></footer>
+	<footer id="index-footer"><a id="footer-id" href="credit.html">Credits</a></footer>
 </body>
 </html>

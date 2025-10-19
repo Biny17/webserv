@@ -12,7 +12,7 @@ class Server {
 		Server(void);
 		~Server(void);
 
-		int							socket;
+		std::vector<int>			sockets;
 		std::string					server_name;
 		std::vector<int>			listen;
 		std::string					root;
@@ -23,6 +23,7 @@ class Server {
 
 		std::map<int, Client>	clients;
 
+		bool	isSockFD(int fd) const;
 		bool	hasFD(int fd) const;
 		void	addClient(int clifd);
 		void	removeClient(int clifd);

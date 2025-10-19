@@ -1,10 +1,10 @@
 #include "webserv.hpp"
 
 // Accept the client and set it as input
-void	accept_new_client(int epfd, Server& server)
+void	accept_new_client(int epfd, int sockfd, Server& server)
 {
 	// Create a socket for the client that is trying to connect to the server
-	int	client_fd = accept(server.socket, NULL, NULL);
+	int	client_fd = accept(sockfd, NULL, NULL);
 	if (client_fd == -1)
 		return ;
 

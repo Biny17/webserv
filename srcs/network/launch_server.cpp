@@ -1,5 +1,35 @@
 #include "webserv.hpp"
 
+// Attach each server's sockets to epoll and set them on reading
+bool	attach_sockets(int epfd, Server& server)
+{
+	size_t	failed_amount = 0;
+
+	// Set socket on reading
+	struct epoll_event event;
+	event.events = EPOLLIN;
+
+	// Iterate over each sockets of each server
+	std::vector<int>::iterator it;
+	std::vector<int>::iterator ite = server.sockets.end();
+	for (it = server.sockets.begin(); it != ite; it++)
+	{
+		event.data.fd = *it;
+
+		// Attach to epoll
+		if (epoll_ctl(epfd, EPOLL_CTL_ADD, *it, &event) == -1)
+		{
+			std::cout << "An error occured while assigning a port of the server `" << server.server_name << "` to epoll: " << strerror(errno) << std::endl;
+			server.sockets.erase(it);
+			failed_amount++;
+		}
+	}
+
+	if (failed_amount == server.sockets.size())
+		return (false);
+	return (true);
+}
+
 // Creation and initialisation of the epoll instance to track new clients
 int	init_epoll(std::vector<Server>& servers)
 {
@@ -11,18 +41,14 @@ int	init_epoll(std::vector<Server>& servers)
 		return (-1);
 	}
 
+	// Iterate over servers to track new clients on their socket
 	std::vector<Server>::iterator it;
 	std::vector<Server>::iterator ite = servers.end();
-	// Iterate over servers to track new clients on their socket
-	for (it = servers.begin(); it != ite; it++)
+	for (it = servers.begin(); it != ite; ++it)
 	{
-		struct epoll_event event;
-		event.events = EPOLLIN;		// Set for reading
-		event.data.fd = it->socket;	// Attach server socket to epoll
-		if (epoll_ctl(epfd, EPOLL_CTL_ADD, it->socket, &event) == -1)
+		if (attach_sockets(epfd, *it) == false)
 		{
-			perror("epoll_ctl");
-			std::cout << "An error occured while assigning the server `" << it->server_name << "` to epoll" << std::endl;
+			std::cout << "Could not assign server `" << it->server_name << "` to epoll" << std::endl;
 			servers.erase(it);
 		}
 	}
@@ -37,65 +63,68 @@ int	init_epoll(std::vector<Server>& servers)
 	return (epfd);
 }
 
-// Bind ports to socket
-bool	bind_ports(Server& server)
+// Setup the port and bind it on the socket
+bool	bind_port(int sockfd, int port)
 {
 	// Reset port to be usable again
 	int	opt = 1;
-	if (setsockopt(server.socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
-	{
-		perror("setsockopt");
+	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
 		return (false);
-	}
 
 	struct sockaddr_in addr;			// Address representation
 	addr.sin_family = AF_INET;			// IPv4 addr
 	addr.sin_addr.s_addr = INADDR_ANY;	// Listen on all private network IPs
+	addr.sin_port = htons(port);			// Set the port to listen on (htons convert to network endian)
 
-	size_t						failed_amount = 0;
+	// Bind ports to socket
+	if (bind(sockfd, (struct sockaddr*)&addr, sizeof(addr)) == -1)
+		return (false);
+
+	return (true);
+}
+
+// Create the sockets, bind them and put them in passive mode
+bool	init_sockets(Server& server)
+{
+	size_t	failed_amount = 0;
+
+	// Iterate over ports
 	std::vector<int>::iterator	it;
 	std::vector<int>::iterator	ite = server.listen.end();
 	for (it = server.listen.begin(); it != ite; ++it)
 	{
-		addr.sin_port = htons(*it);		// Set the port to listen on (htons convert to network endian)
-
-		std::cout << *it << std::endl;
-
-		if (bind(server.socket, (struct sockaddr*)&addr, sizeof(addr)) == -1)
+		// Create IPv4 TCP socket
+		int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+		if (sockfd == -1)
 		{
-			perror("bind");
-			std::cout << "Failed to bind port " << *it << " to server `" << server.server_name << "`" << std::endl;
+			std::cout << "Failed to create socket for the port " << *it << " on server `" << server.server_name << "`: " << strerror(errno) << std::endl;
 			failed_amount++;
+			continue;
+		}
+
+		server.sockets.push_back(sockfd);	// Add socket to server socket list
+
+		// Setup port and bind it to the socket
+		if (bind_port(sockfd, *it) == false)
+		{
+			std::cout << "Failed to bind port " << *it << " to server `" << server.server_name << "`: " << strerror(errno) << std::endl;
+			server.sockets.pop_back();
+			failed_amount++;
+			continue;
+		}
+
+		// Put socket in passive mode (ready to accept connections)
+		if (listen(sockfd, SOMAXCONN) == -1)
+		{
+			std::cout << "Failed set socket on listening for the port " << *it << " on server `" << server.server_name << "`: " << strerror(errno) << std::endl;
+			server.sockets.pop_back();
+			failed_amount++;
+			continue;
 		}
 	}
 
 	if (failed_amount == server.listen.size())
 		return (false);
-	return (true);
-}
-
-// Create a socket, bind it and put it in passive mode
-bool	init_server(Server& server)
-{
-	// Create IPv4 TCP socket
-	int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-	if (sockfd == -1)
-	{
-		perror("socket");
-		return (false);
-	}
-	server.socket = sockfd;
-
-	if (bind_ports(server) == false)
-		return (false);
-
-	// Put socket in passive mode (ready to accept connections)
-	if (listen(server.socket, SOMAXCONN) == -1)
-	{
-		perror("listen");
-		return (false);
-	}
-
 	return (true);
 }
 
@@ -107,7 +136,7 @@ void	launch_server(std::vector<Server>& servers)
 	std::vector<Server>::iterator ite = servers.end();
 	for (it = servers.begin(); it != ite; ++it)
 	{
-		if (init_server(*it) == false)
+		if (init_sockets(*it) == false)
 		{
 			std::cout << "An error occured while creating the server `" << it->server_name << "`" << std::endl;
 			servers.erase(it);

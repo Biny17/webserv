@@ -2,21 +2,31 @@
 
 Server::Server(void)
 {
-	this->server_name = "Best server";
 	this->max_upload = 0;
-	this->socket = -1;
 }
 
 Server::~Server(void)
 {
-	if (this->socket >= 0)
-		close(this->socket);
+	std::vector<int>::iterator	it;
+	std::vector<int>::iterator	ite = this->sockets.end();
+	for (it = this->sockets.begin(); it != ite; ++it)
+	{
+		if (*it >= 0)
+			close(*it);
+	}
+}
+
+bool	Server::isSockFD(int fd) const
+{
+	if (std::find(this->sockets.begin(), this->sockets.end(), fd) != this->sockets.end())
+		return (true);
+	return (false);
 }
 
 // Search for the FD in the server (including himself)
 bool	Server::hasFD(int fd) const
 {
-	if (fd == this->socket)
+	if (this->isSockFD(fd))
 		return (true);
 
 	if (this->clients.find(fd) != this->clients.end())

@@ -33,8 +33,8 @@ void	event_loop(int epfd, std::vector<Server>& servers)
 			int		fd = events[i].data.fd;								// Get the fd of the socket of the event
 			Server&	server_request = fetch_server(servers, fd);			// Fetch the server of the client
 
-			if (fd == server_request.socket)							// New client
-				accept_new_client(epfd, server_request);
+			if (server_request.isSockFD(fd))							// New client
+				accept_new_client(epfd, fd, server_request);
 			else														// Received form existing client
 				read_client_data(epfd, fd, server_request);
 		}

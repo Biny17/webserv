@@ -9,7 +9,9 @@
 # include <csignal>
 # include <cstdio>
 # include <cstdlib>
+# include <cstring>
 # include <fstream>
+# include <algorithm>
 # include "Location.hpp"
 # include "Client.hpp"
 # include "Server.hpp"

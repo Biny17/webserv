@@ -1,10 +1,13 @@
 #include "Location.hpp"
 
-Location::Location(void) : autoindex(0) {
+Location::Location(void)
+{
+	this->autoindex = 0;
 	return ;
 }
 
-Location::~Location(void) {
+Location::~Location(void)
+{
 	return ;
 }
 

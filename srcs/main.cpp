@@ -1,30 +1,37 @@
 #include "webserv.hpp"
 
-int	main(int ac, char **av)
+void	print_servers(std::vector<Server> servers)
 {
-	(void)ac;
-	(void)av;
-	std::vector<Server>	servers;
-	try {
-		parse_conf(av[1], servers);
-	}
-	catch(std::runtime_error& e) {
-		std::cerr << "Error while parcing : " << e.what() << '\n';
-		return (0);
-	}
-	std::vector<Server>::iterator	it = servers.begin();
-	for (it = servers.begin(); it != servers.end(); ++it)
+	std::vector<Server>::iterator	it;
+	for (it  = servers.begin(); it != servers.end(); ++it)
 	{
 		std::cout << *it << std::endl;
 	}
-	
-	// try {
-	// 	// Get config file
-	// 	launch_server();
-	// }
-	// catch (std::exception& e) {
-	// 	std::cout << "An error has occured: " << e.what() << std::endl;
-	// 	return (1);
-	// }
+}
+
+int	main(int ac, char **av)
+{
+	if (ac != 2)
+	{
+		std::cout << "Invalid amount of arguments, please launch the program with a config file" << std::endl;
+		return (1);
+	}
+
+	std::vector<Server>	servers;
+	try {
+		try {
+			parse_conf(av[1], servers);
+		}
+		catch(std::runtime_error& e) {
+			std::cerr << "Parsing error: " << e.what() << '\n';
+			return (1);
+		}
+		// print_servers(servers);
+		launch_server(servers);
+	}
+	catch (std::exception& e) {
+		std::cout << "An error has occured: " << e.what() << std::endl;
+		return (1);
+	}
 	return (0);
 }

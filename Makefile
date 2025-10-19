@@ -1,5 +1,5 @@
 CXX			= c++
-CXXFLAGS	= -Wall -Werror -Wextra -std=c++98 -g
+CXXFLAGS	= -Wall -Werror -Wextra -std=c++98 -ggdb
 
 HEADERS		= ./headers/
 SRC_DIR		= ./srcs/
@@ -8,10 +8,14 @@ OBJ_DIR		= ./objs/
 CXXFLAGS += -I$(HEADERS)
 
 SRCS		=	main.cpp					\
-				network/server.cpp			\
+				classes/Client.cpp			\
+				classes/Server.cpp			\
+				classes/Location.cpp		\
+				conf/conf_parsing.cpp		\
+				network/event_loop.cpp		\
 				network/handle_clients.cpp	\
-				conf_parsing.cpp			\
-				server_func.cpp
+				network/launch_server.cpp	\
+				utils/exit_signal.cpp
 
 OBJS		= $(patsubst %.cpp, $(OBJ_DIR)%.o, $(SRCS))
 DEPS		= $(OBJS:.o=.d)

@@ -1,18 +1,4 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   conf_parsing.cpp                                   :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: tpinton <tpinton@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/15 11:57:33 by tpinton           #+#    #+#             */
-/*   Updated: 2025/10/17 15:10:00 by tpinton          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include"config.hpp"
-#include<cstdlib>
-
+#include "webserv.hpp"
 
 //reproduit le fonctionnement de emplace_back() pour les vector
 template <typename T>

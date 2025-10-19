@@ -11,17 +11,29 @@ inline bool is_token(unsigned char c) {
     return std::isalnum(c) || strchr("!#$%&'*+-.^_`|~", c);
 }
 
-int parse_token(const std::string& src, std::string& dest, size_t &start)
-{
-    size_t n = start;
-    while (n < src.length() && is_token(src[n]))
-        n++;
-    dest += src.substr(start, n-start);
-    return (n - start);
+inline bool is_xdigit(unsigned char c) {
+    return std::isdigit(c) || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
+}
+
+// unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~"
+inline bool is_unreserved(unsigned char c) {
+    return std::isalnum(c) || (strchr("-._~", c) != 0);
+}
+
+inline bool is_gen_delims(unsigned char c) {
+    return (strchr(":/?#[]@", c) != 0);
+}
+
+inline bool is_sub_delims(unsigned char c) {
+    return (strchr("!$&'()*+,;=", c) != 0);
 }
 
 inline bool is_pchar(unsigned char c) {
-    return std::isalnum(c) || (strchr("-._~%!$&'()*+,;=", c) != 0);
+    return is_unreserved(c) || is_sub_delims(c) || (c == ':') || (c == '@') || (c == '%');
+}
+
+inline bool is_query(unsigned char c) {
+    return is_pchar(c) || (strchr("/?", c) != 0);
 }
 
 inline bool is_abspath(unsigned char c) {
@@ -32,7 +44,29 @@ inline bool valid_method(const std::string& method) {
     return (method == "GET" || method == "POST" || method == "DELETE");
 }
 
-bool is_validpath(const std::string& path) {
+int parse_token(const std::string& src, std::string& dest, size_t &start)
+{
+    size_t n = start;
+    while (n < src.length() && is_token(src[n]))
+        n++;
+    dest += src.substr(start, n-start);
+    return (n - start);
+}
+
+bool valid_pct_encoded(const std::string &str)
+{
+    for (size_t i = 0; i < str.length(); i++) {
+        if (str[i] == '%') {
+            if (i + 2 >= str.length() || !is_xdigit(str[i + 1]) || !is_xdigit(str[i + 2]))
+                return false;
+            i += 2;
+        }
+    }
+    return true;
+}
+
+bool valid_path(const std::string& path) 
+{
     if (path[0] != '/')
         return false;
     size_t start = 1;
@@ -44,5 +78,5 @@ bool is_validpath(const std::string& path) {
             return false;
         start = end + 1;
     }
-    return true;
+    return valid_pct_encoded(path);
 }

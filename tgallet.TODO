@@ -3,3 +3,10 @@ Request line:
     ☐ implement the absolute path parsing
     ☐ fo what to do with the query argument
     ☐ fo more about the role of the protocol version
+    ☐ Length limites for method, path, headers
+
+https://www.rfc-editor.org/rfc/rfc9112#name-origin-form
+
+A client that has more than one outstanding request on a connection MUST maintain a list of outstanding
+requests in the order sent and MUST associate each received response message on that connection to the first 
+outstanding request that has not yet received a final (non-1xx) response

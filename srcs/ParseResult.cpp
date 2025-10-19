@@ -40,9 +40,43 @@ void ParseResult::Path(const std::string& buff, size_t& i)
     req.path += buff.substr(i, n - i);
     if (n == buff.length())
         return;
-    if ((buff[n] == ' ' || buff[n] == '?') && is_validpath(req.path)) {        
-        i = n + 1;
+    if ((buff[n] == ' ' || buff[n] == '?') && valid_path(req.path)) {        
         state = (buff[n] == ' ') ? VERSION : QUERY;
+        i = n + 1;
+    }
+    else
+        Error("", 400);
+}
+
+void ParseResult::Query(const std::string &buff, size_t& i)
+{
+    size_t n = i;
+    while (n < buff.length() && is_query(buff[n]))
+        n++;
+    req.query += buff.substr(i, n - i);
+    if (n == buff.length())
+        return;
+    if (buff[n] == ' ') {
+        state = VERSION;
+        i = n + 1;
+    }
+    else
+        Error("", 400);
+}
+
+void ParseResult::Version(const std::string &buff, size_t& i)
+{
+    size_t n = i;
+    while (n < buff.length() && (std::isalnum(buff[n]) || buff[n] == '/' || buff[n] == '.' ))
+        n++;
+    req.version += buff.substr(i, n - i);
+    if (req.version != "HTTP/1.1" && req.version != "HTTP/1.0") {
+        Error("Unsupported HTTP version", 505);
+        return;
+    }
+    if (n+1 < buff.length() && buff[n] == '\r' && buff[n+1] == '\n') {
+        state = HEADERS;
+        i = n+2;
     }
     else
         Error("", 400);

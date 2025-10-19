@@ -49,6 +49,14 @@ bool	init_server(Server& server)
 	}
 	server.socket = sockfd;
 
+	// Reset port to be usable again
+	int opt = 1;
+	if (setsockopt(server.socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
+	{
+		perror("setsockopt");
+		return (false);
+	}
+
 	// Bind socket to port
 	struct sockaddr_in addr;			// Address representation
 	addr.sin_family = AF_INET;			// IPv4 addr

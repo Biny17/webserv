@@ -34,15 +34,15 @@ void ParseResult::Method(const std::string& buff, size_t& i)
 
 void ParseResult::Path(const std::string& buff, size_t& i)
 {
-    size_t n = i;
-    while (n < buff.length() && is_abspath(buff[n]))
-        n++;
-    req.path += buff.substr(i, n - i);
-    if (n == buff.length())
+    size_t start = i;
+    while (i < buff.length() && is_abspath(buff[i]))
+        i++;
+    req.path += buff.substr(start, i - start);
+    if (i == buff.length())
         return;
-    if ((buff[n] == ' ' || buff[n] == '?') && valid_path(req.path)) {        
-        state = (buff[n] == ' ') ? VERSION : QUERY;
-        i = n + 1;
+    if ((buff[i] == ' ' || buff[i] == '?') && valid_path(req.path)) {        
+        state = (buff[i] == ' ') ? VERSION : QUERY;
+        i++;
     }
     else
         Error("", 400);
@@ -50,15 +50,15 @@ void ParseResult::Path(const std::string& buff, size_t& i)
 
 void ParseResult::Query(const std::string &buff, size_t& i)
 {
-    size_t n = i;
-    while (n < buff.length() && is_query(buff[n]))
-        n++;
-    req.query += buff.substr(i, n - i);
-    if (n == buff.length())
+    size_t start = i;
+    while (i < buff.length() && is_query(buff[i]))
+        i++;
+    req.query += buff.substr(start, i - start);
+    if (i == buff.length())
         return;
-    if (buff[n] == ' ') {
+    if (buff[i] == ' ') {
         state = VERSION;
-        i = n + 1;
+        i++;
     }
     else
         Error("", 400);
@@ -75,11 +75,61 @@ void ParseResult::Version(const std::string &buff, size_t& i)
         return;
     }
     if (n+1 < buff.length() && buff[n] == '\r' && buff[n+1] == '\n') {
-        state = HEADERS;
+        state = HEAD_KEY;
         i = n+2;
     }
     else
         Error("", 400);
+}
+
+void ParseResult::Head_Key(const std::string &buff, size_t& i)
+{
+    if (buff[i] == '\r' && i+1 < buff.length() && buff[i+1] == '\n') {
+        state = BODY;
+        i += 2;
+        return;
+    }
+    size_t start = i;
+    while (i < buff.length() && is_token(buff[i]))
+        i++;
+    cur_key += buff.substr(start, i - start);
+    if (i == buff.length())
+        return;
+    if (buff[i] != ':') {
+        Error("", 400);
+        return;
+    }
+    state = HEAD_VAL;
+    skip_leading_ws = true;
+    i++;
+}
+
+void ParseResult::Head_Value(const std::string &buff, size_t& i)
+{
+    size_t start = i;
+
+    if (skip_leading_ws) {
+        while (i < buff.length() && (buff[i] == ' ' || buff[i] == '\t'))
+            i++;
+        start = i;
+        if (i < buff.length())
+            skip_leading_ws = false;
+    }
+
+    size_t crfl = buff.find("\r\n", i);
+    if (crfl == std::string::npos) {
+        cur_value += buff.substr(start, i - start);
+        i = buff.length();
+        return;
+    }
+    else {
+        cur_value += buff.substr(start, crfl - start);
+        req.headers[cur_key] = cur_value;
+        cur_key.clear();
+        cur_value.clear();
+        state = HEAD_KEY;
+        i = crfl + 2;
+    }
 }
 
 void ParseResult::FillReq(const std::string& buff)
@@ -94,6 +144,12 @@ void ParseResult::FillReq(const std::string& buff)
         Method(buff, i);
     if (state == PATH && i < buff.length())
         Path(buff, i);
-    // if (state == QUERY && i < buff.length())
-
+    if (state == QUERY && i < buff.length())
+        Query(buff, i);
+    if (state == VERSION && i < buff.length())
+        Version(buff, i);
+    if (state == HEAD_KEY && i < buff.length())
+        Head_Key(buff, i);
+    if (state == HEAD_VAL && i < buff.length())
+        Head_Value(buff, i);
 }

@@ -80,3 +80,21 @@ bool valid_path(const std::string& path)
     }
     return valid_pct_encoded(path);
 }
+
+bool valid_h_key(const std::string &key)
+{
+    for (size_t i = 0; i < key.length(); i++) {
+        if (!is_token(key[i]))
+            return false;
+    }
+    return true;
+}
+
+bool valid_h_value(const std::string &value)
+{
+    for (size_t i = 0; i < value.length(); i++) {
+        if (value[i] != '\t' && (value[i] < ' ' || value[i] > '~'))
+            return false;
+    }
+    return true;
+}

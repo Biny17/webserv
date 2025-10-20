@@ -8,6 +8,8 @@ OBJ_DIR		= ./objs/
 CXXFLAGS += -I$(HEADERS)
 
 SRCS		=	main.cpp					\
+				cgi/handle_cgi.cpp			\
+				cgi/pipex_cgi.cpp			\
 				classes/Client.cpp			\
 				classes/Server.cpp			\
 				classes/Location.cpp		\

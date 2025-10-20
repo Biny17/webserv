@@ -60,14 +60,11 @@ int	exec_cgi(std::vector<std::string> const &cgi, char **env) {
 	return (fdout);
 }
 
-int	manage_cgi(std::string &filename, char **env) {
+int	launch_cgi(std::string &filename, char **env) {
 
 	std::vector<std::string>	cgi;
 	if (access(filename.c_str(), F_OK))
-	{
-		perror("access");
 		return (-1);
-	}
 	if (filename.find_last_of('.') == filename.npos)
 		return (-1);
 	if (filename.substr(filename.find_last_of('.'), filename.size()) == ".py") {

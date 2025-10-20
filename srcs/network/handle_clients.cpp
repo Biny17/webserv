@@ -26,6 +26,12 @@ void	disconnect_client(int epfd, int clifd, Server& server)
 // Handle client request
 void	read_client_data(int epfd, int clifd, Server& server)
 {
+	if (server.clients[clifd].isCGI == true)
+	{
+		listen_cgi(server, server.clients[clifd]);
+		return ;
+	}
+
 	char	buf[REQUEST_BUFF_SIZE];
 	int		bytes = recv(clifd, buf, sizeof(buf), 0);
 
@@ -40,4 +46,10 @@ void	read_client_data(int epfd, int clifd, Server& server)
 
 	// Handle request
 	// parse_request(request, clifd);
+
+	bool		isCGI = true; // temp
+	std::string	name = "cgi-bin/python.py";
+	if (isCGI)
+		add_cgi(server, server.clients[clifd], name);
+	server.removeClient(clifd);
 }

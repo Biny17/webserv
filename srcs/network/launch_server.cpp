@@ -46,6 +46,7 @@ int	init_epoll(std::vector<Server>& servers)
 	std::vector<Server>::iterator ite = servers.end();
 	for (it = servers.begin(); it != ite; ++it)
 	{
+		it->epfd = epfd;
 		if (attach_sockets(epfd, *it) == false)
 		{
 			std::cout << "Could not assign server `" << it->server_name << "` to epoll" << std::endl;

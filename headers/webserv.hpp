@@ -18,6 +18,7 @@
 # include "Client.hpp"
 # include "Server.hpp"
 # include "network.hpp"
+# include "cgi.hpp"
 
 // Utils
 extern volatile sig_atomic_t shutdown_serv;

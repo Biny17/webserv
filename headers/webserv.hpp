@@ -9,6 +9,8 @@
 # include <csignal>
 # include <cstdio>
 # include <cstdlib>
+# include <sys/types.h>
+# include <sys/wait.h>
 # include <cstring>
 # include <fstream>
 # include <algorithm>

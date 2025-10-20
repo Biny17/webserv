@@ -1,20 +1,4 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   exec_cgi.cpp                                       :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: tpinton <tpinton@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/20 13:40:33 by tpinton           #+#    #+#             */
-/*   Updated: 2025/10/20 14:38:48 by tpinton          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include<iostream>
-#include<string>
-#include<vector>
-#include <sys/types.h>
-#include <sys/wait.h>
+#include "webserv.hpp"
 
 std::string	find_path(std::string const &cmd, char **env) {
 	int			i = 0;

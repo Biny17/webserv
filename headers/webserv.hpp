@@ -11,6 +11,7 @@
 # include <cstdlib>
 # include <sys/types.h>
 # include <sys/wait.h>
+# include <dirent.h>
 # include <cstring>
 # include <fstream>
 # include <algorithm>
@@ -22,6 +23,7 @@
 
 // Utils
 extern volatile sig_atomic_t shutdown_serv;
-void	handle_shutdown(int sig);
+void		handle_shutdown(int sig);
+std::string	autoindex(std::string const & directory);
 
 #endif // WEBSERV_HPP

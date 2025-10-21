@@ -39,8 +39,8 @@ void ParseResult::Path(const std::string& buff, size_t& i)
     size_t start = i;
     while (i < buff.length() && is_abspath(buff[i]))
         i++;
-    if ((req.path.length() + i - start) > 8192) {
-        Error("Uri is too long >8192", 414);
+    if ((req.path.length() + i - start) > URI_MAX) {
+        Error("Uri is too long", 414);
         return;
     }
     req.path += buff.substr(start, i - start);
@@ -78,10 +78,8 @@ void ParseResult::Version(const std::string &buff, size_t& i)
         || buff[n] == '/' || buff[n] == '.' ))
         n++;
     req.version += buff.substr(i, n - i);
-    if (req.version != "HTTP/1.1" && req.version != "HTTP/1.0") {
-        Error("Unsupported HTTP version", 505);
-        return;
-    }
+    if (req.version != "HTTP/1.1" && req.version != "HTTP/1.0")
+        return Error("Unsupported HTTP version", 505);
     if (n+1 < buff.length() && buff[n] == '\r' && buff[n+1] == '\n') {
         state = HEAD_KEY;
         i = n+2;
@@ -101,6 +99,8 @@ void ParseResult::HeadKey(const std::string &buff, size_t& i)
     size_t start = i;
     while (i < buff.length() && is_token(buff[i]))
         i++;
+    if ((i-start + cur_key.length()) > HEADER_MAX)
+        return Error("Request Header Fields Too Large", 431);
     cur_key += buff.substr(start, i - start);
     if (i == buff.length())
         return;
@@ -127,12 +127,15 @@ void ParseResult::HeadValue(const std::string &buff, size_t& i)
 
     size_t crfl = buff.find("\r\n", i);
     if (crfl == std::string::npos) {
-        cur_value += buff.substr(start, i - start);
+        if (cur_value.length() + (i - buff.length()) > HEADER_MAX)
+            return Error("Request Header Fields Too Large", 431);
+        cur_value += buff.substr(start, i - buff.length());
         i = buff.length();
         return;
     }
     else {
         cur_value += buff.substr(start, crfl - start);
+        cur_value = cur_value.substr(0, cur_value.find_last_not_of(" \t"));
         req.headers[cur_key] = cur_value;
         cur_key.clear();
         cur_value.clear();
@@ -143,17 +146,13 @@ void ParseResult::HeadValue(const std::string &buff, size_t& i)
 
 void ParseResult::AfterHeadersCheck()
 {
-    if (req.headers.find("Host") != req.headers.end()) {
-        Error("Host header is required", 400);
-        return;
-    }
+    if (req.headers.find("Host") != req.headers.end())
+        return Error("Host header is required", 400);
     if (req.method == "GET")
     {
         if (req.headers.find("Content-Length") != req.headers.end() ||
-            req.headers.find("Transfer-Encoding") != req.headers.end()) {
-            Error("GET request must not have a body", 400);
-            return;
-        }
+            req.headers.find("Transfer-Encoding") != req.headers.end())
+            return Error("GET request must not have a body", 400);
     }
     else if (req.method == "POST") {
         Post();
@@ -165,10 +164,8 @@ void ParseResult::Post()
     std::map<std::string,std::string>::iterator te = req.headers.find("Transfer-Encoding");
     if (te != req.headers.end())
     {
-        if (te->second != "chunked") {
-            Error("Unsupported Transfer-Encoding", 501);
-            return;
-        }
+        if (te->second != "chunked")
+            return Error("Unsupported Transfer-Encoding", 501);
         else {
             state = CHUNK_SIZE;
             return;
@@ -179,15 +176,11 @@ void ParseResult::Post()
     {
         std::stringstream ss(ce->second);
         ss >> content_length;
-        if (ss.fail() || !ss.eof() || ss.bad() || content_length < 0){
-            Error("Invalid Content-Length", 400);
-            return;
-        }
+        if (ss.fail() || !ss.eof() || ss.bad() || content_length < 0)
+            return Error("Invalid Content-Length", 400);
     }
-    else {
-        Error("POST request must have a body", 400);
-        return;
-    }
+    else
+        return Error("POST request must have a body", 400);
 }
 
 void ParseResult::FillReq(const std::string& buff)

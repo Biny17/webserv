@@ -65,7 +65,7 @@ bool valid_pct_encoded(const std::string &str)
     return true;
 }
 
-bool valid_path(const std::string& path) 
+bool valid_path(const std::string& path)
 {
     if (path[0] != '/')
         return false;

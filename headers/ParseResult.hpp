@@ -19,13 +19,17 @@ enum p_state {
 
 class ParseResult {
     private:
+        static const unsigned int URI_MAX = 8192;
+        static const unsigned int HEADER_MAX = 8192;
+
         std::string cur_key;
         std::string cur_value;
+        size_t max_body_size;
         int content_length;
         p_state state;
         int pct;
         bool skip_leading_ws;
-        
+
         void Error(std::string msg, int error_code);
         void Method(const std::string& buff, size_t& i);
         void Path(const std::string& buff, size_t& i);
@@ -39,7 +43,7 @@ class ParseResult {
         void TransferEncoding(const std::string &buff, size_t& i);
 
     public:
-        HttpReq req;
+        HttpReq& req;
         HttpError err;
         bool ok;
         void FillReq(const std::string& buff);

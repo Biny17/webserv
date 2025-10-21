@@ -22,9 +22,9 @@ void	listen_cgi(Server& server, Client& client)
 			return ;
 		}
 		if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
-			std::cout << WEXITSTATUS(status) << std::endl; // Handle the error here
+			std::cout << WEXITSTATUS(status) << std::endl;		// Handle the error here
 		else
-			std::cout << "CGI response: " << client.cgi_body << std::endl; // Make the response here
+			std::cout << "CGI response: " << client.cgi_body;	// Make the response here
 		server.removeClient(client.fd);
 		return ;
 	}

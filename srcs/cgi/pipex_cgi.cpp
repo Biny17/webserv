@@ -74,7 +74,7 @@ int	exec_cgi(std::vector<std::string> const &cgi, Client& client, char **env) {
 		close(pipefd[1]);
 		close(fdout);
 		std::string test = find_path(cgi[0], env);
-		execve("test.c_str()", tab, env);
+		execve(test.c_str(), tab, env);
 		std::string errmessage = "cgi execve failure - ";
 		errmessage += strerror(errno);
 		throw std::runtime_error(errmessage.c_str());

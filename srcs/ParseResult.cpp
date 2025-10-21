@@ -175,20 +175,20 @@ void ParseResult::Post()
     if (ce != req.headers.end())
     {
         std::stringstream ss(ce->second);
-        ss >> content_length;
-        if (ss.fail() || !ss.eof() || ss.bad() || content_length < 0)
+        ss >> req.content_len;
+        if (ss.fail() || !ss.eof() || ss.bad() || req.content_len < 0)
             return Error("Invalid Content-Length", 400);
     }
     else
         return Error("POST request must have a body", 400);
 }
 
-void ParseResult::FillReq(const std::string& buff)
+size_t ParseResult::FillReq(const std::string& buff)
 {
 
     size_t i = 0;
     if (state == ERROR)
-        return;
+        return i;
     if (state == INIT)
         state = METHOD;
     if (state == METHOD && i < buff.length())
@@ -199,8 +199,12 @@ void ParseResult::FillReq(const std::string& buff)
         Query(buff, i);
     if (state == VERSION && i < buff.length())
         Version(buff, i);
-    if (state == HEAD_KEY && i < buff.length())
-        HeadKey(buff, i);
-    if (state == HEAD_VAL && i < buff.length())
-        HeadValue(buff, i);
+    while ((state == HEAD_KEY || state == HEAD_VAL) && i < buff.length())
+    {
+        if (state == HEAD_KEY)
+           HeadKey(buff, i);
+        if (state == HEAD_VAL && i < buff.length())
+            HeadValue(buff, i);
+    }
+    return i;
 }

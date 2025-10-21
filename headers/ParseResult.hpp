@@ -25,9 +25,7 @@ class ParseResult {
         std::string cur_key;
         std::string cur_value;
         size_t max_body_size;
-        int content_length;
         p_state state;
-        int pct;
         bool skip_leading_ws;
 
         void Error(std::string msg, int error_code);
@@ -43,9 +41,10 @@ class ParseResult {
         void TransferEncoding(const std::string &buff, size_t& i);
 
     public:
-        HttpReq& req;
+        HttpReq req;
         HttpError err;
         bool ok;
-        void FillReq(const std::string& buff);
+        size_t FillReq(const std::string& buff);
         ParseResult();
+        void Print();
 };

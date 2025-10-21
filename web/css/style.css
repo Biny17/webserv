@@ -275,6 +275,9 @@ p.surnames {
 }
 
 #cgi-response {
+	display: flex;
+	flex-direction: column;
+	background-color: #7b7b7b43;
 	margin: 4%;
 	margin-top: 0;
 	border: thick double #973dd0;

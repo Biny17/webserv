@@ -39,10 +39,14 @@ void ParseResult::Path(const std::string& buff, size_t& i)
     size_t start = i;
     while (i < buff.length() && is_abspath(buff[i]))
         i++;
+    if ((req.path.length() + i - start) > 8192) {
+        Error("Uri is too long >8192", 414);
+        return;
+    }
     req.path += buff.substr(start, i - start);
     if (i == buff.length())
         return;
-    if ((buff[i] == ' ' || buff[i] == '?') && valid_path(req.path)) {        
+    if ((buff[i] == ' ' || buff[i] == '?') && valid_path(req.path)) {
         state = (buff[i] == ' ') ? VERSION : QUERY;
         i++;
     }
@@ -69,7 +73,9 @@ void ParseResult::Query(const std::string &buff, size_t& i)
 void ParseResult::Version(const std::string &buff, size_t& i)
 {
     size_t n = i;
-    while (n < buff.length() && (std::isalnum(buff[n]) || buff[n] == '/' || buff[n] == '.' ))
+    while (n < buff.length()
+        && (std::isalnum(buff[n])
+        || buff[n] == '/' || buff[n] == '.' ))
         n++;
     req.version += buff.substr(i, n - i);
     if (req.version != "HTTP/1.1" && req.version != "HTTP/1.0") {
@@ -137,6 +143,10 @@ void ParseResult::HeadValue(const std::string &buff, size_t& i)
 
 void ParseResult::AfterHeadersCheck()
 {
+    if (req.headers.find("Host") != req.headers.end()) {
+        Error("Host header is required", 400);
+        return;
+    }
     if (req.method == "GET")
     {
         if (req.headers.find("Content-Length") != req.headers.end() ||
@@ -173,11 +183,11 @@ void ParseResult::Post()
             Error("Invalid Content-Length", 400);
             return;
         }
-    } 
+    }
     else {
         Error("POST request must have a body", 400);
         return;
-    }   
+    }
 }
 
 void ParseResult::FillReq(const std::string& buff)

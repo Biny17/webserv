@@ -29,6 +29,6 @@ std::string	autoindex(std::string const & directory) {	//preciser le directory
 	}
 	answer += "</body>\n" \
 				"</html>";
-	close(dir);
+	closedir(dir);
 	return (answer);	//renvoie une string contennant la page html a afficher (ca reste une string) :)
 }

@@ -1,23 +1,42 @@
-#pragma once
-#include "Http.hpp"
-#include <chrono>
+#ifndef CLIENT_HPP
+# define CLIENT_HPP
+
+# include "webserv.hpp"
+# include "HTTP.hpp"
+// # include <chrono>
+
+class Server;
 
 enum ClientState {
-    READING,
-    WRITE,
-    CLOSED
+	RD_HEADER,
+	RD_BODY,
+	WRITING
 };
 
-struct Client {
-    int fd;
-    ClientState state;
-    std::chrono::time_point<std::chrono::system_clock> ts;
-    std::string write_buff;
-    std::string tmp;
-    size_t wdi;
-    HttpReq request;
-    bool keep_alive;
+class Client {
 
-    Client(int socket_fd);
-    void Parse(const std::string& buff);
+	public:
+		Client(void);
+		~Client(void);
+
+		int	fd;
+
+		bool		isCGI;
+		int			referringFD;
+		pid_t		CGIpid;
+		std::string	cgi_body;
+
+		void	setCGI(int cgiFD, Server& server);
+
+		// ClientState state;
+		// int socker_fd;
+		// std::chrono::time_point<std::chrono::system_clock> ts;
+
+		// std::string read_buff;
+		// size_t rdi;
+		// std::string write_buff;
+		// size_t wdi;
+
 };
+
+#endif // CLIENT_HPP

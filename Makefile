@@ -1,5 +1,5 @@
 CXX			= c++
-CXXFLAGS	= -Wall -Werror -Wextra -std=c++98
+CXXFLAGS	= -Wall -Werror -Wextra -std=c++98 -ggdb
 
 HEADERS		= ./headers/
 SRC_DIR		= ./srcs/
@@ -7,7 +7,19 @@ OBJ_DIR		= ./objs/
 
 CXXFLAGS += -I$(HEADERS)
 
-SRCS		= main.cpp
+SRCS		=	main.cpp					\
+				cgi/get_cgi.cpp				\
+				cgi/handle_cgi.cpp			\
+				cgi/pipex_cgi.cpp			\
+				classes/Client.cpp			\
+				classes/Location.cpp		\
+				classes/Server.cpp			\
+				conf/conf_parsing.cpp		\
+				network/event_loop.cpp		\
+				network/handle_clients.cpp	\
+				network/launch_server.cpp	\
+				utils/exit_signal.cpp
+
 OBJS		= $(patsubst %.cpp, $(OBJ_DIR)%.o, $(SRCS))
 DEPS		= $(OBJS:.o=.d)
 

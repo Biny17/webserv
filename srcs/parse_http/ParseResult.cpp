@@ -2,6 +2,24 @@
 #include "../headers/utils.hpp"
 #include <sstream>
 #include <iostream>
+#include <stdio.h>
+
+ParseResult::ParseResult(): state(INIT), skip_leading_ws(true), ok(true) {}
+
+void ParseResult::Reset()
+{
+    state = INIT;
+    ok = true;
+    skip_leading_ws = true;
+    cur_key.clear();
+    cur_value.clear();
+    req.content_len = 0;
+    req.headers.clear();
+    req.method.clear();
+    req.query.clear();
+    req.version.clear();
+    req.path.clear();
+}
 
 void ParseResult::Error(std::string msg, int error_code)
 {
@@ -20,8 +38,10 @@ void ParseResult::Method(const std::string& buff, size_t& i)
         Error("Unsupported method", 501);
         return ;
     }
+
     if (i == buff.length())
         return;
+
     if (buff[i] != ' ') {
         Error("", 400);
         return;

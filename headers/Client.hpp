@@ -2,7 +2,6 @@
 # define CLIENT_HPP
 
 # include "webserv.hpp"
-# include "HTTP.hpp"
 // # include <chrono>
 
 class Server;
@@ -21,6 +20,7 @@ class Client {
 
 		int			fd;
 		std::string	out_buffer;
+		ParseResult	parse;
 
 		bool		isCGI;
 		int			referringFD;

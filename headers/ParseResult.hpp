@@ -46,5 +46,6 @@ class ParseResult {
         bool ok;
         size_t FillReq(const std::string& buff);
         ParseResult();
+        void Reset();
         void Print();
 };

@@ -19,9 +19,11 @@ void	accept_new_client(int epfd, int sockfd, Server& server)
 // Handle client request
 void	read_client_data(int epfd, int clifd, Server& server)
 {
-	if (server.clients[clifd].isCGI == true)
+	Client& client = server.clients[clifd];
+
+	if (client.isCGI == true)
 	{
-		listen_cgi(server, server.clients[clifd]);
+		listen_cgi(server, client);
 		return ;
 	}
 
@@ -39,10 +41,9 @@ void	read_client_data(int epfd, int clifd, Server& server)
 
 	buf[bytes] = 0;
 
-	std::cout << buf << std::endl;
-	// Handle request
-	// parse_request(buf, clifd);
-
+	client.parse.FillReq(buf);
+	client.parse.Print();
+	client.parse.Reset();
 	if (send_response(clifd, server) == false)
 		set_epoll_event(epfd, clifd, EPOLLOUT);
 }

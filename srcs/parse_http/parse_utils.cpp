@@ -1,56 +1,57 @@
 #include "../headers/utils.hpp"
 #include <cstring>
+#include <stdio.h>
 
-inline bool is_req(unsigned char c)
+bool is_req(unsigned char c)
 {
     if (c > 0x20 && c < 0x7E)
         return true;
     return false;
 }
-inline bool is_token(unsigned char c) {
+bool is_token(unsigned char c) {
     return std::isalnum(c) || strchr("!#$%&'*+-.^_`|~", c);
 }
 
-inline bool is_xdigit(unsigned char c) {
+bool is_xdigit(unsigned char c) {
     return std::isdigit(c) || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
 }
 
 // unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~"
-inline bool is_unreserved(unsigned char c) {
+bool is_unreserved(unsigned char c) {
     return std::isalnum(c) || (strchr("-._~", c) != 0);
 }
 
-inline bool is_gen_delims(unsigned char c) {
+bool is_gen_delims(unsigned char c) {
     return (strchr(":/?#[]@", c) != 0);
 }
 
-inline bool is_sub_delims(unsigned char c) {
+bool is_sub_delims(unsigned char c) {
     return (strchr("!$&'()*+,;=", c) != 0);
 }
 
-inline bool is_pchar(unsigned char c) {
+bool is_pchar(unsigned char c) {
     return is_unreserved(c) || is_sub_delims(c) || (c == ':') || (c == '@') || (c == '%');
 }
 
-inline bool is_query(unsigned char c) {
+bool is_query(unsigned char c) {
     return is_pchar(c) || (strchr("/?", c) != 0);
 }
 
-inline bool is_abspath(unsigned char c) {
+bool is_abspath(unsigned char c) {
     return is_pchar(c) || (c == '/');
 }
 
-inline bool valid_method(const std::string& method) {
+bool valid_method(const std::string& method) {
     return (method == "GET" || method == "POST" || method == "DELETE");
 }
 
-int parse_token(const std::string& src, std::string& dest, size_t &start)
+int parse_token(const std::string& src, std::string& dest, size_t &i)
 {
-    size_t n = start;
-    while (n < src.length() && is_token(src[n]))
-        n++;
-    dest += src.substr(start, n-start);
-    return (n - start);
+    size_t start = i;
+    while (i < src.length() && is_token(src[i]))
+        i++;
+    dest += src.substr(start, i-start);
+    return (start - i);
 }
 
 bool valid_pct_encoded(const std::string &str)

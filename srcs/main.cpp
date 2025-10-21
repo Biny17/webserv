@@ -1,5 +1,7 @@
 #include "webserv.hpp"
 
+std::vector<Server>	servers;
+
 void	print_servers(std::vector<Server> servers)
 {
 	std::vector<Server>::iterator	it;
@@ -17,7 +19,6 @@ int	main(int ac, char **av)
 		return (1);
 	}
 
-	std::vector<Server>	servers;
 	try {
 		try {
 			parse_conf(av[1], servers);

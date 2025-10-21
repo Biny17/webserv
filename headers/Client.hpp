@@ -5,6 +5,8 @@
 # include "HTTP.hpp"
 // # include <chrono>
 
+class Server;
+
 enum ClientState {
 	RD_HEADER,
 	RD_BODY,
@@ -18,6 +20,13 @@ class Client {
 		~Client(void);
 
 		int	fd;
+
+		bool		isCGI;
+		int			referringFD;
+		pid_t		CGIpid;
+		std::string	cgi_body;
+
+		void	setCGI(int cgiFD, Server& server);
 
 		// ClientState state;
 		// int socker_fd;

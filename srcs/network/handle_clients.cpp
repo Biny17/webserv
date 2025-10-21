@@ -26,7 +26,13 @@ void	disconnect_client(int epfd, int clifd, Server& server)
 // Handle client request
 void	read_client_data(int epfd, int clifd, Server& server)
 {
-	char	buf[REQUEST_BUFF_SIZE + 1];
+	if (server.clients[clifd].isCGI == true)
+	{
+		listen_cgi(server, server.clients[clifd]);
+		return ;
+	}
+
+	char	buf[REQUEST_BUFF_SIZE];
 	int		bytes = recv(clifd, buf, sizeof(buf), 0);
 
 	if (bytes == -1)
@@ -42,5 +48,13 @@ void	read_client_data(int epfd, int clifd, Server& server)
 
 	std::cout << buf << std::endl;
 	// Handle request
-	// parse_request(request, clifd);
+	// parse_request(buf, clifd);
+
+	// std::cout << buf << std::endl;
+
+	/* bool		isCGI = true; // temp
+	std::string	name = "cgi-bin/shell.sh";
+	if (isCGI)
+		add_cgi(server, server.clients[clifd], name);
+	server.removeClient(clifd); */
 }

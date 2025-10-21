@@ -4,28 +4,33 @@
 bool	attach_sockets(int epfd, Server& server)
 {
 	size_t	failed_amount = 0;
+	size_t	sockets_size = server.sockets.size();
 
 	// Set socket on reading
 	struct epoll_event event;
 	event.events = EPOLLIN;
 
 	// Iterate over each sockets of each server
-	std::vector<int>::iterator it;
-	std::vector<int>::iterator ite = server.sockets.end();
-	for (it = server.sockets.begin(); it != ite; it++)
+	std::vector<int>::iterator it = server.sockets.begin();
+	while (it != server.sockets.end())
 	{
 		event.data.fd = *it;
+
+		(void)epfd;
 
 		// Attach to epoll
 		if (epoll_ctl(epfd, EPOLL_CTL_ADD, *it, &event) == -1)
 		{
 			std::cout << "An error occured while assigning a port of the server `" << server.server_name << "` to epoll: " << strerror(errno) << std::endl;
-			server.sockets.erase(it);
+			close(*it);
+			it = server.sockets.erase(it);
 			failed_amount++;
 		}
+		else
+			++it;
 	}
 
-	if (failed_amount == server.sockets.size())
+	if (failed_amount == sockets_size)
 		return (false);
 	return (true);
 }
@@ -42,15 +47,16 @@ int	init_epoll(std::vector<Server>& servers)
 	}
 
 	// Iterate over servers to track new clients on their socket
-	std::vector<Server>::iterator it;
-	std::vector<Server>::iterator ite = servers.end();
-	for (it = servers.begin(); it != ite; ++it)
+	std::vector<Server>::iterator it = servers.begin();
+	while (it != servers.end())
 	{
 		if (attach_sockets(epfd, *it) == false)
 		{
 			std::cout << "Could not assign server `" << it->server_name << "` to epoll" << std::endl;
-			servers.erase(it);
+			it = servers.erase(it);
 		}
+		else
+			++it;
 	}
 
 	// If all servers have failed to connect to epoll
@@ -108,6 +114,7 @@ bool	init_sockets(Server& server)
 		if (bind_port(sockfd, *it) == false)
 		{
 			std::cout << "Failed to bind port " << *it << " to server `" << server.server_name << "`: " << strerror(errno) << std::endl;
+			close(server.sockets.back());
 			server.sockets.pop_back();
 			failed_amount++;
 			continue;
@@ -117,6 +124,7 @@ bool	init_sockets(Server& server)
 		if (listen(sockfd, SOMAXCONN) == -1)
 		{
 			std::cout << "Failed set socket on listening for the port " << *it << " on server `" << server.server_name << "`: " << strerror(errno) << std::endl;
+			close(server.sockets.back());
 			server.sockets.pop_back();
 			failed_amount++;
 			continue;
@@ -132,15 +140,16 @@ bool	init_sockets(Server& server)
 void	launch_server(std::vector<Server>& servers)
 {
 	// Initialise all servers
-	std::vector<Server>::iterator it;
-	std::vector<Server>::iterator ite = servers.end();
-	for (it = servers.begin(); it != ite; ++it)
+	std::vector<Server>::iterator it = servers.begin();
+	while (it != servers.end())
 	{
 		if (init_sockets(*it) == false)
 		{
 			std::cout << "An error occured while creating the server `" << it->server_name << "`" << std::endl;
-			servers.erase(it);
+			it = servers.erase(it);
 		}
+		else
+			++it;
 	}
 
 	// Quit if all servers have failed their initialisation

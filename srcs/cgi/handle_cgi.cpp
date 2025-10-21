@@ -21,11 +21,8 @@ void	listen_cgi(Server& server, Client& client)
 			server.removeClient(client.fd);
 			return ;
 		}
-		if (bytes < 0)
-		{
-			if (WIFEXITED(status))
-				std::cout << WEXITSTATUS(status) << std::endl;
-		}
+		if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
+			std::cout << WEXITSTATUS(status) << std::endl; // Handle the error here
 		else
 			std::cout << "CGI response: " << client.cgi_body << std::endl; // Make the response here
 		server.removeClient(client.fd);

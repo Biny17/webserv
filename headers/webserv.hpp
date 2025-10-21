@@ -21,6 +21,9 @@
 # include "network.hpp"
 # include "cgi.hpp"
 
+// Global because I love the 42norm
+extern std::vector<Server> servers;
+
 // Utils
 extern volatile sig_atomic_t shutdown_serv;
 void		handle_shutdown(int sig);

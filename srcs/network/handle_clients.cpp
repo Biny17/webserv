@@ -47,7 +47,7 @@ void	read_client_data(int epfd, int clifd, Server& server)
 	// Handle request
 	// parse_request(buf, clifd);
 
-	std::cout << buf << std::endl;
+	// std::cout << buf << std::endl;
 
 	bool		isCGI = true; // temp
 	std::string	name = "cgi-bin/shell.sh";

@@ -26,7 +26,7 @@ void	disconnect_client(int epfd, int clifd, Server& server)
 // Handle client request
 void	read_client_data(int epfd, int clifd, Server& server)
 {
-	char	buf[REQUEST_BUFF_SIZE];
+	char	buf[REQUEST_BUFF_SIZE + 1];
 	int		bytes = recv(clifd, buf, sizeof(buf), 0);
 
 	if (bytes == -1)
@@ -38,6 +38,9 @@ void	read_client_data(int epfd, int clifd, Server& server)
 		return ;
 	}
 
+	buf[bytes] = 0;
+
+	std::cout << buf << std::endl;
 	// Handle request
 	// parse_request(request, clifd);
 }

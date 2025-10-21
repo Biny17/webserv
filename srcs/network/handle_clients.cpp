@@ -49,9 +49,9 @@ void	read_client_data(int epfd, int clifd, Server& server)
 
 	// std::cout << buf << std::endl;
 
-	bool		isCGI = true; // temp
+	/* bool		isCGI = true; // temp
 	std::string	name = "cgi-bin/shell.sh";
 	if (isCGI)
 		add_cgi(server, server.clients[clifd], name);
-	server.removeClient(clifd);
+	server.removeClient(clifd); */
 }

@@ -15,7 +15,7 @@ void	listen_cgi(Server& server, Client& client)
 	if (bytes <= 0)
 	{
 		int status;
-		if (waitpid(-1, &status, 0) == -1)
+		if (waitpid(client.CGIpid, &status, 0) == -1)
 		{
 			perror("waitpid");
 			server.removeClient(client.fd);
@@ -27,7 +27,7 @@ void	listen_cgi(Server& server, Client& client)
 				std::cout << WEXITSTATUS(status) << std::endl;
 		}
 		else
-			std::cout << "CGI response: " << client.cgi_body << std::endl;
+			std::cout << "CGI response: " << client.cgi_body << std::endl; // Make the response here
 		server.removeClient(client.fd);
 		return ;
 	}
@@ -38,7 +38,7 @@ void	listen_cgi(Server& server, Client& client)
 
 void	add_cgi(Server& server, Client& client, std::string& filename)
 {
-	int cgiFD = launch_cgi(filename, __environ);
+	int cgiFD = launch_cgi(filename, client, __environ);
 
 	if (cgiFD < 0)
 		return ;

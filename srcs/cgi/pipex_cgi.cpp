@@ -33,7 +33,7 @@ std::string	find_path(std::string const &cmd, char **env) {
 	return (test);
 }
 
-int	exec_cgi(std::vector<std::string> const &cgi, char **env) {
+int	exec_cgi(std::vector<std::string> const &cgi, Client& client, char **env) {
 
 	char	*tab[] = {(char *)cgi[0].c_str(), (char *)cgi[1].c_str(), NULL};
 	int		pipefd[2];
@@ -53,14 +53,15 @@ int	exec_cgi(std::vector<std::string> const &cgi, char **env) {
 		std::string test = find_path(cgi[0], env);
 		execve(test.c_str(), tab, env);
 		perror("execve");
-		exit(EXIT_FAILURE);
+		throw std::runtime_error("cgi execve failure");
 	}
+	client.CGIpid = pid;
 	close(pipefd[1]);
 	close(pipefd[0]);
 	return (fdout);
 }
 
-int	launch_cgi(std::string &filename, char **env) {
+int	launch_cgi(std::string &filename, Client& client, char **env) {
 
 	std::vector<std::string>	cgi;
 	if (access(filename.c_str(), F_OK))
@@ -77,5 +78,5 @@ int	launch_cgi(std::string &filename, char **env) {
 	}
 	else
 		return (-1);
-	return(exec_cgi(cgi, env));
+	return(exec_cgi(cgi, client, env));
 }

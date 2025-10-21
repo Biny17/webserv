@@ -45,10 +45,12 @@ void	read_client_data(int epfd, int clifd, Server& server)
 	}
 
 	// Handle request
-	// parse_request(request, clifd);
+	// parse_request(buf, clifd);
+
+	std::cout << buf << std::endl;
 
 	bool		isCGI = true; // temp
-	std::string	name = "cgi-bin/python.py";
+	std::string	name = "cgi-bin/shell.sh";
 	if (isCGI)
 		add_cgi(server, server.clients[clifd], name);
 	server.removeClient(clifd);

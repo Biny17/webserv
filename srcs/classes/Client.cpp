@@ -5,6 +5,7 @@ Client::Client(void)
 	this->fd = -1;
 	this->isCGI = false;
 	this->cgi_body = "";
+	this->CGIpid = -1;
 }
 
 Client::~Client(void)

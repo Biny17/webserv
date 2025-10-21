@@ -9,7 +9,7 @@ void	read_cgi(char* buf, Client& client)
 // Handle the CGI Request
 void	listen_cgi(Server& server, Client& client)
 {
-	char	buf[REQUEST_BUFF_SIZE];
+	char	buf[REQUEST_BUFF_SIZE + 1];
 	int		bytes = read(client.fd, buf, sizeof(buf));
 
 	if (bytes <= 0)
@@ -31,6 +31,7 @@ void	listen_cgi(Server& server, Client& client)
 		server.removeClient(client.fd);
 		return ;
 	}
+	buf[bytes] = 0;
 	read_cgi(buf, client);
 	return ;
 }

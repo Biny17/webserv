@@ -27,8 +27,8 @@ std::string	autoindex(std::string const & directory) {	//preciser le directory
 		}
 		content = readdir(dir);		//a chaque appel de readdir on passe au fichier suivant
 	}
-	closedir(dir);
 	answer += "</body>\n" \
 				"</html>";
+	closedir(dir);
 	return (answer);	//renvoie une string contennant la page html a afficher (ca reste une string) :)
 }

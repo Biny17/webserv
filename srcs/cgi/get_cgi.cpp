@@ -16,5 +16,6 @@ std::vector<std::string>	list_file_extension(std::string const &directory, std::
 			result.push_back(file);
 		content = readdir(dir);
 	}
+	closedir(dir);
 	return (result);	//retourne un vecteur contenant tout le snom de fichier avec l'extenssion voulu
 }

@@ -16,13 +16,6 @@ void	accept_new_client(int epfd, int sockfd, Server& server)
 	server.addClient(client_fd);
 }
 
-// Clear the client and remove it from epoll
-void	disconnect_client(int epfd, int clifd, Server& server)
-{
-	server.removeClient(clifd);
-	epoll_ctl(epfd, EPOLL_CTL_DEL, clifd, NULL);
-}
-
 // Handle client request
 void	read_client_data(int epfd, int clifd, Server& server)
 {
@@ -50,11 +43,13 @@ void	read_client_data(int epfd, int clifd, Server& server)
 	// Handle request
 	// parse_request(buf, clifd);
 
-	// std::cout << buf << std::endl;
+	if (send_response(clifd, server) == false)
+		set_epoll_event(epfd, clifd, EPOLLOUT);
+}
 
-	/* bool		isCGI = true; // temp
-	std::string	name = "cgi-bin/shell.sh";
-	if (isCGI)
-		add_cgi(server, server.clients[clifd], name);
-	server.removeClient(clifd); */
+bool	send_response(int clifd, Server& server)
+{
+	(void)clifd;
+	(void)server;
+	return (true);
 }

@@ -3,8 +3,9 @@
 Client::Client(void)
 {
 	this->fd = -1;
+	this->out_buffer = "";
+
 	this->isCGI = false;
-	this->cgi_body = "";
 	this->CGIpid = -1;
 }
 

@@ -15,8 +15,30 @@ Server&	fetch_server(std::vector<Server>& servers, int fd)
 	return (servers[0]);
 }
 
+// Handle EPOLLIN events
+void	handle_epollin(struct epoll_event& event, int epfd)
+{
+	int		fd = event.data.fd;							// Get the fd of the socket of the event
+	Server&	server_request = fetch_server(servers, fd);	// Fetch the server of the client
+
+	if (server_request.isSockFD(fd))					// New client
+		accept_new_client(epfd, fd, server_request);
+	else												// Received form existing client
+		read_client_data(epfd, fd, server_request);
+}
+
+// Handle EPOLLOUT events
+void	handle_epollout(struct epoll_event& event, int epfd)
+{
+	int		fd = event.data.fd;
+	Server&	server_request = fetch_server(servers, fd);	// Fetch the server of the client
+
+	if (send_response(fd, server_request) == true)
+		set_epoll_event(epfd, fd, EPOLLIN);
+}
+
 // Event loop of epoll
-void	event_loop(int epfd, std::vector<Server>& servers)
+void	event_loop(int epfd)
 {
 	struct epoll_event	events[MAX_EVENTS];
 
@@ -30,13 +52,10 @@ void	event_loop(int epfd, std::vector<Server>& servers)
 		// Iterate over events
 		for (int i = 0; i < event_amount; i++)
 		{
-			int		fd = events[i].data.fd;								// Get the fd of the socket of the event
-			Server&	server_request = fetch_server(servers, fd);			// Fetch the server of the client
-
-			if (server_request.isSockFD(fd))							// New client
-				accept_new_client(epfd, fd, server_request);
-			else														// Received form existing client
-				read_client_data(epfd, fd, server_request);
+			if (events[i].events & EPOLLIN)
+				handle_epollin(events[i], epfd);
+			else if (events[i].events & EPOLLOUT)
+				handle_epollout(events[i], epfd);
 		}
 	}
 

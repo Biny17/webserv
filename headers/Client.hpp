@@ -19,12 +19,12 @@ class Client {
 		Client(void);
 		~Client(void);
 
-		int	fd;
+		int			fd;
+		std::string	out_buffer;
 
 		bool		isCGI;
 		int			referringFD;
 		pid_t		CGIpid;
-		std::string	cgi_body;
 
 		void	setCGI(int cgiFD, Server& server);
 

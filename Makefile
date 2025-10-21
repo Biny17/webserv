@@ -15,6 +15,7 @@ SRCS		=	main.cpp					\
 				classes/Location.cpp		\
 				classes/Server.cpp			\
 				conf/conf_parsing.cpp		\
+				network/epoll_ctl.cpp		\
 				network/event_loop.cpp		\
 				network/handle_clients.cpp	\
 				network/launch_server.cpp	\

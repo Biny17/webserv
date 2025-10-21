@@ -17,23 +17,31 @@ enum p_state {
     ERROR
 };
 
-struct ParseResult {
-    bool ok;
-    HttpReq req;
-    HttpError err;
-    p_state state;
-    int pct;
-    std::string cur_key;
-    std::string cur_value;
-    bool skip_leading_ws;
+class ParseResult {
+    private:
+        std::string cur_key;
+        std::string cur_value;
+        int content_length;
+        p_state state;
+        int pct;
+        bool skip_leading_ws;
+        
+        void Error(std::string msg, int error_code);
+        void Method(const std::string& buff, size_t& i);
+        void Path(const std::string& buff, size_t& i);
+        void Query(const std::string &buff, size_t& i);
+        void Version(const std::string &buff, size_t& i);
+        void HeadKey(const std::string &buff, size_t& i);
+        void HeadValue(const std::string &buff, size_t& i);
+        void AfterHeadersCheck();
+        void Body(const std::string &buff, size_t& i);
+        void Post();
+        void TransferEncoding(const std::string &buff, size_t& i);
 
-    ParseResult();
-    void Error(std::string msg, int error_code);
-    void Method(const std::string& buff, size_t& i);
-    void Path(const std::string& buff, size_t& i);
-    void Query(const std::string &buff, size_t& i);
-    void Version(const std::string &buff, size_t& i);
-    void Head_Key(const std::string &buff, size_t& i);
-    void Head_Value(const std::string &buff, size_t& i);
-    void FillReq(const std::string& buff);
+    public:
+        HttpReq req;
+        HttpError err;
+        bool ok;
+        void FillReq(const std::string& buff);
+        ParseResult();
 };

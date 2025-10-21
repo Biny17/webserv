@@ -1,5 +1,7 @@
 #include "../headers/ParseResult.hpp"
 #include "../headers/utils.hpp"
+#include <sstream>
+#include <iostream>
 
 void ParseResult::Error(std::string msg, int error_code)
 {
@@ -82,11 +84,12 @@ void ParseResult::Version(const std::string &buff, size_t& i)
         Error("", 400);
 }
 
-void ParseResult::Head_Key(const std::string &buff, size_t& i)
+void ParseResult::HeadKey(const std::string &buff, size_t& i)
 {
     if (buff[i] == '\r' && i+1 < buff.length() && buff[i+1] == '\n') {
         state = BODY;
         i += 2;
+        AfterHeadersCheck();
         return;
     }
     size_t start = i;
@@ -104,7 +107,7 @@ void ParseResult::Head_Key(const std::string &buff, size_t& i)
     i++;
 }
 
-void ParseResult::Head_Value(const std::string &buff, size_t& i)
+void ParseResult::HeadValue(const std::string &buff, size_t& i)
 {
     size_t start = i;
 
@@ -132,6 +135,51 @@ void ParseResult::Head_Value(const std::string &buff, size_t& i)
     }
 }
 
+void ParseResult::AfterHeadersCheck()
+{
+    if (req.method == "GET")
+    {
+        if (req.headers.find("Content-Length") != req.headers.end() ||
+            req.headers.find("Transfer-Encoding") != req.headers.end()) {
+            Error("GET request must not have a body", 400);
+            return;
+        }
+    }
+    else if (req.method == "POST") {
+        Post();
+    }
+}
+
+void ParseResult::Post()
+{
+    std::map<std::string,std::string>::iterator te = req.headers.find("Transfer-Encoding");
+    if (te != req.headers.end())
+    {
+        if (te->second != "chunked") {
+            Error("Unsupported Transfer-Encoding", 501);
+            return;
+        }
+        else {
+            state = CHUNK_SIZE;
+            return;
+        }
+    }
+    std::map<std::string,std::string>::iterator ce = req.headers.find("Content-Length");
+    if (ce != req.headers.end())
+    {
+        std::stringstream ss(ce->second);
+        ss >> content_length;
+        if (ss.fail() || !ss.eof() || ss.bad() || content_length < 0){
+            Error("Invalid Content-Length", 400);
+            return;
+        }
+    } 
+    else {
+        Error("POST request must have a body", 400);
+        return;
+    }   
+}
+
 void ParseResult::FillReq(const std::string& buff)
 {
 
@@ -149,7 +197,7 @@ void ParseResult::FillReq(const std::string& buff)
     if (state == VERSION && i < buff.length())
         Version(buff, i);
     if (state == HEAD_KEY && i < buff.length())
-        Head_Key(buff, i);
+        HeadKey(buff, i);
     if (state == HEAD_VAL && i < buff.length())
-        Head_Value(buff, i);
+        HeadValue(buff, i);
 }

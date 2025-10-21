@@ -166,7 +166,7 @@ void	launch_server(std::vector<Server>& servers)
 	signal(SIGINT, &handle_shutdown);
 
 	// Start the epoll event loop (wait for connections)
-	event_loop(epfd, servers);
+	event_loop(epfd);
 
 	// Close when the server stop
 	close(epfd);

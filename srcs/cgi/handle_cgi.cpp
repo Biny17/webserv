@@ -3,7 +3,7 @@
 // Read a CGI and add append it's string
 void	read_cgi(char* buf, Client& client)
 {
-	client.cgi_body += buf;
+	client.out_buffer += buf;
 }
 
 // Handle the CGI Request
@@ -24,7 +24,7 @@ void	listen_cgi(Server& server, Client& client)
 		if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
 			std::cout << WEXITSTATUS(status) << std::endl;		// Handle the error here
 		else
-			std::cout << "CGI response: " << client.cgi_body;	// Make the response here
+			std::cout << "CGI response: " << client.out_buffer;	// Make the response here
 		server.removeClient(client.fd);
 		return ;
 	}

@@ -38,3 +38,7 @@ Client sends data → ParseResult parses → Request Handler:
         ├─ POST → File Upload Handler → Response Builder
         ├─ DELETE → File Delete → Response Builder
         └─ CGI → CGI Handler
+
+tgallet:
+    ☐ Plus de test pour le parsing
+    ☐ File upload class

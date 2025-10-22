@@ -4,9 +4,29 @@ Request line:
     ✔ fo what to do with the query argument @done (10/21/2025, 3:54:47 PM)
     ✔ fo more about the role of the protocol version @done (10/21/2025, 3:54:49 PM)
     ☐ Length limits for method, path, headers
+    ☐ Response Builder Class
+    ☐ Request handler that use the Parsed Result and the Server
+    ☐ File Upload Class
+    ☐ Function from request path to filesystem path
 
-https://www.rfc-editor.org/rfc/rfc9112#name-origin-form
+Response Maker Class:
+    ☐ First line
+    ☐ Headers
+    ☐ Error Page / body
+    ☐ Load error.html depending on the error code
 
-A client that has more than one outstanding request on a connection MUST maintain a list of outstanding
-requests in the order sent and MUST associate each received response message on that connection to the first
-outstanding request that has not yet received a final (non-1xx) response
+File upload class:
+    ☐ Check location config
+    ☐ Check Content-Lenght
+    ☐ Create file
+    ☐ Read chunkes into file
+    ☐ responses (201, 413, 403...)
+
+Client sends data → ParseResult parses → Request Handler:
+    ├─ Match location config
+    ├─ Validate method allowed
+    └─ Route to appropriate handler:
+        ├─ GET → Resource Resolver → Response Builder
+        ├─ POST → File Upload Handler → Response Builder
+        ├─ DELETE → File Delete Handler → Response Builder
+        └─ CGI → CGI Handler (you already have this)

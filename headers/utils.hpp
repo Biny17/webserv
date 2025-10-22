@@ -3,7 +3,7 @@
 
 bool is_req(unsigned char c);
 bool is_token(unsigned char c);
-int parse_token(const std::string& src, std::string& dest, size_t &start);
+int parse_token(const std::string& src, std::string& dest, size_t &start, size_t limit);
 bool is_pchar(unsigned char c);
 bool valid_method(const std::string& method);
 bool is_abspath(unsigned char c);

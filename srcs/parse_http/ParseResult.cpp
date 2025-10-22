@@ -4,7 +4,7 @@
 #include <iostream>
 #include <stdio.h>
 
-ParseResult::ParseResult(): state(INIT), skip_leading_ws(true), ok(true) {}
+ParseResult::ParseResult(): state(INIT), skip_leading_ws(true), ok(true), max_body_size(16384) {}
 
 void ParseResult::Reset()
 {
@@ -34,7 +34,7 @@ void ParseResult::Error(std::string msg, int error_code)
 
 void ParseResult::Method(const std::string& buff, size_t& i)
 {
-    if (parse_token(buff, req.method, i) > 6) {
+    if (parse_token(buff, req.method, i, 15) > 6) {
         Error("Unsupported method", 501);
         return ;
     }
@@ -77,9 +77,12 @@ void ParseResult::Path(const std::string& buff, size_t& i)
 void ParseResult::Query(const std::string &buff, size_t& i)
 {
     size_t start = i;
-    while (i < buff.length() && is_query(buff[i]))
+    while (i < buff.length() && is_query(buff[i]) 
+        && (req.path.length() + req.query.length() + i - start) < URI_MAX+1)
         i++;
     req.query += buff.substr(start, i - start);
+    if (req.query.length()+req.path.length() > URI_MAX)
+        return Error("Uri is too long", 414);
     if (i == buff.length())
         return;
     if (buff[i] == ' ') {
@@ -92,17 +95,17 @@ void ParseResult::Query(const std::string &buff, size_t& i)
 
 void ParseResult::Version(const std::string &buff, size_t& i)
 {
-    size_t n = i;
-    while (n < buff.length()
-        && (std::isalnum(buff[n])
-        || buff[n] == '/' || buff[n] == '.' ))
-        n++;
-    req.version += buff.substr(i, n - i);
+    size_t start = i;
+    while (i < buff.length()
+        && (std::isalnum(buff[i]) || buff[i] == '/' || buff[i] == '.' )
+        && (i-start < 10))
+        i++;
+    req.version += buff.substr(start, i-start);
     if (req.version != "HTTP/1.1" && req.version != "HTTP/1.0")
         return Error("Unsupported HTTP version", 505);
-    if (n+1 < buff.length() && buff[n] == '\r' && buff[n+1] == '\n') {
+    if (i+1 < buff.length() && buff[i] == '\r' && buff[i+1] == '\n') {
         state = HEAD_KEY;
-        i = n+2;
+        i = i+2;
     }
     else
         Error("", 400);
@@ -157,6 +160,8 @@ void ParseResult::HeadValue(const std::string &buff, size_t& i)
         cur_value += buff.substr(start, crfl - start);
         cur_value = cur_value.substr(0, cur_value.find_last_not_of(" \t"));
         req.headers[cur_key] = cur_value;
+        if (req.headers.size() > 10)
+            return Error("Too many headers", 431);
         cur_key.clear();
         cur_value.clear();
         state = HEAD_KEY;
@@ -175,11 +180,11 @@ void ParseResult::AfterHeadersCheck()
             return Error("GET request must not have a body", 400);
     }
     else if (req.method == "POST") {
-        Post();
+        PostCheck();
     }
 }
 
-void ParseResult::Post()
+void ParseResult::PostCheck()
 {
     std::map<std::string,std::string>::iterator te = req.headers.find("Transfer-Encoding");
     if (te != req.headers.end())
@@ -198,6 +203,8 @@ void ParseResult::Post()
         ss >> req.content_len;
         if (ss.fail() || !ss.eof() || ss.bad() || req.content_len < 0)
             return Error("Invalid Content-Length", 400);
+        if (req.content_len > max_body_size)
+            return Error("Payload Too Large", 413);
     }
     else
         return Error("POST request must have a body", 400);

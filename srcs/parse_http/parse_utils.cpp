@@ -45,7 +45,7 @@ bool valid_method(const std::string& method) {
     return (method == "GET" || method == "POST" || method == "DELETE");
 }
 
-int parse_token(const std::string& src, std::string& dest, size_t &i)
+int parse_token(const std::string& src, std::string& dest, size_t &i, size_t limit)
 {
     size_t start = i;
     while (i < src.length() && is_token(src[i]))

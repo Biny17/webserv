@@ -20,11 +20,11 @@ enum p_state {
 class ParseResult {
     private:
         static const unsigned int URI_MAX = 8192;
-        static const unsigned int HEADER_MAX = 8192;
+        static const unsigned int HEADER_MAX = 4096;
 
         std::string cur_key;
         std::string cur_value;
-        size_t max_body_size;
+        int max_body_size;
         p_state state;
         bool skip_leading_ws;
 
@@ -37,7 +37,7 @@ class ParseResult {
         void HeadValue(const std::string &buff, size_t& i);
         void AfterHeadersCheck();
         void Body(const std::string &buff, size_t& i);
-        void Post();
+        void PostCheck();
         void TransferEncoding(const std::string &buff, size_t& i);
 
     public:

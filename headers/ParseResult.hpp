@@ -24,6 +24,7 @@ class ParseResult {
 
         std::string cur_key;
         std::string cur_value;
+        std::string buff;
         int max_body_size;
         p_state state;
         bool skip_leading_ws;

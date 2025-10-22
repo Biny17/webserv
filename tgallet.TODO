@@ -4,7 +4,7 @@ Request line:
     ✔ fo what to do with the query argument @done (10/21/2025, 3:54:47 PM)
     ✔ fo more about the role of the protocol version @done (10/21/2025, 3:54:49 PM)
     ☐ Length limits for method, path, headers
-    ☐ Add a bit of buffering 
+    ☐ Add a bit of buffering
 
 Response Maker Class:
     ☐ First line
@@ -13,12 +13,18 @@ Response Maker Class:
     ☐ Load error.html depending on the error code
 
 Request Handler:
+    (receive parsed data)
+    ☐ Build the local path
+        ☐ if error build response error
     ☐ Match location config
-    ☐ Validate method allowed
-    ☐ Route to appropriate handler:
+        ☐ if error build response error
+    ☐ Apply the rules of the config
+        ☐ if error build response error
+    ☐ Route to appropriate handler (send file to client / CGI / upload file to server / delete file)
+        ☐ if error build response error
+    ☐ Build the response
 
 File upload class:
-    ☐ Check location config
     ☐ Check Content-Lenght
     ☐ Create file
     ☐ Read chunkes into file

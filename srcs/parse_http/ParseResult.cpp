@@ -77,7 +77,7 @@ void ParseResult::Path(const std::string& buff, size_t& i)
 void ParseResult::Query(const std::string &buff, size_t& i)
 {
     size_t start = i;
-    while (i < buff.length() && is_query(buff[i]) 
+    while (i < buff.length() && is_query(buff[i])
         && (req.path.length() + req.query.length() + i - start) < URI_MAX+1)
         i++;
     req.query += buff.substr(start, i - start);
@@ -103,22 +103,30 @@ void ParseResult::Version(const std::string &buff, size_t& i)
     req.version += buff.substr(start, i-start);
     if (req.version != "HTTP/1.1" && req.version != "HTTP/1.0")
         return Error("Unsupported HTTP version", 505);
-    if (i+1 < buff.length() && buff[i] == '\r' && buff[i+1] == '\n') {
-        state = HEAD_KEY;
-        i = i+2;
+    if (i+1 < buff.length())
+    {
+        if (buff[i] == '\r' && buff[i+1] == '\n') {
+            state = HEAD_KEY;
+            i = i+2;
+        }
+        else
+            Error("", 400);
     }
-    else
-        Error("", 400);
 }
 
 void ParseResult::HeadKey(const std::string &buff, size_t& i)
 {
-    if (buff[i] == '\r' && i+1 < buff.length() && buff[i+1] == '\n') {
-        state = BODY;
-        i += 2;
-        AfterHeadersCheck();
-        return;
+    if (i+1 < buff.length())
+    {
+        if (buff[i] == '\r' && buff[i+1] == '\n') {
+            state = BODY;
+            i += 2;
+            AfterHeadersCheck();
+            return;
+        }
     }
+    else
+        return;
     size_t start = i;
     while (i < buff.length() && is_token(buff[i]))
         i++;
@@ -210,9 +218,9 @@ void ParseResult::PostCheck()
         return Error("POST request must have a body", 400);
 }
 
-size_t ParseResult::FillReq(const std::string& buff)
+size_t ParseResult::FillReq(const std::string& read_buff)
 {
-
+    buff += read_buff;
     size_t i = 0;
     if (state == ERROR)
         return i;
@@ -233,5 +241,6 @@ size_t ParseResult::FillReq(const std::string& buff)
         if (state == HEAD_VAL && i < buff.length())
             HeadValue(buff, i);
     }
+    buff = read_buff.substr(i);
     return i;
 }

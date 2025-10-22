@@ -4,7 +4,7 @@
 #include <iostream>
 #include <stdio.h>
 
-ParseResult::ParseResult(): state(INIT), skip_leading_ws(true), ok(true), max_body_size(16384) {}
+ParseResult::ParseResult(): max_body_size(16384), state(INIT), skip_leading_ws(true), ok(true) {}
 
 void ParseResult::Reset()
 {

@@ -22,7 +22,8 @@ SRCS		=	main.cpp					\
 				parse_http/parse_utils.cpp	\
 				parse_http/ParseResult.cpp	\
 				parse_http/TestUtils.cpp	\
-				utils/exit_signal.cpp
+				utils/exit_signal.cpp		\
+				http_respond/server_respond.cpp \
 
 OBJS		= $(patsubst %.cpp, $(OBJ_DIR)%.o, $(SRCS))
 DEPS		= $(OBJS:.o=.d)

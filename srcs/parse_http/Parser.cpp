@@ -1,12 +1,14 @@
-#include "../headers/ParseResult.hpp"
+#include "../headers/Parser.hpp"
 #include "../headers/utils.hpp"
 #include <sstream>
 #include <iostream>
 #include <stdio.h>
 
-ParseResult::ParseResult(): state(INIT), skip_leading_ws(true), ok(true), max_body_size(16384) {}
+Parser::Parser(Request& request, Response& response)
+    : max_body_size(16384), state(INIT), skip_leading_ws(true),
+    req(request), err(response), ok(true) {}
 
-void ParseResult::Reset()
+void Parser::Reset()
 {
     state = INIT;
     ok = true;
@@ -21,7 +23,7 @@ void ParseResult::Reset()
     req.path.clear();
 }
 
-void ParseResult::Error(std::string msg, int error_code)
+void Parser::Error(std::string msg, int error_code)
 {
     state = ERROR;
     ok = false;
@@ -32,7 +34,7 @@ void ParseResult::Error(std::string msg, int error_code)
     err.error_code = error_code;
 }
 
-void ParseResult::Method(const std::string& buff, size_t& i)
+void Parser::Method(const std::string& buff, size_t& i)
 {
     if (parse_token(buff, req.method, i, 15) > 6) {
         Error("Unsupported method", 501);
@@ -54,7 +56,7 @@ void ParseResult::Method(const std::string& buff, size_t& i)
     i++;
 }
 
-void ParseResult::Path(const std::string& buff, size_t& i)
+void Parser::Path(const std::string& buff, size_t& i)
 {
     size_t start = i;
     while (i < buff.length() && is_abspath(buff[i]))
@@ -74,7 +76,7 @@ void ParseResult::Path(const std::string& buff, size_t& i)
         Error("", 400);
 }
 
-void ParseResult::Query(const std::string &buff, size_t& i)
+void Parser::Query(const std::string &buff, size_t& i)
 {
     size_t start = i;
     while (i < buff.length() && is_query(buff[i])
@@ -93,7 +95,7 @@ void ParseResult::Query(const std::string &buff, size_t& i)
         Error("", 400);
 }
 
-void ParseResult::Version(const std::string &buff, size_t& i)
+void Parser::Version(const std::string &buff, size_t& i)
 {
     size_t start = i;
     while (i < buff.length()
@@ -114,7 +116,7 @@ void ParseResult::Version(const std::string &buff, size_t& i)
     }
 }
 
-void ParseResult::HeadKey(const std::string &buff, size_t& i)
+void Parser::HeadKey(const std::string &buff, size_t& i)
 {
     if (i+1 < buff.length())
     {
@@ -144,7 +146,7 @@ void ParseResult::HeadKey(const std::string &buff, size_t& i)
     i++;
 }
 
-void ParseResult::HeadValue(const std::string &buff, size_t& i)
+void Parser::HeadValue(const std::string &buff, size_t& i)
 {
     size_t start = i;
 
@@ -177,7 +179,7 @@ void ParseResult::HeadValue(const std::string &buff, size_t& i)
     }
 }
 
-void ParseResult::AfterHeadersCheck()
+void Parser::AfterHeadersCheck()
 {
     if (req.headers.find("Host") != req.headers.end())
         return Error("Host header is required", 400);
@@ -192,7 +194,7 @@ void ParseResult::AfterHeadersCheck()
     }
 }
 
-void ParseResult::PostCheck()
+void Parser::PostCheck()
 {
     std::map<std::string,std::string>::iterator te = req.headers.find("Transfer-Encoding");
     if (te != req.headers.end())
@@ -218,7 +220,7 @@ void ParseResult::PostCheck()
         return Error("POST request must have a body", 400);
 }
 
-size_t ParseResult::FillReq(const std::string& read_buff)
+size_t Parser::FillReq(const std::string& read_buff)
 {
     buff += read_buff;
     size_t i = 0;

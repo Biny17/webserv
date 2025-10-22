@@ -3,8 +3,9 @@ RequestParse:
     ✔ implement the absolute path parsing @done (10/21/2025, 3:54:46 PM)
     ✔ fo what to do with the query argument @done (10/21/2025, 3:54:47 PM)
     ✔ fo more about the role of the protocol version @done (10/21/2025, 3:54:49 PM)
-    ☐ Length limits for method, path, headers
-    ☐ Add a bit of buffering
+    ✔ Length limits for method, path, headers @done (10/22/2025, 6:40:44 PM)
+    ✔ Add a bit of buffering @done (10/22/2025, 6:40:41 PM)
+    ☐ faire des tests
 
 Response Maker Class:
     ☐ First line
@@ -30,7 +31,7 @@ File upload class:
     ☐ Read chunkes into file
     ☐ responses (201, 413, 403...)
 
-Client sends data → ParseResult parses → Request Handler:
+Client sends data → Parser parses → Request Handler:
     ├─ Match location config
     ├─ Validate method allowed
     └─ Route to appropriate handler:

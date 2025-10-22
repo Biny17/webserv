@@ -20,13 +20,16 @@ class Client {
 
 		int			fd;
 		std::string	out_buffer;
-		ParseResult	parse;
+
 
 		bool		isCGI;
 		int			referringFD;
 		pid_t		CGIpid;
 
 		void	setCGI(int cgiFD, Server& server);
+		Response   response;
+		Request    request;
+		Parser	   parser;
 
 		// ClientState state;
 		// int socker_fd;

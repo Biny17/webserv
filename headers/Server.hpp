@@ -2,6 +2,8 @@
 # define SERVER_HPP
 
 # include "webserv.hpp"
+# include "Response.hpp"
+# include "Request.hpp"
 
 class Client;
 class Location;

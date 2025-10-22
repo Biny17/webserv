@@ -1,5 +1,6 @@
 #pragma once
-#include "Http.hpp"
+#include "Request.hpp"
+#include "Response.hpp"
 
 enum p_state {
     INIT,
@@ -17,7 +18,7 @@ enum p_state {
     ERROR
 };
 
-class ParseResult {
+class Parser {
     private:
         static const unsigned int URI_MAX = 8192;
         static const unsigned int HEADER_MAX = 4096;
@@ -27,7 +28,7 @@ class ParseResult {
         std::string buff;
         int max_body_size;
         p_state state;
-        bool skip_leading_ws;
+        bool skip_leading_ws;   
 
         void Error(std::string msg, int error_code);
         void Method(const std::string& buff, size_t& i);
@@ -42,11 +43,11 @@ class ParseResult {
         void TransferEncoding(const std::string &buff, size_t& i);
 
     public:
-        HttpReq req;
-        HttpError err;
+        Request& req;
+        Response& err;
         bool ok;
         size_t FillReq(const std::string& buff);
-        ParseResult();
+        Parser(Request& request, Response& response);
         void Reset();
         void Print();
 };

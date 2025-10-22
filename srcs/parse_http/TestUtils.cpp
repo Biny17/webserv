@@ -1,9 +1,9 @@
-#include "../headers/ParseResult.hpp"
+#include "../../headers/Parser.hpp"
 #include <iostream>
 #include <map>
 #include <utility>
 
-void ParseResult::Print()
+void Parser::Print()
 {
     if (ok)
     {

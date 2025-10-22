@@ -41,9 +41,9 @@ void	read_client_data(int epfd, int clifd, Server& server)
 
 	buf[bytes] = 0;
 
-	client.parse.FillReq(buf);
-	client.parse.Print();
-	client.parse.Reset();
+	client.parser.FillReq(buf);
+	client.parser.Print();
+	client.parser.Reset();
 	if (send_response(clifd, server) == false)
 		set_epoll_event(epfd, clifd, EPOLLOUT);
 }

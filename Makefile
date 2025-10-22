@@ -20,7 +20,7 @@ SRCS		=	main.cpp					\
 				network/handle_clients.cpp	\
 				network/launch_server.cpp	\
 				parse_http/parse_utils.cpp	\
-				parse_http/ParseResult.cpp	\
+				parse_http/Parser.cpp	\
 				parse_http/TestUtils.cpp	\
 				utils/exit_signal.cpp
 

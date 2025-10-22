@@ -18,7 +18,7 @@ void	event_loop(int epfd);
 void	set_epoll_event(int epfd, int clifd, uint32_t event);
 void	accept_new_client(int epfd, int sockfd, Server& server);
 void	read_client_data(int epfd, int clifd, Server& server);
-bool	send_response(int clifd, Server& server);
+bool	send_response(int clifd, std::string& out_buffer);
 void	disconnect_client(int epfd, int clifd, Server& server);
 
 #endif // NETWORK_HPP

@@ -22,7 +22,7 @@ void	Client::setCGI(int referringFD, Server& server)
 	this->referringFD = referringFD;
 
 	struct epoll_event cli_event;
-	cli_event.events = EPOLLIN;
+	cli_event.events = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP;;
 	cli_event.data.fd = this->fd;
 	if (epoll_ctl(server.epfd, EPOLL_CTL_ADD, this->fd, &cli_event) == -1)
 	{

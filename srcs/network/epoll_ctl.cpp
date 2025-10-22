@@ -4,7 +4,7 @@
 void	set_epoll_event(int epfd, int clifd, uint32_t event)
 {
 	struct epoll_event cli_event;
-	cli_event.events = event;
+	cli_event.events = event | EPOLLHUP | EPOLLERR | EPOLLRDHUP;;
 	cli_event.data.fd = clifd;
 	epoll_ctl(epfd, EPOLL_CTL_MOD, clifd, &cli_event);
 }

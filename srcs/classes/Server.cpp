@@ -80,4 +80,3 @@ std::ostream	&operator<<(std::ostream &o, Server const &serv) {
 	o << "-------------------------------------------------------------------------" << std::endl;
 	return o;
 }
-

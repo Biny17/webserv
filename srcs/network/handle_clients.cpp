@@ -44,7 +44,8 @@ void	read_client_data(int epfd, int clifd, Server& server)
 
 	buf[bytes] = 0;
 
-	// client.parse.FillReq(client.in_buffer); // Start the parsing of the request
+	// Parse the request
+	client.parser.FillReq(buf);
 	// check if failed -> stop reading
 
 	// if finished

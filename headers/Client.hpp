@@ -16,20 +16,22 @@ class Client {
 
 	public:
 		Client(void);
+		Client(const Client& Client);
 		~Client(void);
+
+		Client&	operator=(const Client& Client);
 
 		int			fd;
 		std::string	out_buffer;
-
+		Request		request;
+		Response	response;
+		Parser		parser;
 
 		bool		isCGI;
 		int			referringFD;
 		pid_t		CGIpid;
+		void		setCGI(int cgiFD, Server& server);
 
-		void	setCGI(int cgiFD, Server& server);
-		Response   response;
-		Request    request;
-		Parser	   parser;
 };
 
 #endif // CLIENT_HPP

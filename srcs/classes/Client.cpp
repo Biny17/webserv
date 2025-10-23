@@ -1,18 +1,39 @@
 #include "Client.hpp"
 
 Client::Client(void)
-	:parser(request, response)
+	:parser(this->request, this->response)
 {
 	this->fd = -1;
 	this->out_buffer = "";
+
 	this->isCGI = false;
 	this->CGIpid = -1;
+}
+
+Client::Client(const Client& Client): parser(Client.parser)
+{
+	*this = Client;
 }
 
 Client::~Client(void)
 {
 	if (this->fd >= 0)
 		close(this->fd);
+}
+
+Client&	Client::operator=(const Client& Client)
+{
+	if (this == &Client)
+		return (*this);
+	this->fd = Client.fd;
+	this->out_buffer = Client.out_buffer;
+	this->isCGI = Client.isCGI;
+	this->referringFD = Client.referringFD;
+	this->CGIpid = Client.CGIpid;
+	this->request = Client.request;
+	this->response = Client.response;
+	this->parser = Client.parser;
+	return (*this);
 }
 
 // Define the client as a CGI and add it to epoll

@@ -1,6 +1,6 @@
 #include "../../headers/Parser.hpp"
 #include <cstring>
-#include <stdio.h>
+#include <iostream>
 
 bool is_req(unsigned char c)
 {

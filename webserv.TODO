@@ -1,16 +1,16 @@
 Server:
-    ☐ Initialize sockets for all server configs
-    ☐ Event loop (epoll/select/poll)
-    ☐ Accept new connections → create Client objects
-    ☐ Monitor client sockets for read/write events
+    ✔ Initialize sockets for all server configs @done (10/23/2025, 3:14:47 AM)
+    ✔ Event loop (epoll/select/poll) @done (10/23/2025, 3:14:48 AM)
+    ✔ Accept new connections → create Client objects @done (10/23/2025, 3:14:49 AM)
+    ✔ Monitor client sockets for read/write events @done (10/23/2025, 3:14:52 AM)
     ☐ Cleanup closed connections
 
 Parser:
-    ☐ method
-    ☐ path
-    ☐ query
-    ☐ version
-    ☐ headers
+    ✔ method @done (10/23/2025, 3:14:53 AM)
+    ✔ path @done (10/23/2025, 3:14:54 AM)
+    ✔ query @done (10/23/2025, 3:14:54 AM)
+    ✔ version @done (10/23/2025, 3:14:56 AM)
+    ✔ headers @done (10/23/2025, 3:14:55 AM)
 
 Response Maker Class:
     ☐ First line
@@ -31,10 +31,10 @@ Request Handler:
     ☐ Return Response to Client
 
 Route Matcher:
-    ☐ input: path, method, config
+input: requtest + config
     ☐ find server
     ☐ find location
-    ☐ check the request using the location config
+    ☐ check for errors using the location config
 
 "The ResourceResolver determines WHAT to do, then delegates to specialized handlers"
 Resource Resolver:

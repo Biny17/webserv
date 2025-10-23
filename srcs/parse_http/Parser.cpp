@@ -187,7 +187,7 @@ void Parser::HeadValue(const std::string &buff, size_t& i)
 		cur_value += buff.substr(start, crfl - start);
 		cur_value = cur_value.substr(0, cur_value.find_last_not_of(" \t"));
 		req.headers[cur_key] = cur_value;
-		if (req.headers.size() > 10)
+		if (req.headers.size() > 100)
 			return Error("Too many headers", 431);
 		cur_key.clear();
 		cur_value.clear();
@@ -198,7 +198,7 @@ void Parser::HeadValue(const std::string &buff, size_t& i)
 
 void Parser::AfterHeadersCheck()
 {
-	if (req.headers.find("Host") != req.headers.end())
+	if (req.headers.find("Host") == req.headers.end())
 		return Error("Host header is required", 400);
 	if (req.method == "GET")
 	{

@@ -27,7 +27,6 @@ class Parser {
 		std::string cur_value;
 		std::string buff;
 		int max_body_size;
-		p_state state;
 		bool skip_leading_ws;
 
 		void Error(std::string msg, int error_code);
@@ -46,6 +45,7 @@ class Parser {
 		Request& req;
 		Response& err;
 		bool ok;
+		p_state state;
 		size_t FillReq(const std::string& buff);
 		Parser(Request& request, Response& response);
 		Parser(const Parser& Parser);

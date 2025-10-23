@@ -48,12 +48,17 @@ void	read_client_data(int epfd, int clifd, Server& server)
 	client.parser.FillReq(buf);
 	client.parser.Print();
 
-	// if !finished || !error
-	//	return ;
+	if (client.parser.state != COMPLETE && client.parser.state != ERROR)
+		return ;
 
-	// fill response
+	// Handle request
+	// Fill response
+
 	if (send_response(clifd, client.out_buffer) == false)
 		set_epoll_event(epfd, clifd, EPOLLOUT);
+
+	if (client.request.headers.find("Connection") != client.request.headers.end() && client.request.headers["Connection"] != "keep-alive")
+		disconnect_client(epfd, clifd, server);
 }
 
 // Send the server's response to the client

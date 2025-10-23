@@ -4,8 +4,8 @@
 #include <stdio.h>
 
 Parser::Parser(Request& request, Response& response)
-	: max_body_size(16384), state(INIT), skip_leading_ws(true),
-	req(request), err(response), ok(true) {}
+	: max_body_size(16384), skip_leading_ws(true),
+	req(request), err(response), ok(true), state(INIT) {}
 
 Parser::Parser(const Parser& Parser): req(Parser.req), err(Parser.err)
 {
@@ -138,7 +138,7 @@ void Parser::HeadKey(const std::string &buff, size_t& i)
 	if (i+1 < buff.length())
 	{
 		if (buff[i] == '\r' && buff[i+1] == '\n') {
-			state = BODY;
+			state = COMPLETE;
 			i += 2;
 			AfterHeadersCheck();
 			return;

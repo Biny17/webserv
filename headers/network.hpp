@@ -21,4 +21,7 @@ void	read_client_data(int epfd, int clifd, Server& server);
 bool	send_response(int clifd, std::string& out_buffer);
 void	disconnect_client(int epfd, int clifd, Server& server);
 
+//request func
+bool	handle_request(Server &server, Client &client, Request const &request, Response &response);
+
 #endif // NETWORK_HPP

@@ -47,7 +47,6 @@ bool valid_method(const std::string& method) {
 
 int parse_token(const std::string& src, std::string& dest, size_t &i, size_t limit)
 {
-    (void)limit;
     size_t start = i;
     while (i < src.length() && is_token(src[i]) && (i-start) < limit)
         i++;

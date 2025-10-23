@@ -47,12 +47,15 @@ void	read_client_data(int epfd, int clifd, Server& server)
 	// std::cout << buf << std::endl;
 	// Parse the request
 	client.parser.FillReq(buf);
-	client.parser.Print();
 
 	if (client.parser.state != COMPLETE && client.parser.state != ERROR)
 		return ;
 
 	// Handle request
+	client.parser.Print();
+	std::cout << std::endl;
+	client.RequestHandler();
+	client.parser.Reset();
 	// Fill response
 
 	if (send_response(clifd, client.out_buffer) == false)

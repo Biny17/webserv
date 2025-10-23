@@ -11,9 +11,6 @@ enum p_state {
 	HEAD_KEY,
 	HEAD_VAL,
 	BODY,
-	CHUNK_SIZE,
-	CHUNK_DATA,
-	CHUNK_DATA_CRLF,
 	COMPLETE,
 	ERROR
 };

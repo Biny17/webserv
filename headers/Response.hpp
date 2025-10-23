@@ -9,4 +9,6 @@ struct Response {
     std::string content_type;
     std::string msg;
     //---------------------
+
+    Response();
 };

@@ -3,6 +3,10 @@
 #include <map>
 #include <utility>
 
+Response::Response()
+    :error_code(0), content_length(0), content_type("grr") ,msg("proute")
+{}
+
 void Parser::Print()
 {
     if (ok)

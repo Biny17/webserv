@@ -218,10 +218,8 @@ void Parser::PostCheck()
 	{
 		if (te->second != "chunked")
 			return Error("Unsupported Transfer-Encoding", 501);
-		else {
-			state = CHUNK_SIZE;
+		else
 			return;
-		}
 	}
 	std::map<std::string,std::string>::iterator ce = req.headers.find("Content-Length");
 	if (ce != req.headers.end())

@@ -44,6 +44,7 @@ void	read_client_data(int epfd, int clifd, Server& server)
 
 	buf[bytes] = 0;
 
+	// std::cout << buf << std::endl;
 	// Parse the request
 	client.parser.FillReq(buf);
 	client.parser.Print();
@@ -59,6 +60,38 @@ void	read_client_data(int epfd, int clifd, Server& server)
 
 	if (client.request.headers.find("Connection") != client.request.headers.end() && client.request.headers["Connection"] != "keep-alive")
 		disconnect_client(epfd, clifd, server);
+}
+
+
+//checkpoint for every request (supposed to build the client.respond)
+bool	handle_request(Server &server, Client &client, Request const &request, Response &response) {
+	(void)client;
+	int	checker;
+	checker = check_allowed_methods(server, request.path, request.method);
+	if (checker == 0) {
+		if (request.method != "GET" && request.method != "POST" && request.method != "DELETE")
+			response.error_code = 501;
+		else
+			response.error_code = 405;
+		return (false);
+	}
+	else if (checker == -1) {
+		response.error_code = 404;
+		return (false);
+	}
+
+	//maybe more to verify, it depends of the request method
+	if (request.method == "GET")
+		;
+	else if (request.method == "POST")
+		;
+	else if (request.method == "DELETE")
+		;
+	else {
+		std::cout << "Unkown method" << std::endl;
+		return (false);
+	}
+	return (true);
 }
 
 // Send the server's response to the client

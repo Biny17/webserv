@@ -31,7 +31,7 @@ Request Handler:
     ☐ Return Response to Client
 
 Route Matcher:
-input: requtest + config
+input: request + config
     ☐ find server
     ☐ find location
     ☐ check for errors using the location config

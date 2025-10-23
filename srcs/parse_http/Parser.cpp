@@ -185,7 +185,7 @@ void Parser::HeadValue(const std::string &buff, size_t& i)
 	}
 	else {
 		cur_value += buff.substr(start, crfl - start);
-		cur_value = cur_value.substr(0, cur_value.find_last_not_of(" \t"));
+		cur_value = cur_value.substr(0, cur_value.find_last_not_of(" \t") + 1);
 		req.headers[cur_key] = cur_value;
 		if (req.headers.size() > 100)
 			return Error("Too many headers", 431);

@@ -30,5 +30,6 @@ extern std::vector<Server> servers;
 extern volatile sig_atomic_t shutdown_serv;
 void		handle_shutdown(int sig);
 std::string	autoindex(std::string const & directory);
+int			check_allowed_methods(Server const &server, std::string const &req_path, std::string const &req_method);
 
 #endif // WEBSERV_HPP

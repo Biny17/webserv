@@ -104,11 +104,25 @@ static void	parse_param(std::vector<std::string> const &words, Location &locatio
 		throw std::runtime_error("location unknown command : " + *it);
 }
 
+static void	delete_loc_doublon(std::vector<Location> &locations, std::string const &path) {
+
+	std::vector<Location>::iterator	it = locations.begin();
+	if (locations.empty())
+		return ;
+	while (it != locations.end())
+	{
+		if ((*it).path == path)
+			it = locations.erase(it);
+		else
+			++it;
+	}
+	return ;
+}
+
 //point de passage de toute les ligne, sert a savoir si on entre dans un bloc ou si on quite un bloc, ou alors si on a un argument de bloc
 static void	parse_line(std::vector<std::string> const &words, std::vector<Server> &servers, int &level) {
 
 	std::vector<std::string>::const_iterator	it = words.begin();
-	// static int									level = 0;			//sert a definir si a quel niveau on est : 1 = dans server, 2 = dans location, 0 = dans rien
 
 	if (*it == "server") {
 		if (level != 0 || words.size() != 2 || *(it + 1) != "{")
@@ -119,6 +133,7 @@ static void	parse_line(std::vector<std::string> const &words, std::vector<Server
 	else if (*it == "location") {
 		if (level != 1 || words.size() != 3 || *(it + 2) != "{")
 			throw std::runtime_error(*it + " bad line");
+		delete_loc_doublon(servers.back().locations, *(it + 1));
 		construct_back<Location>(servers.back().locations);
 		servers.back().locations.back().path = *(it + 1);
 		level++;

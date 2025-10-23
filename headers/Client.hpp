@@ -2,7 +2,6 @@
 # define CLIENT_HPP
 
 # include "webserv.hpp"
-# include "HTTP.hpp"
 // # include <chrono>
 
 class Server;
@@ -22,21 +21,15 @@ class Client {
 		int			fd;
 		std::string	out_buffer;
 
+
 		bool		isCGI;
 		int			referringFD;
 		pid_t		CGIpid;
 
 		void	setCGI(int cgiFD, Server& server);
-
-		// ClientState state;
-		// int socker_fd;
-		// std::chrono::time_point<std::chrono::system_clock> ts;
-
-		// std::string read_buff;
-		// size_t rdi;
-		// std::string write_buff;
-		// size_t wdi;
-
+		Response   response;
+		Request    request;
+		Parser	   parser;
 };
 
 #endif // CLIENT_HPP

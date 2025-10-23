@@ -15,6 +15,8 @@
 # include <cstring>
 # include <fstream>
 # include <algorithm>
+# include "Request.hpp"
+# include "Parser.hpp"
 # include "Location.hpp"
 # include "Client.hpp"
 # include "Server.hpp"

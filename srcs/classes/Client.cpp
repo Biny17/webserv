@@ -1,10 +1,10 @@
 #include "Client.hpp"
 
 Client::Client(void)
+	:parser(request, response)
 {
 	this->fd = -1;
 	this->out_buffer = "";
-
 	this->isCGI = false;
 	this->CGIpid = -1;
 }

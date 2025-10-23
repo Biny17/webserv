@@ -1,0 +1,59 @@
+Server:
+    ☐ Initialize sockets for all server configs
+    ☐ Event loop (epoll/select/poll)
+    ☐ Accept new connections → create Client objects
+    ☐ Monitor client sockets for read/write events
+    ☐ Cleanup closed connections
+
+Parser:
+    ☐ method
+    ☐ path
+    ☐ query
+    ☐ version
+    ☐ headers
+
+Response Maker Class:
+    ☐ First line
+    ☐ Headers
+    ☐ Error Page / body
+    ☐ Load error.html depending on the error code
+    ☐ Format http response
+
+Client:
+    ☐ Add timeout logic
+    ☐ State machine (READING_REQUEST / PROCESSING / SENDING_RESPONSE)
+    ☐ Trigger RequestHandler
+
+Request Handler:
+    ☐ Link the different parts
+    ☐ Parser → RouteMatcher → Resolver → Handler → Response
+    ☐ Error handling at each step
+    ☐ Return Response to Client
+
+Route Matcher:
+    ☐ input: path, method, config
+    ☐ find server
+    ☐ find location
+    ☐ check the request using the location config
+
+"The ResourceResolver determines WHAT to do, then delegates to specialized handlers"
+Resource Resolver:
+    ☐ Maps request paths to filesystem paths
+    ☐ Call the appropriate handler
+
+Static File Handler:
+    ☐ Serve files from filesystem
+    ☐ Handle MIME types
+    ☐ Implement directory listing (if enabled)
+    ☐ Handle index files
+
+CGI Handler:
+    ☐ Execute CGI scripts
+    ☐ Set environment variables
+    ☐ Handle CGI timeouts
+    ☐ Process CGI output
+
+FileUploadHandler:
+    ☐ Handle multipart/form-data
+    ☐ Save uploaded files to designated directory
+    ☐ Make file size limits

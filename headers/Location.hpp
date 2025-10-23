@@ -18,7 +18,7 @@ class Location {
 		std::string					cgi_extension;
 		std::string					upload_dir;
 		std::vector<std::string>	methods;
-		std::vector<Location>		locations;
+		// std::vector<Location>		locations;
 
 };
 std::ostream	&operator<<(std::ostream &o, Location const &loc);

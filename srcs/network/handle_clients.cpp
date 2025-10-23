@@ -46,15 +46,14 @@ void	read_client_data(int epfd, int clifd, Server& server)
 
 	// Parse the request
 	client.parser.FillReq(buf);
-	// check if failed -> stop reading
+	client.parser.Print();
 
-	// if finished
+	// if !finished || !error
+	//	return ;
+
+	// fill response
 	if (send_response(clifd, client.out_buffer) == false)
 		set_epoll_event(epfd, clifd, EPOLLOUT);
-
-	// if Connection: close && (parse finished || parse failed)
-	// disconnect_client(epfd, clifd, server);
-
 }
 
 // Send the server's response to the client

@@ -30,16 +30,6 @@ class Client {
 		Response   response;
 		Request    request;
 		Parser	   parser;
-
-		// ClientState state;
-		// int socker_fd;
-		// std::chrono::time_point<std::chrono::system_clock> ts;
-
-		// std::string read_buff;
-		// size_t rdi;
-		// std::string write_buff;
-		// size_t wdi;
-
 };
 
 #endif // CLIENT_HPP

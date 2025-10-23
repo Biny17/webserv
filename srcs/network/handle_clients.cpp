@@ -62,7 +62,7 @@ void	read_client_data(int epfd, int clifd, Server& server)
 
 	//checkpoint for every request (supposed to build the client.respond)
 	if (handle_request(server, client, client.request, client.response) == false)
-		;			//return error
+		;			// error
 
 	// if finished
 	if (send_response(clifd, client.out_buffer) == false)
@@ -77,6 +77,14 @@ void	read_client_data(int epfd, int clifd, Server& server)
 
 }
 
+bool	build_get_response(Server &server, Client &client, Request const &request, Response &response) {
+	(void)server;
+	(void)client;
+	(void)request;
+	(void)response;
+
+	return (false);
+}
 
 //checkpoint for every request (supposed to build the client.respond)
 bool	handle_request(Server &server, Client &client, Request const &request, Response &response) {
@@ -97,7 +105,7 @@ bool	handle_request(Server &server, Client &client, Request const &request, Resp
 
 	//maybe more to verify, it depends of the request method
 	if (request.method == "GET")
-		;
+		build_get_response(server, client, request, response);
 	else if (request.method == "POST")
 		;
 	else if (request.method == "DELETE")

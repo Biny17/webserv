@@ -3,6 +3,7 @@
 
 struct Response {
 
+    Location *location;
     //enought for GET -----
     int error_code;
     int content_length;

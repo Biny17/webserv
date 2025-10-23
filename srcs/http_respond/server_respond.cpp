@@ -1,7 +1,5 @@
 #include "webserv.hpp"
 
-
-
 //check if method req_method is allowed in Location location
 static bool	check_method(Location const &location, std::string const &req_method) {
 	std::vector<std::string>::const_iterator	it;

@@ -13,6 +13,7 @@ SRCS		=	main.cpp						\
 				cgi/pipex_cgi.cpp				\
 				classes/Client.cpp				\
 				classes/Location.cpp			\
+				classes/Response.cpp			\
 				classes/Server.cpp				\
 				conf/conf_parsing.cpp			\
 				network/epoll_ctl.cpp			\

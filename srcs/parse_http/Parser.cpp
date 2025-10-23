@@ -1,7 +1,4 @@
-#include "../headers/Parser.hpp"
-#include <sstream>
-#include <iostream>
-#include <stdio.h>
+#include "webserv.hpp"
 
 Parser::Parser(Request& request, Response& response)
 	: max_body_size(16384), skip_leading_ws(true),
@@ -45,10 +42,10 @@ void Parser::Error(std::string msg, int error_code)
 	state = ERROR;
 	ok = false;
 	if (msg == "")
-		err.msg = "malformed request syntax";
+		err.body = "malformed request syntax";
 	else
-		err.msg = msg;
-	err.error_code = error_code;
+		err.body = msg;
+	err.code = error_code;
 }
 
 void Parser::Method(const std::string& buff, size_t& i)

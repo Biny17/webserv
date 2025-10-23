@@ -1,4 +1,6 @@
-#pragma once
+#ifndef REQUEST_HPP
+# define REQUEST_HPP
+
 #include <map>
 #include <string>
 
@@ -10,3 +12,5 @@ struct Request {
 	std::map<std::string, std::string> headers;
 	int content_len;
 };
+
+#endif // REQUEST_HPP

@@ -1,7 +1,10 @@
 #include "Client.hpp"
 
 Client::Client(void)
-	:parser(this->request, this->response)
+	: response(*this), parser(this->request, this->response) {}
+
+Client::Client(Server* s)
+	:server(s), response(*this), parser(this->request, this->response)
 {
 	this->fd = -1;
 	this->out_buffer = "";
@@ -10,7 +13,7 @@ Client::Client(void)
 	this->CGIpid = -1;
 }
 
-Client::Client(const Client& Client): parser(Client.parser)
+Client::Client(const Client& Client): response(Client.response), parser(Client.parser)
 {
 	*this = Client;
 }

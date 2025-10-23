@@ -9,13 +9,16 @@
 # include <csignal>
 # include <cstdio>
 # include <cstdlib>
+# include <ctime>
 # include <sys/types.h>
 # include <sys/wait.h>
 # include <dirent.h>
 # include <cstring>
 # include <fstream>
+# include <sstream>
 # include <algorithm>
 # include "Request.hpp"
+# include "Response.hpp"
 # include "Parser.hpp"
 # include "Location.hpp"
 # include "Client.hpp"

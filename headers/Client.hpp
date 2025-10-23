@@ -5,6 +5,8 @@
 // # include <chrono>
 
 class Server;
+class Parser;
+class Response;
 
 enum ClientState {
 	RD_HEADER,
@@ -16,11 +18,13 @@ class Client {
 
 	public:
 		Client(void);
+		Client(Server* s);
 		Client(const Client& Client);
 		~Client(void);
 
 		Client&	operator=(const Client& Client);
 
+		Server*		server;
 		int			fd;
 		std::string	out_buffer;
 		Request		request;

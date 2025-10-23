@@ -27,6 +27,7 @@ void	read_client_data(int epfd, int clifd, Server& server)
 	ssize_t	bytes = recv(clifd, buf, REQUEST_BUFF_SIZE, 0);
 
 	Client&	client = server.clients[clifd];
+	client.server = &server;
 
 	if (bytes == -1)
 	{
@@ -53,8 +54,9 @@ void	read_client_data(int epfd, int clifd, Server& server)
 
 	// Handle request
 	// Fill response
+	client.response.Build();
 
-	if (send_response(clifd, client.out_buffer) == false)
+	if (send_response(clifd, client.response.outBuffer) == false)
 		set_epoll_event(epfd, clifd, EPOLLOUT);
 
 	if (client.request.headers.find("Connection") != client.request.headers.end() && client.request.headers["Connection"] != "keep-alive")

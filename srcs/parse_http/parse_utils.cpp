@@ -1,6 +1,4 @@
-#include "../../headers/Parser.hpp"
-#include <cstring>
-#include <iostream>
+#include "webserv.hpp"
 
 bool is_req(unsigned char c)
 {

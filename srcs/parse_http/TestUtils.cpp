@@ -1,7 +1,4 @@
-#include "../../headers/Parser.hpp"
-#include <iostream>
-#include <map>
-#include <utility>
+#include "webserv.hpp"
 
 void Parser::Print()
 {
@@ -21,8 +18,7 @@ void Parser::Print()
     else
     {
         std::cerr << "Error !" << std::endl;
-        std::cerr << err.error_code << std::endl;
-        std::cerr << err.msg << std::endl;
+        std::cerr << err.code << std::endl;
+        std::cerr << err.body << std::endl;
     }
 }
-

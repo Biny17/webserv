@@ -163,11 +163,15 @@ void	check_location(Server const &server) {
 		for (it = server.locations.begin(); it != ite; ++it)
 		{
 			if ((*it).root.empty())
+			{
 				if (access((server.root + (*it).path).c_str(), F_OK))
 					throw std::runtime_error("cant access " + (*it).path);
+			}
 			else
+			{
 				if (access(((*it).root + (*it).path).c_str(), F_OK))
 					throw std::runtime_error("cant access " + (*it).path);
+			}
 
 			//check les index file du bloc location
 			std::vector<std::string>::const_iterator itl;
@@ -175,11 +179,15 @@ void	check_location(Server const &server) {
 			for (itl = (*it).index.begin(); itl != itle; ++itl)
 			{
 				if ((*it).root.empty())
+				{
 					if (access((server.root + (*it).path + *itl).c_str(), F_OK))
 						throw std::runtime_error("cant access " + *itl);
+				}
 				else
+				{
 					if (access(((*it).root + (*it).path + *itl).c_str(), F_OK))
 						throw std::runtime_error("cant access " + *itl);
+				}
 			}
 		}
 }
@@ -190,7 +198,7 @@ void	access_check(std::vector<Server> const &servers) {
 	std::vector<Server>::const_iterator	it;
 	std::vector<Server>::const_iterator	ite = servers.end();
 
-	for (it = servers.begin(); it != servers.end(); ++it)
+	for (it = servers.begin(); it != ite; ++it)
 	{
 		check_location(*it);
 
@@ -260,5 +268,5 @@ void	parse_conf(std::string filename, std::vector<Server> &servers) {
 	}
 	if (level != 0)
 		throw std::runtime_error("{ not close error");
-	//access_check(servers);	//!!!!!! pas encore vraiment test !!!!!! 
+	// access_check(servers);	//!!!!!! pas encore vraiment test !!!!!! 
 }

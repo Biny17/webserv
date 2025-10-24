@@ -1,7 +1,7 @@
 #include "webserv.hpp"
 
 // Accept the client and set it as input
-void	accept_new_client(int epfd, int sockfd, Server& server)
+void	accept_new_client(int sockfd, Server& server)
 {
 	// Create a socket for the client that is trying to connect to the server
 	int	client_fd = accept(sockfd, NULL, NULL);
@@ -10,36 +10,26 @@ void	accept_new_client(int epfd, int sockfd, Server& server)
 
 	// Set the socket of the client as reading form that socket
 	struct epoll_event cli_event;
-	cli_event.events = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP;;
+	cli_event.events = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP;
 	cli_event.data.fd = client_fd;
-	if (epoll_ctl(epfd, EPOLL_CTL_ADD, client_fd, &cli_event) == -1)
+	if (epoll_ctl(server.epfd, EPOLL_CTL_ADD, client_fd, &cli_event) == -1)
 	{
 		close(client_fd);
 		return;
 	}
 	server.addClient(client_fd);
+	server.clients[client_fd].epollStatus = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP;
 }
 
 // Handle client request
-void	read_client_data(int epfd, int clifd, Server& server)
+void	read_client_data(Client& client, Server& server)
 {
 	char	buf[REQUEST_BUFF_SIZE + 1];
-	ssize_t	bytes = recv(clifd, buf, REQUEST_BUFF_SIZE, 0);
+	ssize_t	bytes = recv(client.fd, buf, REQUEST_BUFF_SIZE, 0);
 
-	Client&	client = server.clients[clifd];
-	client.server = &server;
-
-	if (bytes == -1)
+	if (bytes <= 0)
 	{
-		perror("recv");
-		disconnect_client(epfd, clifd, server);
-		return ;
-	}
-
-	if (bytes == 0)
-	{
-		if (client.out_buffer.empty())
-			disconnect_client(epfd, clifd, server);
+		server.removeClient(client.fd);
 		return ;
 	}
 
@@ -53,26 +43,7 @@ void	read_client_data(int epfd, int clifd, Server& server)
 		return ;
 
 	// Handle request
-	// Fill response
+
 	client.response.Build();
-
-	if (send_response(clifd, client.response.outBuffer) == false)
-		set_epoll_event(epfd, clifd, EPOLLOUT);
-
-	if (client.request.headers.find("Connection") != client.request.headers.end() && client.request.headers["Connection"] != "keep-alive")
-		disconnect_client(epfd, clifd, server);
-}
-
-// Send the server's response to the client
-bool	send_response(int clifd, std::string& out_buffer)
-{
-	ssize_t	bytes = send(clifd, out_buffer.c_str(), out_buffer.size(), 0);
-
-	if (bytes > 0)
-		out_buffer.erase(0, bytes);
-
-	if (out_buffer.empty())
-		return (true);
-
-	return (false);
+	client.response.Send();
 }

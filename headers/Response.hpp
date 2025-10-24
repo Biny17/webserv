@@ -30,7 +30,8 @@ class Response {
 		std::string	body;
 		std::string	outBuffer;
 
-		void	Build();
+		void	Build(void);
+		void	Send(void);
 
 };
 

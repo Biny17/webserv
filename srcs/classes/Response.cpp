@@ -128,6 +128,7 @@ std::string Response::ReadFile(const std::string &path)
 	return (content);
 }
 
+// Build the response of the server
 void	Response::Build(void)
 {
 	std::string page = this->FindPage();
@@ -138,4 +139,34 @@ void	Response::Build(void)
 
 	this->header >> this->outBuffer;
 	this->outBuffer += this->body;
+}
+
+// Send the server's response to the client
+void	Response::Send(void)
+{
+	ssize_t	bytes = send(this->client.fd, this->outBuffer.c_str(), this->outBuffer.size(), 0);
+
+	if (bytes < 0)
+		return ;
+
+	if (bytes > 0)
+		this->outBuffer.erase(0, bytes);
+
+	if (this->outBuffer.empty())
+	{
+		if (this->client.request.headers.find("Connection") != this->client.request.headers.end()
+			&& client.request.headers["Connection"] != "keep-alive")
+		{
+			this->client.server->removeClient(this->client.fd);
+			return ;
+		}
+
+		if (this->client.epollStatus & EPOLLOUT)
+			set_epoll_event(this->client.server->epfd, this->client, EPOLLIN);
+
+		return ;
+	}
+
+	if (this->client.epollStatus & EPOLLIN)
+		set_epoll_event(this->client.server->epfd, this->client, EPOLLOUT);
 }

@@ -38,12 +38,14 @@ bool	Server::hasFD(int fd) const
 void	Server::addClient(int clifd)
 {
 	this->clients[clifd] = Client(this);
+	this->clients[clifd].server = this;
 	this->clients[clifd].fd = clifd;
 }
 
 // Remove the client form the server's client map
 void	Server::removeClient(int clifd)
 {
+	epoll_ctl(epfd, EPOLL_CTL_DEL, clifd, NULL);
 	this->clients.erase(clifd);
 }
 

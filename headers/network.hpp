@@ -15,10 +15,8 @@ class Server;
 
 void	launch_server(std::vector<Server>& servers);
 void	event_loop(int epfd);
-void	set_epoll_event(int epfd, int clifd, uint32_t event);
-void	accept_new_client(int epfd, int sockfd, Server& server);
-void	read_client_data(int epfd, int clifd, Server& server);
-bool	send_response(int clifd, std::string& out_buffer);
-void	disconnect_client(int epfd, int clifd, Server& server);
+void	set_epoll_event(int epfd, Client& client, uint32_t event);
+void	accept_new_client(int sockfd, Server& server);
+void	read_client_data(Client& client, Server& server);
 
 #endif // NETWORK_HPP

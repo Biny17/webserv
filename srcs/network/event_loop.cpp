@@ -16,39 +16,40 @@ Server&	fetch_server(std::vector<Server>& servers, int fd)
 }
 
 // Handle EPOLLERR events
-void	handle_epollerr(struct epoll_event& event, int epfd)
+void	handle_epollerr(struct epoll_event& event)
 {
-	int		fd = event.data.fd;
-	Server&	server_request = fetch_server(servers, fd);
+	int		fd = event.data.fd;							// Get the fd of the socket of the event
+	Server&	server_request = fetch_server(servers, fd);	// Fetch the server of the client
 
-	disconnect_client(epfd, fd, server_request);
+	server_request.removeClient(fd);
 }
 
 // Handle EPOLLIN events
-void	handle_epollin(struct epoll_event& event, int epfd)
+void	handle_epollin(struct epoll_event& event)
 {
 	int		fd = event.data.fd;							// Get the fd of the socket of the event
 	Server&	server_request = fetch_server(servers, fd);	// Fetch the server of the client
 
 	if (server_request.isSockFD(fd))					// New client
-		accept_new_client(epfd, fd, server_request);
+	accept_new_client(fd, server_request);
 	else												// Received form existing client
 	{
-		if (server_request.clients[fd].isCGI == true)	// The client is a CGI
-			listen_cgi(server_request, server_request.clients[fd]);
+		Client&	client = server_request.clients[fd];
+
+		if (client.isCGI == true)						// The client is a CGI
+			listen_cgi(server_request, client);
 		else
-			read_client_data(epfd, fd, server_request);	// Process the request
+			read_client_data(client, server_request);	// Process the request
 	}
 }
 
 // Handle EPOLLOUT events
-void	handle_epollout(struct epoll_event& event, int epfd)
+void	handle_epollout(struct epoll_event& event)
 {
 	int		fd = event.data.fd;
 	Server&	server_request = fetch_server(servers, fd);	// Fetch the server of the client
 
-	if (send_response(fd, server_request.clients[fd].out_buffer) == true)
-		set_epoll_event(epfd, fd, EPOLLIN);
+	server_request.clients[fd].response.Send();
 }
 
 // Event loop of epoll
@@ -67,11 +68,11 @@ void	event_loop(int epfd)
 		for (int i = 0; i < event_amount; i++)
 		{
 			if (events[i].events & EPOLLERR)
-				handle_epollerr(events[i], epfd);
+				handle_epollerr(events[i]);
 			else if (events[i].events & (EPOLLIN | EPOLLHUP | EPOLLRDHUP))
-				handle_epollin(events[i], epfd);
+				handle_epollin(events[i]);
 			else if (events[i].events & EPOLLOUT)
-				handle_epollout(events[i], epfd);
+				handle_epollout(events[i]);
 		}
 	}
 

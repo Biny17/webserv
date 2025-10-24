@@ -8,12 +8,6 @@ class Server;
 class Parser;
 class Response;
 
-enum ClientState {
-	RD_HEADER,
-	RD_BODY,
-	WRITING
-};
-
 class Client {
 
 	public:
@@ -26,7 +20,7 @@ class Client {
 
 		Server*		server;
 		int			fd;
-		std::string	out_buffer;
+		int			epollStatus;
 		Request		request;
 		Response	response;
 		Parser		parser;
@@ -34,7 +28,7 @@ class Client {
 		bool		isCGI;
 		int			referringFD;
 		pid_t		CGIpid;
-		void		setCGI(int cgiFD, Server& server);
+		void		setCGI(int referringFD);
 
 };
 

@@ -86,16 +86,27 @@ std::string	Response::Date(void)
 	return (std::string(buf));
 }
 
+std::string	Response::GetConnection(void)
+{
+	if (this->client.request.headers.find("Connection") != this->client.request.headers.end())
+		return (client.request.headers["Connection"]);
+	return ("close");
+}
+
 void	Response::CreateHeader(void)
 {
+	this->header.str("");
+	this->header.clear();
+
 	this->header << "HTTP/1.1 " << this->code << " " << this->Reason() << "\r\n";
 	this->header << "Date: " << this->Date() << "\r\n";
 	this->header << "Server: webserv\r\n";
-	if (this->body == "")
+	if (this->body != "")
 	{
 		this->header << "Content-Type: " << this->content_type << "\r\n";
-		this->header << "Content-Lenght: " << this->body.size() << "\r\n";
+		this->header << "Content-Length: " << this->body.size() << "\r\n";
 	}
+	this->header << "Connection: " << this->GetConnection() << "\r\n";
 	this->header << "\r\n";
 }
 
@@ -122,10 +133,10 @@ std::string Response::ReadFile(const std::string &path)
 
 	this->content_type = "text/html; charset=utf-8";
 
-	std::string	content((std::istreambuf_iterator<char>(file)),
-						std::istreambuf_iterator<char>());
-
-	return (content);
+	return std::string(
+		(std::istreambuf_iterator<char>(file)),
+		std::istreambuf_iterator<char>()
+	);
 }
 
 // Build the response of the server
@@ -134,11 +145,12 @@ void	Response::Build(void)
 	std::string page = this->FindPage();
 	if (page != "")
 		this->body = this->ReadFile(page);
+	if (page == "" && this->body == "")
+		this->body = this->ReadFile("www/index.html");
 
 	this->CreateHeader();
 
-	this->header >> this->outBuffer;
-	this->outBuffer += this->body;
+	this->outBuffer = this->header.str() + this->body;
 }
 
 // Send the server's response to the client
@@ -149,13 +161,16 @@ void	Response::Send(void)
 	if (bytes < 0)
 		return ;
 
+	std::cout << std::endl << COLOR_GREEN << "------- RESPONSE -------" << std::endl;
+	std::cout << outBuffer.substr(0, bytes) << COLOR_NC;
+
 	if (bytes > 0)
 		this->outBuffer.erase(0, bytes);
 
 	if (this->outBuffer.empty())
 	{
-		if (this->client.request.headers.find("Connection") != this->client.request.headers.end()
-			&& client.request.headers["Connection"] != "keep-alive")
+		std::cout << std::endl;
+		if (this->GetConnection() == "close")
 		{
 			this->client.server->removeClient(this->client.fd);
 			return ;

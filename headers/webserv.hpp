@@ -25,6 +25,7 @@
 # include "Server.hpp"
 # include "network.hpp"
 # include "cgi.hpp"
+# include "color.hpp"
 
 // Global because I love the 42norm
 extern std::vector<Server> servers;

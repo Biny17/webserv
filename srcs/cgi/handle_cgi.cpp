@@ -30,7 +30,7 @@ void	build_cgi_response(std::string& result)
 	std::string response =
 		"HTTP/1.1 200 OK\r\n"
 		"Content-Type: text/html\r\n"
-		"Content-Length: " + std::to_string(result.size()) + "\r\n"
+		"Content-Length: " /*+ std::to_string(result.size()) + "\r\n"*/
 		"Connection: close\r\n"
 		"\r\n" +
 		result;

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>UwUbserv</title>
+	<link rel="stylesheet" type="text/css" media="screen" href="../css/style.css">
+</head>
+<body class="mouli1">
+	<header>
+		<div class="header"></div>
+		<div class="header" id="name">
+			<span>UwUbserv</span>
+		</div>
+		<div class="header" id="cat-div">
+			<button id="cat-btn">Chat</button>
+		</div>
+	</header>
+	<main id="main-id">
+		<section class="index-sections" id="upload-file">
+			<p class="titles">Upload file</p>
+			<form action="/submit" method="POST" id="upload-form">
+				<input type="file" required id="file-select" name="file-name" class="inputs"/>
+				<input type="submit" id="upload-button" value="Upload" class="buttons inputs">
+			</form>
+		</section>
+		<section class="index-sections" id="delete-file">
+			<p class="titles">Delete file</p>
+			<div id="delete-div">
+				<input type="text" id="delete-input" name="delete-name" placeholder="Name of the file to delete" class="inputs"/>
+				<input type="submit" id="delete-button" value="Delete" class="buttons inputs">
+			</div>
+		</section>
+		<section class="index-sections" id="cgi">
+			<p class="titles">CGI</p>
+			<form action="/submit" method="POST" id="cgi-forms">
+				<div id="cgi-list-container">
+					<select id="cgi-list" name="cgi-name" class="buttons" required>
+						<option value="" selected disabled hidden>Select CGI</option>
+					</select>
+					<input id="fetch-cgi" type="submit" value="Refresh" class="buttons inputs" formnovalidate>
+				</div>
+				<input type="submit" id="launch-cgi" value="Launch" class="buttons inputs">
+			</form>
+		</section>
+		<section class="index-sections" id="upload-cgi">
+			<p class="titles">Upload CGI</p>
+			<form action="/submit" method="POST" id="upload-cgi-form">
+				<input type="file" id="cgi-select" name="cgi-name" class="inputs" required/>
+				<input type="submit" id="upload-cgi-button" value="Upload CGI" class="buttons inputs">
+			</form>
+		</section>
+	</main>
+	<footer id="index-footer"><a id="footer-id" href="credit.html">Credits</a></footer>
+</body>
+</html>

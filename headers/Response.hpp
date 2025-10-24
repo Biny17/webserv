@@ -3,10 +3,11 @@
 
 struct Response {
 
-    Location *location;
+    // Location *location;
     //enought for GET -----
-    int error_code;
-    int content_length;
+    int         error_code;
+    std::string status_message;
+    int         content_length;
     std::string content_type;
     std::string msg;
     //---------------------

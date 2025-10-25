@@ -37,9 +37,9 @@ bool	Server::hasFD(int fd) const
 // Add a client to the server's client map
 void	Server::addClient(int clifd)
 {
-	this->clients[clifd] = Client(this);
-	this->clients[clifd].server = this;
-	this->clients[clifd].fd = clifd;
+	this->clients.insert(std::make_pair(clifd, Client(*this)));
+	std::map<int, Client>::iterator	clientIt = this->clients.find(clifd);
+	clientIt->second.fd = clifd;
 }
 
 // Remove the client form the server's client map

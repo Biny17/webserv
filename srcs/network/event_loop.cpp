@@ -31,15 +31,17 @@ void	handle_epollin(struct epoll_event& event)
 	Server&	server_request = fetch_server(servers, fd);	// Fetch the server of the client
 
 	if (server_request.isSockFD(fd))					// New client
-	accept_new_client(fd, server_request);
-	else												// Received form existing client
+		accept_new_client(fd, server_request);
+	else												// Received from existing client
 	{
-		Client&	client = server_request.clients[fd];
-
-		if (client.isCGI == true)						// The client is a CGI
-			listen_cgi(server_request, client);
-		else
-			read_client_data(client, server_request);	// Process the request
+		std::map<int, Client>::iterator client_it = server_request.clients.find(fd);
+		if (client_it != server_request.clients.end())
+		{
+			if (client_it->second.isCGI == true)		// The client is a CGI
+				listen_cgi(server_request, client_it->second);
+			else
+				read_client_data(client_it->second, server_request);	// Process the request
+		}
 	}
 }
 
@@ -49,7 +51,9 @@ void	handle_epollout(struct epoll_event& event)
 	int		fd = event.data.fd;
 	Server&	server_request = fetch_server(servers, fd);	// Fetch the server of the client
 
-	server_request.clients[fd].response.Send();
+	std::map<int, Client>::iterator client_it = server_request.clients.find(fd);
+	if (client_it != server_request.clients.end())
+		client_it->second.response.Send();
 }
 
 // Event loop of epoll

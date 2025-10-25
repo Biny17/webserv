@@ -1,9 +1,6 @@
 #include "Client.hpp"
 
-Client::Client(void)
-	: response(*this), parser(this->request, this->response) {}
-
-Client::Client(Server* s)
+Client::Client(Server &s)
 	:server(s), response(*this), parser(this->request, this->response)
 {
 	this->fd = -1;
@@ -12,29 +9,18 @@ Client::Client(Server* s)
 	this->CGIpid = -1;
 }
 
-Client::Client(const Client& Client): response(Client.response), parser(Client.parser)
+Client::Client(const Client& other)
+	: server(other.server), fd(other.fd), response(*this), parser(this->request, this->response)
 {
-	*this = Client;
+	this->isCGI = other.isCGI;
+	this->CGIpid = other.CGIpid;
+	this->referringFD = other.referringFD;
 }
 
 Client::~Client(void)
 {
 	if (this->fd >= 0)
 		close(this->fd);
-}
-
-Client&	Client::operator=(const Client& Client)
-{
-	if (this == &Client)
-		return (*this);
-	this->fd = Client.fd;
-	this->isCGI = Client.isCGI;
-	this->referringFD = Client.referringFD;
-	this->CGIpid = Client.CGIpid;
-	this->request = Client.request;
-	this->response = Client.response;
-	this->parser = Client.parser;
-	return (*this);
 }
 
 // Define the client as a CGI and add it to epoll
@@ -47,9 +33,9 @@ void	Client::setCGI(int referringFD)
 	cli_event.events = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP;
 	cli_event.data.fd = this->fd;
 	this->epollStatus = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP;
-	if (epoll_ctl(this->server->epfd, EPOLL_CTL_ADD, this->fd, &cli_event) == -1)
+	if (epoll_ctl(this->server.epfd, EPOLL_CTL_ADD, this->fd, &cli_event) == -1)
 	{
 		std::cout << "Couldn't add the cgi to epoll" << std::endl;
-		this->server->removeClient(this->fd);
+		this->server.removeClient(this->fd);
 	}
 }

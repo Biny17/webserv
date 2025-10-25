@@ -18,7 +18,8 @@ void	accept_new_client(int sockfd, Server& server)
 		return;
 	}
 	server.addClient(client_fd);
-	server.clients[client_fd].epollStatus = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP;
+	std::map<int, Client>::iterator	clientIt = server.clients.find(client_fd);
+	clientIt->second.epollStatus = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP;
 }
 
 // Handle client request

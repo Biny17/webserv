@@ -66,5 +66,6 @@ void	add_cgi(Server& server, Client& client, std::string& filename)
 		return ;
 
 	server.addClient(cgiFD);
-	server.clients[cgiFD].setCGI(client.fd);
+	std::map<int, Client>::iterator clit = server.clients.find(cgiFD);
+	clit->second.setCGI(client.fd);
 }

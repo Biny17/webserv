@@ -11,14 +11,11 @@ class Response;
 class Client {
 
 	public:
-		Client(void);
-		Client(Server* s);
+		Client(Server &s);
 		Client(const Client& Client);
 		~Client(void);
 
-		Client&	operator=(const Client& Client);
-
-		Server*		server;
+		Server&		server;
 		int			fd;
 		int			epollStatus;
 		Request		request;

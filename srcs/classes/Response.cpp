@@ -115,8 +115,8 @@ std::string	Response::FindPage(void)
 	if (this->code <= 0)
 		return ("");
 
-	std::map<int, std::string>::iterator search = this->client.server->err_page.find(this->code);
-	if (search == this->client.server->err_page.end())
+	std::map<int, std::string>::iterator search = this->client.server.err_page.find(this->code);
+	if (search == this->client.server.err_page.end())
 		return ("");
 
 	return (search->second);
@@ -172,16 +172,16 @@ void	Response::Send(void)
 		std::cout << std::endl;
 		if (this->GetConnection() == "close")
 		{
-			this->client.server->removeClient(this->client.fd);
+			this->client.server.removeClient(this->client.fd);
 			return ;
 		}
 
 		if (this->client.epollStatus & EPOLLOUT)
-			set_epoll_event(this->client.server->epfd, this->client, EPOLLIN);
+			set_epoll_event(this->client.server.epfd, this->client, EPOLLIN);
 
 		return ;
 	}
 
 	if (this->client.epollStatus & EPOLLIN)
-		set_epoll_event(this->client.server->epfd, this->client, EPOLLOUT);
+		set_epoll_event(this->client.server.epfd, this->client, EPOLLOUT);
 }

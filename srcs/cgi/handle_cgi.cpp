@@ -1,4 +1,5 @@
 #include "webserv.hpp"
+#include <sstream>
 
 // Read a CGI and add append it's string
 void	read_cgi(char* buf, Client& client)
@@ -27,10 +28,13 @@ void	wait_cgi(Client& client)
 
 void	build_cgi_response(std::string& result)
 {
+
+	std::ostringstream oss;
+	oss << result.size();
 	std::string response =
 		"HTTP/1.1 200 OK\r\n"
 		"Content-Type: text/html\r\n"
-		"Content-Length: " + std::to_string(result.size()) + "\r\n"
+		"Content-Length: " + oss.str() + "\r\n"
 		"Connection: close\r\n"
 		"\r\n" +
 		result;
@@ -80,5 +84,8 @@ void	add_cgi(Server& server, Client& client, std::string& filename)
 		return ;
 
 	server.addClient(cgiFD);
-	server.clients[cgiFD].setCGI(client.fd, server);
+	std::map<int, Client>::iterator clit = server.clients.find(cgiFD);
+	Client &cgiClient = clit->second;
+	cgiClient.setCGI(client.fd, server);
+	// server.clients[cgiFD].setCGI(client.fd, server);
 }

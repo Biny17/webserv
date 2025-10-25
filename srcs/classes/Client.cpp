@@ -1,9 +1,8 @@
 #include "Client.hpp"
 
-Client::Client():parser(this->request, this->response) {}
 
-Client::Client(Server *s)
-	:server(s), parser(this->request, this->response)
+Client::Client(Server &s, int new_fd)
+	:server(s), fd(new_fd), parser(this->request, this->response)
 {
 	this->fd = -1;
 	this->out_buffer = "";
@@ -12,31 +11,19 @@ Client::Client(Server *s)
 	this->CGIpid = -1;
 }
 
-Client::Client(const Client& Client): server(Client.server), parser(Client.parser)
+Client::Client(const Client& other)
+	: server(other.server), fd(other.fd), parser(this->request, this->response)
 {
-	*this = Client;
+	this->out_buffer = other.out_buffer;
+	this->isCGI = other.isCGI;
+	this->CGIpid = other.CGIpid;
+	this->referringFD = other.referringFD;
 }
 
 Client::~Client(void)
 {
 	if (this->fd >= 0)
 		close(this->fd);
-}
-
-Client&	Client::operator=(const Client& Client)
-{
-	if (this == &Client)
-		return (*this);
-	this->server = Client.server;
-	this->fd = Client.fd;
-	this->out_buffer = Client.out_buffer;
-	this->isCGI = Client.isCGI;
-	this->referringFD = Client.referringFD;
-	this->CGIpid = Client.CGIpid;
-	this->request = Client.request;
-	this->response = Client.response;
-	this->parser = Client.parser;
-	return (*this);
 }
 
 // Define the client as a CGI and add it to epoll
@@ -87,11 +74,6 @@ Location& findLocation(Request& req, Server& serv)
 
 void Client::RequestHandler()
 {
-	if (server == nullptr) {
-		response.error_code = 500;
-		response.msg = "";
-		return ;
-	}
-	Location& loc = findLocation(request, *server);
+	Location& loc = findLocation(request, server);
 	std::cout << "location matched: " << loc.path << std::endl << std::endl;
 }

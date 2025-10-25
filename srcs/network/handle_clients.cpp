@@ -26,7 +26,10 @@ void	read_client_data(int epfd, int clifd, Server& server)
 	char	buf[REQUEST_BUFF_SIZE + 1];
 	ssize_t	bytes = recv(clifd, buf, REQUEST_BUFF_SIZE, 0);
 
-	Client&	client = server.clients[clifd];
+	std::map<int, Client>::iterator it = server.clients.find(clifd);
+	if (it == server.clients.end())
+		return;
+	Client& client = it->second;
 
 	if (bytes == -1)
 	{

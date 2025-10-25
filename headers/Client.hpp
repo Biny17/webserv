@@ -14,14 +14,13 @@ enum ClientState {
 
 class Client {
 	public:
-		Client();
-		Client(Server *s);
+		Client(Server &s, int new_fd);
 		Client(const Client& Client);
 		~Client(void);
 
 		Client&	operator=(const Client& Client);
 
-		Server*     server;
+		Server&     server;
 		int			fd;
 		std::string	out_buffer;
 		Request		request;

@@ -38,13 +38,15 @@ void	read_client_data(Client& client, Server& server)
 
 	// Parse the request
 	client.parser.FillReq(buf);
-	client.parser.Print();
 
 	if (client.parser.state != COMPLETE && client.parser.state != ERROR)
 		return ;
+
+	client.parser.Print();
 
 	// Handle request
 
 	client.response.Build();
 	client.response.Send();
+	client.parser.Reset();
 }

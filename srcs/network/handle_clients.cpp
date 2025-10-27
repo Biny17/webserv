@@ -2,7 +2,7 @@
 #include <fcntl.h>
 
 // Accept the client and set it as input
-void	accept_new_client(int epfd, int sockfd, Server& server)
+void	accept_new_client(int sockfd, Server& server)
 {
 	// Create a socket for the client that is trying to connect to the server
 	int	client_fd = accept(sockfd, NULL, NULL);
@@ -11,35 +11,27 @@ void	accept_new_client(int epfd, int sockfd, Server& server)
 
 	// Set the socket of the client as reading form that socket
 	struct epoll_event cli_event;
-	cli_event.events = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP;;
+	cli_event.events = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP;
 	cli_event.data.fd = client_fd;
-	if (epoll_ctl(epfd, EPOLL_CTL_ADD, client_fd, &cli_event) == -1)
+	if (epoll_ctl(server.epfd, EPOLL_CTL_ADD, client_fd, &cli_event) == -1)
 	{
 		close(client_fd);
 		return;
 	}
 	server.addClient(client_fd);
+	std::map<int, Client>::iterator	clientIt = server.clients.find(client_fd);
+	clientIt->second.epollStatus = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP;
 }
 
 // Handle client request
-void	read_client_data(int epfd, int clifd, Server& server)
+void	read_client_data(Client& client, Server& server)
 {
 	char	buf[REQUEST_BUFF_SIZE + 1];
-	ssize_t	bytes = recv(clifd, buf, REQUEST_BUFF_SIZE, 0);
+	ssize_t	bytes = recv(client.fd, buf, REQUEST_BUFF_SIZE, 0);
 
-	Client&	client = server.clients[clifd];
-
-	if (bytes == -1)
+	if (bytes <= 0)
 	{
-		perror("recv");
-		disconnect_client(epfd, clifd, server);
-		return ;
-	}
-
-	if (bytes == 0)
-	{
-		if (client.out_buffer.empty())
-			disconnect_client(epfd, clifd, server);
+		server.removeClient(client.fd);
 		return ;
 	}
 
@@ -48,46 +40,14 @@ void	read_client_data(int epfd, int clifd, Server& server)
 	// std::cout << buf << std::endl;
 	// Parse the request
 	client.parser.FillReq(buf);
+	client.parser.Print();
 
-	//request 
-	std::cout << client.request.method << " " << client.request.path << " " << client.request.version << std::endl;
-	
-	// request headers;
-	std::map<std::string, std::string>::iterator	it;
-	std::map<std::string, std::string>::iterator	ite = client.request.headers.end();
+	if (client.parser.state != COMPLETE && client.parser.state != ERROR)
+		return ;
 
-	for (it = client.request.headers.begin(); it != ite; ++it)
-	{
-		std::cout << it->first << "----" << it->second << std::endl;
-	}
+	handle_request(server, client, client.request, client.response);
+	// Handle request
 
-	//checkpoint for every request (supposed to build the client.respond)
-	if (handle_request(server, client, client.request, client.response) == false)
-		;			// error
-
-	// if finished
-	if (send_response(clifd, client.out_buffer) == false)
-		set_epoll_event(epfd, clifd, EPOLLOUT);
-
-	// if finished
-	if (send_response(clifd, client.out_buffer) == false)
-		set_epoll_event(epfd, clifd, EPOLLOUT);
-
-	// if Connection: close && (parse finished || parse failed)
-	// disconnect_client(epfd, clifd, server);
-
-}
-
-// Send the server's response to the client
-bool	send_response(int clifd, std::string& out_buffer)
-{
-	ssize_t	bytes = send(clifd, out_buffer.c_str(), out_buffer.size(), 0);
-
-	if (bytes > 0)
-		out_buffer.erase(0, bytes);
-
-	if (out_buffer.empty())
-		return (true);
-
-	return (false);
+	client.response.Build();
+	client.response.Send();
 }

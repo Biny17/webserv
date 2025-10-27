@@ -1,16 +1,16 @@
 #include "webserv.hpp"
 
 // Read a CGI and add append it's string
-void	read_cgi(char* buf, Client& client)
+void	read_cgi(char* buf, Client& cgi)
 {
-	client.out_buffer += buf;
+	cgi.response.outBuffer += buf;
 }
 
 // waitpid for the cgi's subprocess when finished
-void	wait_cgi(Client& client)
+void	wait_cgi(Client& cgi)
 {
 	int		status;
-	pid_t	pid = waitpid(client.CGIpid, &status, WNOHANG);
+	pid_t	pid = waitpid(cgi.CGIpid, &status, WNOHANG);
 
 	if (pid == -1)
 	{
@@ -25,50 +25,36 @@ void	wait_cgi(Client& client)
 		std::cout << WEXITSTATUS(status) << std::endl;	// Handle the error here
 }
 
-void	build_cgi_response(std::string& result)
-{
-	std::string response =
-		"HTTP/1.1 200 OK\r\n"
-		"Content-Type: text/html\r\n"
-		"Content-Length: " /*+ std::to_string(result.size()) + "\r\n"*/
-		"Connection: close\r\n"
-		"\r\n" +
-		result;
-	result = response;
-}
-
 // Handle the CGI Request
-void	listen_cgi(Server& server, Client& client)
+void	listen_cgi(Server& server, Client& cgi)
 {
 	char	buf[REQUEST_BUFF_SIZE + 1];
-	int		bytes = read(client.fd, buf, REQUEST_BUFF_SIZE);
+	int		bytes = read(cgi.fd, buf, REQUEST_BUFF_SIZE);
 
 	if (bytes < 0)
 		return ;
 
 	if (bytes == 0)
 	{
-		wait_cgi(client);
+		wait_cgi(cgi);
 
-		std::map<int, Client>::iterator referringClient = server.clients.find(client.referringFD);
-		if (referringClient == server.clients.end())
+		std::map<int, Client>::iterator	clientIt = server.clients.find(cgi.referringFD);
+		if (clientIt == server.clients.end())
 		{
-			disconnect_client(server.epfd, client.fd, server);
+			server.removeClient(cgi.fd);
 			return;
 		}
 
-		referringClient->second.out_buffer = client.out_buffer;
-		build_cgi_response(referringClient->second.out_buffer);
+		Client&	client = clientIt->second;
+		client.response.outBuffer = client.response.outBuffer;
+		client.response.Send();
 
-		if (send_response(client.referringFD, referringClient->second.out_buffer) == false) // Add http header here
-			set_epoll_event(server.epfd, client.referringFD, EPOLLOUT);
-
-		disconnect_client(server.epfd, client.fd, server);
+		server.removeClient(client.fd);
 		return ;
 	}
 
 	buf[bytes] = 0;
-	read_cgi(buf, client);
+	read_cgi(buf, cgi);
 	return ;
 }
 
@@ -80,5 +66,6 @@ void	add_cgi(Server& server, Client& client, std::string& filename)
 		return ;
 
 	server.addClient(cgiFD);
-	server.clients[cgiFD].setCGI(client.fd, server);
+	std::map<int, Client>::iterator clit = server.clients.find(cgiFD);
+	clit->second.setCGI(client.fd);
 }

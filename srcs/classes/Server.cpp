@@ -30,21 +30,25 @@ bool	Server::hasFD(int fd) const
 		return (true);
 
 	if (this->clients.find(fd) != this->clients.end())
-		return (true);
+			return (true);
 	return (false);
 }
 
 // Add a client to the server's client map
 void	Server::addClient(int clifd)
 {
-	this->clients[clifd] = Client();
-	this->clients[clifd].fd = clifd;
+	this->clients.insert(std::make_pair(clifd, Client(*this)));
+	std::map<int, Client>::iterator	clientIt = this->clients.find(clifd);
+	clientIt->second.fd = clifd;
 }
 
 // Remove the client form the server's client map
 void	Server::removeClient(int clifd)
 {
-	this->clients.erase(clifd);
+	epoll_ctl(epfd, EPOLL_CTL_DEL, clifd, NULL);
+	std::map<int, Client>::iterator	client = this->clients.find(clifd);
+	if (client != this->clients.end())
+		this->clients.erase(client);
 }
 
 std::ostream	&operator<<(std::ostream &o, Server const &serv) {

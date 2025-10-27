@@ -9,19 +9,23 @@
 # include <csignal>
 # include <cstdio>
 # include <cstdlib>
+# include <ctime>
 # include <sys/types.h>
 # include <sys/wait.h>
 # include <dirent.h>
 # include <cstring>
 # include <fstream>
+# include <sstream>
 # include <algorithm>
 # include "Request.hpp"
+# include "Response.hpp"
 # include "Parser.hpp"
 # include "Location.hpp"
 # include "Client.hpp"
 # include "Server.hpp"
 # include "network.hpp"
 # include "cgi.hpp"
+# include "color.hpp"
 
 // Global because I love the 42norm
 extern std::vector<Server> servers;
@@ -33,7 +37,6 @@ std::string	autoindex(std::string const & directory);
 int			check_allowed_methods(Server const &server, std::string const &req_path, std::string const &req_method);
 
 //handle_request
-bool	handle_request(Server &server, Client &client, Request const &request, Response &response);
 bool	build_get_response(Server &server, Client &client, Request const &request, Response &response);
 
 #endif // WEBSERV_HPP

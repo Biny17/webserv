@@ -1,29 +1,8 @@
-#include "../headers/Parser.hpp"
-#include <sstream>
-#include <iostream>
-#include <stdio.h>
+#include "webserv.hpp"
 
 Parser::Parser(Request& request, Response& response)
-	: max_body_size(16384), state(INIT), skip_leading_ws(true),
-	req(request), err(response), ok(true) {}
-
-Parser::Parser(const Parser& Parser): req(Parser.req), err(Parser.err)
-{
-	*this = Parser;
-}
-
-Parser&	Parser::operator=(const Parser& Parser)
-{
-	if (this == &Parser)
-		return (*this);
-	this->max_body_size = Parser.max_body_size;
-	this->state = Parser.state;
-	this->skip_leading_ws = Parser.skip_leading_ws;
-	this->req = Parser.req;
-	this->err = Parser.err;
-	this->ok = Parser.ok;
-	return (*this);
-}
+	: max_body_size(16384), skip_leading_ws(true),
+	req(request), err(response), ok(true), state(INIT) {}
 
 void Parser::Reset()
 {
@@ -45,10 +24,10 @@ void Parser::Error(std::string msg, int error_code)
 	state = ERROR;
 	ok = false;
 	if (msg == "")
-		err.msg = "malformed request syntax";
+		err.body = "malformed request syntax";
 	else
-		err.msg = msg;
-	err.error_code = error_code;
+		err.body = msg;
+	err.code = error_code;
 }
 
 void Parser::Method(const std::string& buff, size_t& i)
@@ -138,7 +117,7 @@ void Parser::HeadKey(const std::string &buff, size_t& i)
 	if (i+1 < buff.length())
 	{
 		if (buff[i] == '\r' && buff[i+1] == '\n') {
-			state = BODY;
+			state = COMPLETE;
 			i += 2;
 			AfterHeadersCheck();
 			return;

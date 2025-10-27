@@ -26,26 +26,30 @@ std::string	read_index(std::vector<std::string> &index_page, Server const &serve
 	index = find_index(index_page);
 	if (index == "")
 		return ("");
+
 	if (!location.root.empty())
 		fd = open((location.root + location.path + index).c_str(), O_RDONLY);
 	else
 		fd = open((server.root + location.path + index).c_str(), O_RDONLY);
 	if (fd == -1)
 		return (perror("open"), "");
+
 	while (read(fd, &buffer[0], 1))
 		result += buffer;
-	close (fd);
+
+	close(fd);
 	return (result);
 }
 
 bool	build_get_response(Server &server, Client &client, Request const &request, Response &response) {
 	(void)client;
+	(void)request;
 
-	response.status_message = request.version + " " + response.status_message + "\r\n";	//response first line
+	// response.status_message = request.version + " " + response.status_message + "\r\n";	//response first line
 	if (!(*server.locations.begin()).index.empty())
 	{
-		response.msg = read_index((*server.locations.begin()).index, server, *server.locations.begin());	//response body
-		if (response.msg == "")
+		response.body = read_index((*server.locations.begin()).index, server, *server.locations.begin());	//response body
+		if (response.body == "")
 			return (false);
 	}
 	else

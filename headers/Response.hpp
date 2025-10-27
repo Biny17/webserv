@@ -1,14 +1,34 @@
-#pragma once
-#include <string>
+#ifndef RESPONSE_HPP
+# define RESPONSE_HPP
 
-struct Response {
+#include "webserv.hpp"
 
-    // Location *location;
-    //enought for GET -----
-    int         error_code;
-    std::string status_message;
-    int         content_length;
-    std::string content_type;
-    std::string msg;
-    //---------------------
+class Client;
+
+class Response {
+
+	private:
+		const char*	Reason(void);
+		std::string	Date(void);
+		std::string	GetConnection(void);
+		std::string	FindPage(void);
+		std::string	ReadFile(const std::string &path);
+		std::string	Header(void);
+
+	public:
+		Response(Client& client);
+		~Response(void);
+
+		Client&	client;
+
+		int			code;
+		std::string	content_type;
+		std::string	body;
+		std::string	outBuffer;
+
+		void	Build(void);
+		void	Send(void);
+
 };
+
+#endif // RESPONSE_HPP

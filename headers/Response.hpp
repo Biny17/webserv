@@ -27,6 +27,7 @@ class Response {
 		std::string	outBuffer;
 
 		void	Build(void);
+		void	BuildCGI(void);
 		void	Send(void);
 
 };

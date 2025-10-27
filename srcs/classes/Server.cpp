@@ -30,7 +30,7 @@ bool	Server::hasFD(int fd) const
 		return (true);
 
 	if (this->clients.find(fd) != this->clients.end())
-		return (true);
+			return (true);
 	return (false);
 }
 
@@ -46,7 +46,9 @@ void	Server::addClient(int clifd)
 void	Server::removeClient(int clifd)
 {
 	epoll_ctl(epfd, EPOLL_CTL_DEL, clifd, NULL);
-	this->clients.erase(clifd);
+	std::map<int, Client>::iterator	client = this->clients.find(clifd);
+	if (client != this->clients.end())
+		this->clients.erase(client);
 }
 
 std::ostream	&operator<<(std::ostream &o, Server const &serv) {

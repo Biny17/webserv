@@ -9,22 +9,6 @@ Response::Response(Client& Client): client(Client)
 	return ;
 }
 
-Response::Response(const Response& Response): client(Response.client)
-{
-	*this = Response;
-}
-
-Response&	Response::operator=(const Response& Response)
-{
-	if (this == &Response)
-		return (*this);
-	this->code = Response.code;
-	this->body = Response.body;
-	this->outBuffer = Response.outBuffer;
-	this->content_type = Response.content_type;
-	return (*this);
-}
-
 Response::~Response(void) {}
 
 const char*	Response::Reason(void)
@@ -93,21 +77,22 @@ std::string	Response::GetConnection(void)
 	return ("close");
 }
 
-void	Response::CreateHeader(void)
+std::string	Response::Header(void)
 {
-	this->header.str("");
-	this->header.clear();
+	std::stringstream	header;
 
-	this->header << "HTTP/1.1 " << this->code << " " << this->Reason() << "\r\n";
-	this->header << "Date: " << this->Date() << "\r\n";
-	this->header << "Server: webserv\r\n";
+	header << "HTTP/1.1 " << this->code << " " << this->Reason() << "\r\n";
+	header << "Date: " << this->Date() << "\r\n";
+	header << "Server: webserv\r\n";
 	if (this->body != "")
 	{
-		this->header << "Content-Type: " << this->content_type << "\r\n";
-		this->header << "Content-Length: " << this->body.size() << "\r\n";
+		header << "Content-Type: " << this->content_type << "\r\n";
+		header << "Content-Length: " << this->body.size() << "\r\n";
 	}
-	this->header << "Connection: " << this->GetConnection() << "\r\n";
-	this->header << "\r\n";
+	header << "Connection: " << this->GetConnection() << "\r\n";
+	header << "\r\n";
+
+	return (header.str());
 }
 
 std::string	Response::FindPage(void)
@@ -148,9 +133,7 @@ void	Response::Build(void)
 	if (page == "" && this->body == "")
 		this->body = this->ReadFile("www/index.html");
 
-	this->CreateHeader();
-
-	this->outBuffer = this->header.str() + this->body;
+	this->outBuffer = Header() + this->body;
 }
 
 // Send the server's response to the client

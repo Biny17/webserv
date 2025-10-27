@@ -8,21 +8,16 @@ class Client;
 class Response {
 
 	private:
-		std::stringstream	header;
-
 		const char*	Reason(void);
 		std::string	Date(void);
 		std::string	GetConnection(void);
 		std::string	FindPage(void);
 		std::string	ReadFile(const std::string &path);
-		void		CreateHeader(void);
+		std::string	Header(void);
 
 	public:
 		Response(Client& client);
-		Response(const Response& Response);
 		~Response(void);
-
-		Response&	operator=(const Response& Response);
 
 		Client&	client;
 

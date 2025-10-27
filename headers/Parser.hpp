@@ -49,8 +49,6 @@ class Parser {
 		p_state state;
 		size_t FillReq(const std::string& buff);
 		Parser(Request& request, Response& response);
-		Parser(const Parser& Parser);
-		Parser&	operator=(const Parser& Parser);
 		void Reset();
 		void Print();
 };

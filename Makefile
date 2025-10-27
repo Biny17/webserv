@@ -1,5 +1,5 @@
 CXX			= c++
-CXXFLAGS	= -Wall -Werror -Wextra -ggdb -std=c++98
+CXXFLAGS	= -Wall -Werror -Wextra -std=c++98 -ggdb
 
 HEADERS		= ./headers/
 SRC_DIR		= ./srcs/

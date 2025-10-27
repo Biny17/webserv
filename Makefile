@@ -25,6 +25,7 @@ SRCS		=	main.cpp						\
 				parser/TestUtils.cpp			\
 				utils/exit_signal.cpp			\
 				utils/check_method.cpp			\
+				utils/autoindex.cpp				\
 				handle_request/handle_request.cpp	\
 				handle_request/get_response.cpp	\
 

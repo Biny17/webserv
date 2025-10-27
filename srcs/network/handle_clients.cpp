@@ -37,7 +37,6 @@ void	read_client_data(Client& client, Server& server)
 
 	buf[bytes] = 0;
 
-	// std::cout << buf << std::endl;
 	// Parse the request
 	client.parser.FillReq(buf);
 	client.parser.Print();

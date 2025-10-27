@@ -69,6 +69,7 @@ void	event_loop(int epfd)
 			break;
 
 		// Iterate over events
+		std::cout << event_amount << std::endl;
 		for (int i = 0; i < event_amount; i++)
 		{
 			if (events[i].events & EPOLLERR)

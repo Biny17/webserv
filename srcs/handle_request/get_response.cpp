@@ -41,18 +41,17 @@ std::string	read_index(std::vector<std::string> &index_page, Server const &serve
 	return (result);
 }
 
-bool	build_get_response(Server &server, Client &client, Request const &request, Response &response) {
+void	build_get_response(Server &server, Client &client, Request const &request, Response &response) {
 	(void)client;
 	(void)request;
 
-	// response.status_message = request.version + " " + response.status_message + "\r\n";	//response first line
 	if (!(*server.locations.begin()).index.empty())
 	{
 		response.body = read_index((*server.locations.begin()).index, server, *server.locations.begin());	//response body
 		if (response.body == "")
-			return (false);
+			response.body = autoindex(request.path_from_root);
 	}
 	else
-		std::cout << "autoindex" << std::endl;
-	return (true);
+		response.body = autoindex(request.path_from_root);
+	return ;
 }

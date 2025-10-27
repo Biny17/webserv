@@ -5,7 +5,7 @@ struct Response {
 
     // Location *location;
     //enought for GET -----
-    int         error_code;
+    int         code;
     std::string status_message;
     int         content_length;
     std::string content_type;

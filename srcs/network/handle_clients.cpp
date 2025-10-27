@@ -1,5 +1,5 @@
 #include "webserv.hpp"
-#include <cstdlib>
+#include <fcntl.h>
 
 // Accept the client and set it as input
 void	accept_new_client(int epfd, int sockfd, Server& server)
@@ -78,39 +78,59 @@ void	read_client_data(int epfd, int clifd, Server& server)
 
 }
 
-std::string	&read_index(std::vector<std::string> &index_page) {
+std::string	find_index(std::vector<std::string> &index_page) {
+
 	std::vector<std::string>::iterator	it;
 	std::vector<std::string>::iterator	ite = index_page.end();
-	std::vector<std::string>::iterator	stock;
-	int									fd;
 
 	for (it = index_page.begin(); it != ite; ++it)
 	{
 		if ((*it).find_last_of('.') != (*it).npos)
 		{
 			if ((*it).substr((*it).find_last_of('.'), (*it).size()) == ".html")
-				stock = it;
+				return (*it);
 		}
 	}
-	//faut read flemme
-	return (*stock);
+	return("");
+}
+
+std::string	read_index(std::vector<std::string> &index_page, Server const &server, Location const &location) {
+	std::string							index;
+	std::string							buffer(1, '\0');
+	std::string							result;
+	int									fd;
+
+	index = find_index(index_page);
+	if (index == "")
+		return ("");
+	if (!location.root.empty())
+		fd = open((location.root + location.path + index).c_str(), O_RDONLY);
+	else
+		fd = open((server.root + location.path + index).c_str(), O_RDONLY);
+	if (fd == -1)
+		return (perror("open"), "");
+	while (read(fd, &buffer[0], 1))
+		result += buffer;
+	close (fd);
+	return (result);
 }
 
 bool	build_get_response(Server &server, Client &client, Request const &request, Response &response) {
-	(void)server;
 	(void)client;
-	(void)request;
-	(void)response;
 
 	std::string status_line = request.version + " " + response.status_message + "\r\n";
+	std::string	msg;
 	std::cout << status_line << std::endl;
 	if (!(*server.locations.begin()).index.empty())
 	{
-		std::cout << read_index((*server.locations.begin()).index) << std::endl;
+		msg = read_index((*server.locations.begin()).index, server, *server.locations.begin());
+		if (msg == "")
+			return (false);
+		std::cout << msg << std::endl;
 	}
 	else
 		std::cout << "autoindex" << std::endl;
-	return (false);
+	return (true);
 }
 
 //checkpoint for every request (supposed to build the client.respond)
@@ -120,21 +140,21 @@ bool	handle_request(Server &server, Client &client, Request const &request, Resp
 	checker = check_allowed_methods(server, request.path, request.method);
 	if (checker == 0) {
 		if (request.method != "GET" && request.method != "POST" && request.method != "DELETE") {
-			response.error_code = 501;
+			response.code = 501;
 			response.status_message = "501 Not Implemented";
 		}
 		else {
-			response.error_code = 405;
+			response.code = 405;
 			response.status_message = "405 Method Not Allowed";
 		}
 	}
 	else if (checker == -1) {
-		response.error_code = 404;		// not found
+		response.code = 404;		// not found
 		response.status_message = "404 Not Found";
 	}
 	else
 	{
-		response.error_code = 200;		// status code OK, no error
+		response.code = 200;		// status code OK, no error
 		response.status_message = "200 OK";
 	}
 

@@ -7,6 +7,8 @@ Client::Client(Server &s)
 
 	this->isCGI = false;
 	this->CGIpid = -1;
+	this->cat = "mouli1";
+	this->changedCat = false;
 }
 
 Client::Client(const Client& other)
@@ -15,6 +17,8 @@ Client::Client(const Client& other)
 	this->isCGI = other.isCGI;
 	this->CGIpid = other.CGIpid;
 	this->referringFD = other.referringFD;
+	this->cat = other.cat;
+	this->changedCat = other.changedCat;
 }
 
 Client::~Client(void)
@@ -38,4 +42,13 @@ void	Client::setCGI(int referringFD)
 		std::cout << "Couldn't add the cgi to epoll" << std::endl;
 		this->server.removeClient(this->fd);
 	}
+}
+
+void	Client::switchCat(void)
+{
+	this->changedCat = true;
+	if (this->request.headers.find("Cookie") != this->request.headers.end())
+		this->cat = this->request.headers["Cookie"].substr(7, 13);
+	std::cout << this->cat << std::endl;
+	this->cat = this->cat == "mouli1" ? "mouli2" : "mouli1";
 }

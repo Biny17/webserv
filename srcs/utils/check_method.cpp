@@ -32,7 +32,6 @@ int	check_allowed_methods(Server const &server, std::string const &req_path, std
 				path = server.root + req_path;
 			else
 				path = (*it).root + req_path;
-			std::cout << (*it) << std::endl;
 			if (!access(path.c_str(), F_OK))
 			{
 				request.path_from_root = path;
@@ -50,7 +49,6 @@ int	check_allowed_methods(Server const &server, std::string const &req_path, std
 			path = server.root + req_path;
 		else
 			path = (*itbase).root + req_path;
-		std::cout << *itbase << std::endl;
 		if (!access(path.c_str(), F_OK))
 		{
 			request.path_from_root = path;

@@ -133,7 +133,31 @@ void	Response::Build(void)
 	if (page == "" && this->body == "")
 		this->body = this->ReadFile("www/index.html");
 
-	this->outBuffer = Header() + this->body;
+	this->outBuffer = this->Header() + this->body;
+}
+
+void	Response::BuildCGI(void)
+{
+	std::ifstream file("www/html/cgi.html");
+	if (file)
+	{
+		std::string cgi_body(
+			(std::istreambuf_iterator<char>(file)),
+			std::istreambuf_iterator<char>()
+		);
+
+		size_t	pos = cgi_body.find("</main>");
+		if (pos != cgi_body.npos)
+		{
+			this->body.insert(0, "\t");
+			this->body += "\t";
+			this->body = cgi_body.insert(pos, this->body);
+		}
+
+		this->content_type = "text/html; charset=utf-8";
+	}
+
+	this->Build();
 }
 
 // Send the server's response to the client

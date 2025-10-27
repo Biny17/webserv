@@ -46,10 +46,11 @@ void	listen_cgi(Server& server, Client& cgi)
 		}
 
 		Client&	client = clientIt->second;
-		client.response.outBuffer = client.response.outBuffer;
+		client.response.body = cgi.response.outBuffer;
+		client.response.BuildCGI();
 		client.response.Send();
 
-		server.removeClient(client.fd);
+		server.removeClient(cgi.fd);
 		return ;
 	}
 

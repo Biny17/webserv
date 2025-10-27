@@ -24,7 +24,10 @@ SRCS		=	main.cpp						\
 				parser/parse_utils.cpp			\
 				parser/TestUtils.cpp			\
 				utils/exit_signal.cpp			\
-				utils/check_method.cpp
+				utils/check_method.cpp			\
+				utils/autoindex.cpp				\
+				handle_request/handle_request.cpp	\
+				handle_request/get_response.cpp	\
 
 OBJS		= $(patsubst %.cpp, $(OBJ_DIR)%.o, $(SRCS))
 DEPS		= $(OBJS:.o=.d)

@@ -1,4 +1,5 @@
 #include "webserv.hpp"
+#include <fcntl.h>
 
 // Accept the client and set it as input
 void	accept_new_client(int sockfd, Server& server)
@@ -44,6 +45,7 @@ void	read_client_data(Client& client, Server& server)
 
 	client.parser.Print();
 
+	handle_request(server, client, client.request, client.response);
 	// Handle request
 
 	client.response.Build();

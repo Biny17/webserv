@@ -185,7 +185,7 @@ void	Response::Send(void)
 
 		if (this->client.epollStatus & EPOLLOUT)
 			set_epoll_event(this->client.server.epfd, this->client, EPOLLIN);
-
+	
 		return ;
 	}
 

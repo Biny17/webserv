@@ -168,15 +168,15 @@ void	Response::Send(void)
 	if (bytes < 0)
 		return ;
 
-	// std::cout << std::endl << COLOR_GREEN << "------- RESPONSE -------" << std::endl;
-	// std::cout << outBuffer.substr(0, bytes) << COLOR_NC;
+	std::cout << std::endl << COLOR_GREEN << "------- RESPONSE -------" << std::endl;
+	std::cout << outBuffer.substr(0, bytes) << COLOR_NC;
 
 	if (bytes > 0)
 		this->outBuffer.erase(0, bytes);
 
 	if (this->outBuffer.empty())
 	{
-		// std::cout << std::endl;
+		std::cout << std::endl;
 		if (this->GetConnection() == "close")
 		{
 			this->client.server.removeClient(this->client.fd);

@@ -32,4 +32,8 @@ void		handle_shutdown(int sig);
 std::string	autoindex(std::string const & directory);
 int			check_allowed_methods(Server const &server, std::string const &req_path, std::string const &req_method);
 
+//handle_request
+bool	handle_request(Server &server, Client &client, Request const &request, Response &response);
+bool	build_get_response(Server &server, Client &client, Request const &request, Response &response);
+
 #endif // WEBSERV_HPP

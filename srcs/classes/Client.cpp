@@ -1,4 +1,5 @@
 #include "Client.hpp"
+#include <algorithm>
 
 Client::Client(Server &s)
 	:server(s), response(*this), parser(this->request, this->response)
@@ -78,7 +79,22 @@ void Client::RequestHandler()
 {
 	Location& loc = findLocation(request, server);
 	std::cout << "location matched: " << loc.path << std::endl << std::endl;
+
+	std::vector<std::string>::iterator meth = std::find(loc.methods.begin(), loc.methods.end(), request.method);
+
+	if (meth == loc.methods.end())
+	{
+		std::string allow("Allow: ");
+		for (std::vector<std::string>::iterator it = loc.methods.begin(); it != loc.methods.end(); it++) {
+			if (it != loc.methods.begin())
+				allow += ", ";
+			allow += *it;
+		}
+		response.code = 403;
+		response.headers.push_back(allow);
+	}
 }
+
 void	Client::switchCat(void)
 {
 	this->changedCat = true;

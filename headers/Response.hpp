@@ -2,6 +2,7 @@
 # define RESPONSE_HPP
 
 #include "webserv.hpp"
+#include <vector>
 
 class Client;
 
@@ -27,6 +28,7 @@ class Response {
 		std::string	content_type;
 		std::string	body;
 		std::string	outBuffer;
+		std::vector<std::string> headers;
 
 		void	Build(void);
 		void	BuildCGI(void);

@@ -32,8 +32,8 @@ Request Handler:
 
 Route Matcher:
 input: request + config
-    ☐ find server
-    ☐ find location
+    ✔ find server @done (10/27/2025, 6:57:18 PM)
+    ✔ find location @done (10/27/2025, 6:57:19 PM)
     ☐ check for errors using the location config
 
 "The ResourceResolver determines WHAT to do, then delegates to specialized handlers"

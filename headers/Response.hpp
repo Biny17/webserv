@@ -14,6 +14,8 @@ class Response {
 		std::string	FindPage(void);
 		std::string	ReadFile(const std::string &path);
 		std::string	Header(void);
+		std::string	Cat(void);
+		void		ReplaceCat(void);
 
 	public:
 		Response(Client& client);

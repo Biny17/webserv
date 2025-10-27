@@ -27,6 +27,10 @@ class Client {
 		pid_t		CGIpid;
 		void		setCGI(int referringFD);
 
+		std::string	cat;
+		bool		changedCat;
+		void		switchCat(void);
+
 };
 
 #endif // CLIENT_HPP

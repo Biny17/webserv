@@ -84,6 +84,7 @@ std::string	Response::Header(void)
 	header << "HTTP/1.1 " << this->code << " " << this->Reason() << "\r\n";
 	header << "Date: " << this->Date() << "\r\n";
 	header << "Server: webserv\r\n";
+	header << this->Cat();
 	if (this->body != "")
 	{
 		header << "Content-Type: " << this->content_type << "\r\n";
@@ -93,6 +94,27 @@ std::string	Response::Header(void)
 	header << "\r\n";
 
 	return (header.str());
+}
+
+void	Response::ReplaceCat(void)
+{
+	size_t	pos;
+	std::string replace = this->client.cat == "mouli1" ? "class=\"mouli2\"" : "class=\"mouli1\"";
+	pos = this->body.find(replace);
+	while (pos != this->body.npos)
+	{
+		this->body.replace(pos, 6, replace == "class=\"mouli1\"" ? "class=\"mouli2\"" : "class=\"mouli1\"");
+		pos += 6;
+		pos = this->body.find(replace);
+	}
+}
+
+std::string	Response::Cat()
+{
+	if (this->client.changedCat == false)
+		return ("");
+	this->client.changedCat = false;
+	return ("Set-Cookie: cookie=" + this->client.cat + "\r\n");
 }
 
 std::string	Response::FindPage(void)
@@ -130,6 +152,8 @@ void	Response::Build(void)
 	std::string page = this->FindPage();
 	if (page != "")
 		this->body = this->ReadFile(page);
+	if (this->content_type == "text/html; charset=utf-8")
+		this->ReplaceCat();
 	if (page == "" && this->body == "") // For tests only
 		this->body = this->ReadFile("www/html/index.html");
 

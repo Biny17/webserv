@@ -5,31 +5,29 @@
 // # include <chrono>
 
 class Server;
-
-enum ClientState {
-	RD_HEADER,
-	RD_BODY,
-	WRITING
-};
+class Parser;
+class Response;
 
 class Client {
 	public:
-		Client(Server &s, int new_fd);
+		Client(Server &s);
 		Client(const Client& Client);
 		~Client(void);
 
-		Client&	operator=(const Client& Client);
-
-		Server&     server;
+		Server&		server;
 		int			fd;
-		std::string	out_buffer;
+		int			epollStatus;
 		Request		request;
 		Response	response;
 		Parser		parser;
 		bool		isCGI;
 		int			referringFD;
 		pid_t		CGIpid;
-		void		setCGI(int cgiFD, Server& server);
+		void		setCGI(int referringFD);
+
+		std::string	cat;
+		bool		changedCat;
+		void		switchCat(void);
 
 		void 		RequestHandler();
 };

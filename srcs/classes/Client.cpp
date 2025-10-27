@@ -1,23 +1,24 @@
 #include "Client.hpp"
 
-
-Client::Client(Server &s, int new_fd)
-	:server(s), fd(new_fd), parser(this->request, this->response)
+Client::Client(Server &s)
+	:server(s), response(*this), parser(this->request, this->response)
 {
 	this->fd = -1;
-	this->out_buffer = "";
 
 	this->isCGI = false;
 	this->CGIpid = -1;
+	this->cat = "mouli1";
+	this->changedCat = false;
 }
 
 Client::Client(const Client& other)
-	: server(other.server), fd(other.fd), parser(this->request, this->response)
+	: server(other.server), fd(other.fd), response(*this), parser(this->request, this->response)
 {
-	this->out_buffer = other.out_buffer;
 	this->isCGI = other.isCGI;
 	this->CGIpid = other.CGIpid;
 	this->referringFD = other.referringFD;
+	this->cat = other.cat;
+	this->changedCat = other.changedCat;
 }
 
 Client::~Client(void)
@@ -27,7 +28,7 @@ Client::~Client(void)
 }
 
 // Define the client as a CGI and add it to epoll
-void	Client::setCGI(int referringFD, Server& server)
+void	Client::setCGI(int referringFD)
 {
 	this->isCGI = true;
 	this->referringFD = referringFD;
@@ -35,10 +36,11 @@ void	Client::setCGI(int referringFD, Server& server)
 	struct epoll_event cli_event;
 	cli_event.events = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP;
 	cli_event.data.fd = this->fd;
-	if (epoll_ctl(server.epfd, EPOLL_CTL_ADD, this->fd, &cli_event) == -1)
+	this->epollStatus = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP;
+	if (epoll_ctl(this->server.epfd, EPOLL_CTL_ADD, this->fd, &cli_event) == -1)
 	{
 		std::cout << "Couldn't add the cgi to epoll" << std::endl;
-		server.removeClient(this->fd);
+		this->server.removeClient(this->fd);
 	}
 }
 
@@ -76,4 +78,12 @@ void Client::RequestHandler()
 {
 	Location& loc = findLocation(request, server);
 	std::cout << "location matched: " << loc.path << std::endl << std::endl;
+}
+void	Client::switchCat(void)
+{
+	this->changedCat = true;
+	if (this->request.headers.find("Cookie") != this->request.headers.end())
+		this->cat = this->request.headers["Cookie"].substr(7, 13);
+	std::cout << this->cat << std::endl;
+	this->cat = this->cat == "mouli1" ? "mouli2" : "mouli1";
 }

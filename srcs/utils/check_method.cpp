@@ -18,7 +18,7 @@ static bool	check_method(Location const &location, std::string const &req_method
 //if match, check allowed method in the designed location
 //ret_value :
 //1 if method and path match, 0 if path but not method, -1 if path dont match
-int	check_allowed_methods(Server const &server, std::string const &req_path, std::string const &req_method) {
+int	check_allowed_methods(Server const &server, std::string const &req_path, std::string const &req_method, Request &request) {
 	std::vector<Location>::const_iterator	it;
 	std::vector<Location>::const_iterator	ite = server.locations.end();
 	std::vector<Location>::const_iterator	itbase;
@@ -32,9 +32,11 @@ int	check_allowed_methods(Server const &server, std::string const &req_path, std
 				path = server.root + req_path;
 			else
 				path = (*it).root + req_path;
-			std::cout << (*it) << std::endl;
 			if (!access(path.c_str(), F_OK))
+			{
+				request.path_from_root = path;
 				return(check_method(*it, req_method));
+			}
 			return (-1);
 		}
 		if ((*it).path == "/")
@@ -47,9 +49,11 @@ int	check_allowed_methods(Server const &server, std::string const &req_path, std
 			path = server.root + req_path;
 		else
 			path = (*itbase).root + req_path;
-		std::cout << *itbase << std::endl;
 		if (!access(path.c_str(), F_OK))
+		{
+			request.path_from_root = path;
 			return(check_method(*itbase, req_method));
+		}
 		return (-1);
 	}
 	return (-1);

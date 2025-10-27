@@ -8,5 +8,6 @@ int		launch_cgi(std::string &filename, Client& client, char **env);
 void	listen_cgi(Server& server, Client& client);
 
 std::vector<std::string>	list_file_extension(std::string const &directory, std::string const &ext);
+std::string					cgi_line(std::vector<std::string> const &ext1, std::vector<std::string> const &ext2);
 
 #endif // CGI_HPP

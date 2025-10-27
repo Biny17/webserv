@@ -1,6 +1,7 @@
-#pragma once
-#include "Request.hpp"
-#include "Response.hpp"
+#ifndef PARSER_HPP
+# define PARSER_HPP
+
+# include "webserv.hpp"
 
 enum p_state {
 	INIT,
@@ -45,8 +46,6 @@ class Parser {
 		p_state state;
 		size_t FillReq(const std::string& buff);
 		Parser(Request& request, Response& response);
-		Parser(const Parser& Parser);
-		Parser&	operator=(const Parser& Parser);
 		void Reset();
 		void Print();
 };
@@ -60,3 +59,5 @@ bool valid_method(const std::string& method);
 bool is_abspath(unsigned char c);
 bool valid_path(const std::string& path);
 bool is_query(unsigned char c);
+
+#endif // PARSER_HPP

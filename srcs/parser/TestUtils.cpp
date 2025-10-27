@@ -1,7 +1,4 @@
-#include "../../headers/Parser.hpp"
-#include <iostream>
-#include <map>
-#include <utility>
+#include "webserv.hpp"
 
 Response::Response()
     :error_code(0), content_length(0), content_type("grr") ,msg("proute")
@@ -9,6 +6,7 @@ Response::Response()
 
 void Parser::Print()
 {
+    std::cerr << std::endl << COLOR_BLUE << "------- REQUEST -------" << std::endl;
     if (ok)
     {
         std::cerr << "method: " << req.method << std::endl;
@@ -16,7 +14,6 @@ void Parser::Print()
         std::cerr << "query: " << req.query << std::endl;
         std::cerr << "version: " << req.version << std::endl;
         std::map<std::string, std::string>::iterator it = req.headers.begin();
-        std::cerr << "--------HEADERS----------" << std::endl;
         while (it != req.headers.end()) {
             std::cerr << it->first << ": " << it->second << std::endl;
             it++;
@@ -25,8 +22,8 @@ void Parser::Print()
     else
     {
         std::cerr << "Error !" << std::endl;
-        std::cerr << err.error_code << std::endl;
-        std::cerr << err.msg << std::endl;
+        std::cerr << err.code << std::endl;
+        std::cerr << err.body << std::endl;
     }
+    std::cout << COLOR_NC;
 }
-

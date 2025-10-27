@@ -32,7 +32,7 @@ std::string read_file(const std::string &path) {
 
 void send_index(int client_fd)
 {
-	std::string body = read_file("web/html/index.html");
+	std::string body = read_file("www/html/index.html");
 	std::string response =
 		"HTTP/1.1 200 OK\r\n"
 		"Content-Type: text/html\r\n"
@@ -58,6 +58,10 @@ void	read_client_data(int epfd, int clifd, Server& server)
 		disconnect_client(epfd, clifd, server);
 		return ;
 	}
+
+	buf[bytes] = '\0';
+
+	std::cout << buf << std::endl;
 
 	// Handle request
 	// parse_request(request, clifd);

@@ -5,6 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>UwUbserv</title>
 	<link rel="stylesheet" type="text/css" media="screen" href="../css/style.css">
+	<script type="text/javascript" src="../js/script.js"></script>
 </head>
 <body class="mouli1">
 	<header>
@@ -19,7 +20,7 @@
 	<main id="main-id">
 		<section class="index-sections" id="upload-file">
 			<p class="titles">Upload file</p>
-			<form action="/submit" method="POST" id="upload-form">
+			<form action="/upload" method="POST" id="upload-form" enctype="multipart/form-data">
 				<input type="file" required id="file-select" name="file-name" class="inputs"/>
 				<input type="submit" id="upload-button" value="Upload" class="buttons inputs">
 			</form>
@@ -28,24 +29,24 @@
 			<p class="titles">Delete file</p>
 			<div id="delete-div">
 				<input type="text" id="delete-input" name="delete-name" placeholder="Name of the file to delete" class="inputs"/>
-				<input type="submit" id="delete-button" value="Delete" class="buttons inputs">
+				<input type="button" id="delete-button" value="Delete" class="buttons inputs" onclick="delete_req()">
 			</div>
 		</section>
 		<section class="index-sections" id="cgi">
 			<p class="titles">CGI</p>
-			<form action="/submit" method="POST" id="cgi-forms">
+			<form action="/cgi" method="GET" id="cgi-forms">
 				<div id="cgi-list-container">
 					<select id="cgi-list" name="cgi-name" class="buttons" required>
 						<option value="" selected disabled hidden>Select CGI</option>
 					</select>
-					<input id="fetch-cgi" type="submit" value="Refresh" class="buttons inputs" formnovalidate>
+					<input id="fetch-cgi" type="button" onclick="fetchCgiList()" value="Refresh" class="buttons inputs" formnovalidate>
 				</div>
 				<input type="submit" id="launch-cgi" value="Launch" class="buttons inputs">
 			</form>
 		</section>
 		<section class="index-sections" id="upload-cgi">
 			<p class="titles">Upload CGI</p>
-			<form action="/submit" method="POST" id="upload-cgi-form">
+			<form action="/upload-cgi" method="POST" id="upload-cgi-form" enctype="multipart/form-data">
 				<input type="file" id="cgi-select" name="cgi-name" class="inputs" required/>
 				<input type="submit" id="upload-cgi-button" value="Upload CGI" class="buttons inputs">
 			</form>

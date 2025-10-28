@@ -21,6 +21,6 @@ void	read_client_data(Client& client, Server& server);
 
 //request func
 void	handle_request(Server &server, Client &client, Request &request, Response &response);
-void	build_get_response(Server &server, Client &client, Request const &request, Response &response);
+void	get_static_file(Server &server, Client &client, Request const &request, Response &response);
 
 #endif // NETWORK_HPP

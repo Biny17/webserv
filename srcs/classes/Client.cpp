@@ -72,6 +72,7 @@ Location& findLocation(Request& req, Server& serv)
 		}
 		i++;
 	}
+	req.loc_index = i;
 	return ret;
 }
 
@@ -95,6 +96,11 @@ void  Client::BuildPath(Location& loc)
 		request.local_path = loc.root + request.path;
 }
 
+static bool is_cgi(Location& loc, std::string& target, std::string& method)
+{
+	return false;
+}
+
 void Client::RequestHandler()
 {
 	Location& loc = findLocation(request, server);
@@ -103,6 +109,12 @@ void Client::RequestHandler()
 	if (std::find(loc.methods.begin(), loc.methods.end(), request.method) == loc.methods.end())
 		return Error403(loc);
 	BuildPath(loc);
+	// ajouter test cgi
+	if (is_cgi(loc, request.path, request.method))
+		add_cgi(server, *this, request.local_path);
+	else if (request.method == "GET")
+		get_static_file(server, *this, request, response);
+
 }
 
 void	Client::switchCat(void)

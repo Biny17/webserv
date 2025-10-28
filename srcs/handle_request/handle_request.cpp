@@ -22,7 +22,8 @@ void	handle_request(Server &server, Client &client, Request &request, Response &
 		response.code = 200;		// status code OK, no error
 	//maybe more to verify, it depends of the request method
 	if (request.method == "GET")
-		build_get_response(server, client, request, response);
+
+	
 	else if (request.method == "POST")
 		;
 	else if (request.method == "DELETE")

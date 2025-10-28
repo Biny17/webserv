@@ -22,7 +22,7 @@ std::string	find_index(std::vector<std::string> const &index_page) {
 
 std::string	read_index(std::string const &path, Server const &server, Location const &location) {
 
-	std::string	index;						
+	std::string	index;
 	std::string	buffer(1, '\0');
 	std::string	result;
 	int			fd;
@@ -64,7 +64,7 @@ Location	&find_location(std::string const &path, std::vector<Location> &location
 	return (*stock);
 }
 
-void	build_get_response(Server &server, Client &client, Request const &request, Response &response) {
+void	get_static_file(Server &server, Client &client, Request const &request, Response &response) {
 	(void)client;
 
 	if (!(*server.locations.begin()).index.empty())

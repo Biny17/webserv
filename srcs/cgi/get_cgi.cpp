@@ -6,7 +6,7 @@ std::vector<std::string>	list_file_extension(std::string const &directory, std::
 	std::vector<std::string>	result;
 
 	if (!dir)
-		return (std::cout << "invalid opendir arg" << std::endl, result);	//renvoie vector vide pour l'instant
+		return (result);	//renvoie vector vide pour l'instant
 	content = readdir(dir);
 	while (content)
 	{
@@ -38,4 +38,9 @@ std::string	cgi_line(std::vector<std::string> const &ext1, std::vector<std::stri
 		result.erase(result.end() - 2, result.end());
 	result.append("]");
 	return(result);
+}
+
+std::string	get_available_cgi(void)
+{
+	return (cgi_line(list_file_extension("cgi-bin", ".py"), list_file_extension("cgi-bin", ".sh")));
 }

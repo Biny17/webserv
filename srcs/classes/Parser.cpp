@@ -17,6 +17,7 @@ void Parser::Reset()
 	req.query.clear();
 	req.version.clear();
 	req.path.clear();
+	req.loc_index = 0;
 }
 
 void Parser::Error(std::string msg, int error_code)
@@ -24,7 +25,7 @@ void Parser::Error(std::string msg, int error_code)
 	state = ERROR;
 	ok = false;
 	if (msg == "")
-		err.body = "malformed request syntax";
+		err.body = "Bad Request";
 	else
 		err.body = msg;
 	err.code = error_code;

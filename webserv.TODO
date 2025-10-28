@@ -13,11 +13,11 @@ Parser:
     ✔ headers @done (10/23/2025, 3:14:55 AM)
 
 Response Maker Class:
-    ☐ First line
-    ☐ Headers
-    ☐ Error Page / body
-    ☐ Load error.html depending on the error code
-    ☐ Format http response
+    ✔ First line @done (10/28/2025, 11:53:39 AM)
+    ✔ Headers @done (10/28/2025, 11:53:41 AM)
+    ✔ Error Page / body @done (10/28/2025, 11:53:42 AM)
+    ✔ Load error.html depending on the error code @done (10/28/2025, 11:53:46 AM)
+    ✔ Format http response @done (10/28/2025, 11:53:48 AM)
 
 Client:
     ☐ Add timeout logic

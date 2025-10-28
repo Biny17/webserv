@@ -110,6 +110,5 @@ void	Client::switchCat(void)
 	this->changedCat = true;
 	if (this->request.headers.find("Cookie") != this->request.headers.end())
 		this->cat = this->request.headers["Cookie"].substr(7, 13);
-	std::cout << this->cat << std::endl;
 	this->cat = this->cat == "mouli1" ? "mouli2" : "mouli1";
 }

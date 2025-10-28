@@ -53,5 +53,4 @@ void	read_client_data(Client& client, Server& server)
 
 	client.response.Build();
 	client.response.Send();
-	client.parser.Reset();
 }

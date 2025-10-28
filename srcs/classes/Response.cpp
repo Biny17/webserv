@@ -154,8 +154,6 @@ void	Response::Build(void)
 		this->body = this->ReadFile(page);
 	if (this->content_type == "text/html; charset=utf-8")
 		this->ReplaceCat();
-	if (page == "" && this->body == "") // For tests only
-		this->body = this->ReadFile("www/html/index.html");
 
 	this->outBuffer = this->Header() + this->body;
 }
@@ -209,7 +207,9 @@ void	Response::Send(void)
 
 		if (this->client.epollStatus & EPOLLOUT)
 			set_epoll_event(this->client.server.epfd, this->client, EPOLLIN);
-	
+
+		this->client.parser.Reset();
+
 		return ;
 	}
 

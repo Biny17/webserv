@@ -91,8 +91,10 @@ std::string	Response::Header(void)
 		header << "Content-Length: " << this->body.size() << "\r\n";
 	}
 	header << "Connection: " << this->GetConnection() << "\r\n";
+	for (int i = 0; i < headers.size(); i++) {
+		header << headers[i] << "\r\n";
+	}
 	header << "\r\n";
-
 	return (header.str());
 }
 

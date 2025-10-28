@@ -25,7 +25,7 @@ void Parser::Error(std::string msg, int error_code)
 	state = ERROR;
 	ok = false;
 	if (msg == "")
-		err.body = "malformed request syntax";
+		err.body = "Bad Request";
 	else
 		err.body = msg;
 	err.code = error_code;

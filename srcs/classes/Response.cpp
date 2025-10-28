@@ -129,7 +129,25 @@ std::string	Response::FindPage(void)
 	return (search->second);
 }
 
-std::string Response::ReadFile(const std::string &path)
+void	Response::AppendError(std::string &file)
+{
+	std::stringstream code_stream;
+	code_stream << this->code;
+	std::string code_string = code_stream.str();
+	std::string	error_msg = this->body != "" ? this->body : this->Reason();
+
+	size_t pos = file.find("</title>");
+	if (pos != file.npos)
+		file.insert(pos, code_string + " - " + this->Reason());
+	pos = file.find("</h1>");
+	if (pos != file.npos)
+		file.insert(pos, code_string);
+	pos = file.find("</p>");
+	if (pos != file.npos)
+		file.insert(pos, error_msg);
+}
+
+std::string	Response::ReadFile(const std::string &path)
 {
 	std::ifstream file(path.c_str());
 	if (!file)
@@ -140,10 +158,14 @@ std::string Response::ReadFile(const std::string &path)
 
 	this->content_type = "text/html; charset=utf-8";
 
-	return std::string(
+	std::string s(
 		(std::istreambuf_iterator<char>(file)),
 		std::istreambuf_iterator<char>()
 	);
+
+	if (path.substr(path.find_last_of('/') + 1) == "error.html")
+		this->AppendError(s);
+	return (s);
 }
 
 // Build the response of the server
@@ -154,8 +176,6 @@ void	Response::Build(void)
 		this->body = this->ReadFile(page);
 	if (this->content_type == "text/html; charset=utf-8")
 		this->ReplaceCat();
-	if (page == "" && this->body == "") // For tests only
-		this->body = this->ReadFile("www/html/index.html");
 
 	this->outBuffer = this->Header() + this->body;
 }
@@ -209,7 +229,12 @@ void	Response::Send(void)
 
 		if (this->client.epollStatus & EPOLLOUT)
 			set_epoll_event(this->client.server.epfd, this->client, EPOLLIN);
-	
+
+		this->body = "";
+		this->code = 200;
+		this->content_type = "";
+		this->client.parser.Reset();
+
 		return ;
 	}
 

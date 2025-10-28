@@ -28,8 +28,9 @@ class Client {
 		std::string	cat;
 		bool		changedCat;
 		void		switchCat(void);
-
 		void 		RequestHandler();
+		void		Error403(Location& loc);
+		void		BuildPath(Location& loc);
 };
 
 #endif // CLIENT_HPP

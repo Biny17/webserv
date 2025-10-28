@@ -12,7 +12,7 @@ struct Request {
 	std::map<std::string, std::string> headers;
 	int content_len;
 
-	std::string	path_from_root;
+	std::string	local_path;
 };
 
 #endif // REQUEST_HPP

@@ -49,9 +49,9 @@ void	build_get_response(Server &server, Client &client, Request const &request, 
 	{
 		response.body = read_index((*server.locations.begin()).index, server, *server.locations.begin());	//response body
 		if (response.body == "")
-			response.body = autoindex(request.path_from_root);
+			response.body = autoindex(request.local_path);
 	}
 	else
-		response.body = autoindex(request.path_from_root);
+		response.body = autoindex(request.local_path);
 	return ;
 }

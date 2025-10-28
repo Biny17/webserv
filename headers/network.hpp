@@ -9,6 +9,8 @@
 
 # define MAX_EVENTS 1024
 # define REQUEST_BUFF_SIZE 1024
+# define EPOLL_TIMEOUT 500
+# define CLIENT_TIMEOUT 10.0
 
 class Client;
 class Server;

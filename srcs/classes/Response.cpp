@@ -234,6 +234,7 @@ void	Response::Send(void)
 		this->code = 200;
 		this->content_type = "";
 		this->client.parser.Reset();
+		this->client.timeout.Stop();
 
 		return ;
 	}

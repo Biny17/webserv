@@ -1,5 +1,25 @@
 #include "webserv.hpp"
 
+void	try_timeouts(void)
+{
+	for (std::vector<Server>::iterator servIt = servers.begin(); servIt != servers.end(); ++servIt)
+	{
+		std::map<int, Client>::iterator cliIt = servIt->clients.begin();
+		while (cliIt != servIt->clients.end())
+		{
+			if (cliIt->second.timeout.Check() == true)
+			{
+				int	current = cliIt->first;
+				++cliIt;
+				servIt->removeClient(current);
+				std::cout << "A client has been timeout on server " << servIt->server_name << std::endl;
+			}
+			else
+				++cliIt;
+		}
+	}
+}
+
 // Return the fd of the server where the client fd is assigned to
 Server&	fetch_server(std::vector<Server>& servers, int fd)
 {
@@ -37,6 +57,8 @@ void	handle_epollin(struct epoll_event& event)
 		std::map<int, Client>::iterator client_it = server_request.clients.find(fd);
 		if (client_it != server_request.clients.end())
 		{
+			if (client_it->second.timeout.Enabled() == false)
+				client_it->second.timeout.Start();
 			if (client_it->second.isCGI == true)		// The client is a CGI
 				listen_cgi(server_request, client_it->second);
 			else
@@ -64,7 +86,7 @@ void	event_loop(int epfd)
 	while (!shutdown_serv)
 	{
 		// Search for events from tracked sockets
-		int event_amount = epoll_wait(epfd, events, MAX_EVENTS, -1); // Get events (blocking)
+		int event_amount = epoll_wait(epfd, events, MAX_EVENTS, EPOLL_TIMEOUT); // Get events (blocking)
 		if (event_amount == -1)
 			break;
 
@@ -78,6 +100,9 @@ void	event_loop(int epfd)
 			else if (events[i].events & EPOLLOUT)
 				handle_epollout(events[i]);
 		}
+
+		// Check timeouts of all clients on all servers and close them if necessary
+		try_timeouts();
 	}
 
 	if (!shutdown_serv)

@@ -213,7 +213,8 @@ void	Response::Send(void)
 		return ;
 
 	std::cout << std::endl << COLOR_GREEN << "------- RESPONSE -------" << std::endl;
-	std::cout << outBuffer.substr(0, bytes) << COLOR_NC;
+	std::cout << "hfsjgbdhgdvbgd : " << content_type << std::endl;
+	// std::cout << outBuffer.substr(0, bytes) << COLOR_NC;
 
 	if (bytes > 0)
 		this->outBuffer.erase(0, bytes);

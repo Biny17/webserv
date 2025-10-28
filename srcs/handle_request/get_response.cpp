@@ -46,22 +46,28 @@ std::string	read_index(std::string const &path, Server const &server, Location c
 	return (result);
 }
 
-Location	&find_location(std::string const &path, std::vector<Location> &locations) {
+//creation du response.content_type (NEED LE CHARSET ENCORE PAS FINI)
+std::string	file_extension(std::string const &path, std::string const &loc_path, std::vector<std::string> const &index_page) {
 
-	std::vector<Location>::iterator	it;
-	std::vector<Location>::iterator	ite = locations.end();
-	std::vector<Location>::iterator	stock;
-	size_t							path_len = 0;
+	std::map<std::string, std::string> test;
+	std::string	ext;
 
-	for (it = locations.begin(); it != ite; ++it)
-	{
-		if (path.find((*it).path) != path.npos && (*it).path.size() > path_len)
-		{
-			stock = it;
-			path_len = (*stock).path.size();
-		}
-	}
-	return (*stock);
+	test[".html"] = "text/html";
+	test[".css"] = "text/css";
+	test[".js"] = "text/javascript";
+
+	if (path == loc_path)
+		ext = find_index(index_page);
+	else
+		ext = path;
+	
+	if (ext.find_last_of('.') != ext.npos)
+		ext = ext.substr(ext.find_last_of('.'), ext.size());
+	if (test.find(ext) != test.end())
+		ext = test.find(ext)->second;
+	else
+		return ("");
+	return (ext);
 }
 
 void	build_get_response(Server &server, Client &client, Request const &request, Response &response) {
@@ -69,10 +75,12 @@ void	build_get_response(Server &server, Client &client, Request const &request, 
 
 	if (!(*server.locations.begin()).index.empty())
 	{
-		// response.body = read_index(request.path, server, find_location(request.path, server.locations)/**server.locations.begin()*/);	//response body
-		response.body = read_index(request.path, server, server.locations[request.loc_index]/**server.locations.begin()*/);	//response body
-		if (response.body == "")
+		response.body = read_index(request.path, server, server.locations[request.loc_index]);	//response body
+		if (response.body == "") {
 			response.body = autoindex(request.path_from_root);
+			return ;
+		}
+		response.content_type = file_extension(request.path, server.locations[request.loc_index].path, server.locations[request.loc_index].index);
 	}
 	else
 		response.body = autoindex(request.path_from_root);

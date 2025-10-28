@@ -18,6 +18,7 @@ class Location {
 		std::string					cgi_extension;
 		std::string					upload_dir;
 		std::vector<std::string>	methods;
+		// std::map<std::string, std::string>	extension;	//a faire
 		// std::vector<Location>		locations;
 
 };

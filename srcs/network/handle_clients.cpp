@@ -45,8 +45,9 @@ void	read_client_data(Client& client, Server& server)
 
 	client.parser.Print();
 
-	handle_request(server, client, client.request, client.response);
 	// Handle request
+	if (client.parser.state == COMPLETE)
+		handle_request(server, client, client.request, client.response);
 
 	if (client.request.path.find("cookie") != client.request.path.npos) // Temporary for cookies
 		client.switchCat();

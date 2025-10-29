@@ -46,22 +46,22 @@ std::string	read_index(std::string const &path, Server const &server, Location c
 	return (result);
 }
 
-Location	&find_location(std::string const &path, std::vector<Location> &locations) {
+//creation du response.content_type (NEED LE CHARSET ENCORE PAS FINI)
+std::string	file_extension(std::string const &path, Location const &location) {
 
-	std::vector<Location>::iterator	it;
-	std::vector<Location>::iterator	ite = locations.end();
-	std::vector<Location>::iterator	stock;
-	size_t							path_len = 0;
+	std::string	ext;
+	if (path == location.path)
+		ext = find_index(location.index);
+	else
+		ext = path;
 
-	for (it = locations.begin(); it != ite; ++it)
-	{
-		if (path.find((*it).path) != path.npos && (*it).path.size() > path_len)
-		{
-			stock = it;
-			path_len = (*stock).path.size();
-		}
-	}
-	return (*stock);
+	if (ext.find_last_of('.') != ext.npos)
+		ext = ext.substr(ext.find_last_of('.'), ext.size());
+	if (location.extension.find(ext) != location.extension.end())
+		ext = location.extension.find(ext)->second;
+	else
+		return ("");
+	return (ext + "; charset=utf-8");
 }
 
 void	get_static_file(Server &server, Client &client, Request const &request, Response &response) {

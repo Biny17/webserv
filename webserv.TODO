@@ -20,7 +20,7 @@ Response Maker Class:
     ✔ Format http response @done (10/28/2025, 11:53:48 AM)
 
 Client:
-    ☐ Add timeout logic
+    ✔ Add timeout logic @done (10/29/2025, 3:07:59 PM)
     ☐ State machine (READING_REQUEST / PROCESSING / SENDING_RESPONSE)
     ☐ Trigger RequestHandler
 
@@ -28,7 +28,7 @@ Request Handler:
     ☐ Link the different parts
     ☐ Parser → RouteMatcher → Resolver → Handler → Response
     ☐ Error handling at each step
-    ☐ Return Response to Client
+    ✔ Return Response to Client @done (10/29/2025, 3:08:18 PM)
 
 Route Matcher:
 input: requtest + config
@@ -48,10 +48,10 @@ Static File Handler:
     ☐ Handle index files
 
 CGI Handler:
-    ☐ Execute CGI scripts
+    ✔ Execute CGI scripts @done (10/29/2025, 3:08:37 PM)
     ☐ Set environment variables
-    ☐ Handle CGI timeouts
-    ☐ Process CGI output
+    ✔ Handle CGI timeouts @done (10/29/2025, 3:08:33 PM)
+    ✔ Process CGI output @done (10/29/2025, 3:08:35 PM)
 
 FileUploadHandler:
     ☐ Handle multipart/form-data

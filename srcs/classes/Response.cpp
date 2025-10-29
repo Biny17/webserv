@@ -156,7 +156,7 @@ std::string	Response::ReadFile(const std::string &path)
 		return ("");
 	}
 
-	this->content_type = "text/html; charset=utf-8";
+	this->content_type = "text/html";
 
 	std::string s(
 		(std::istreambuf_iterator<char>(file)),
@@ -174,7 +174,7 @@ void	Response::Build(void)
 	std::string page = this->FindPage();
 	if (page != "")
 		this->body = this->ReadFile(page);
-	if (this->content_type == "text/html; charset=utf-8")
+	if (this->content_type == "text/html")
 		this->ReplaceCat();
 
 	this->outBuffer = this->Header() + this->body;
@@ -198,7 +198,7 @@ void	Response::BuildCGI(void)
 			this->body = cgi_body.insert(pos, this->body);
 		}
 
-		this->content_type = "text/html; charset=utf-8";
+		this->content_type = "text/html";
 	}
 
 	this->Build();

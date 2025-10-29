@@ -3,7 +3,7 @@
 // Read a CGI and add append it's string
 void	read_cgi(char* buf, Client& cgi)
 {
-	cgi.response.outBuffer += buf;
+	cgi.response.body += buf;
 }
 
 // waitpid for the cgi's subprocess when finished
@@ -22,7 +22,10 @@ void	wait_cgi(Client& cgi)
 		return ;
 
 	if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
-		std::cout << WEXITSTATUS(status) << std::endl;	// Handle the error here
+	{
+		cgi.response.code = 502;
+		cgi.response.body = "Cannot execute the CGI";
+	}
 }
 
 void	send_cgi(Server& server, Client& cgi)
@@ -37,9 +40,12 @@ void	send_cgi(Server& server, Client& cgi)
 	}
 
 	Client&	client = clientIt->second;
-	client.response.body = cgi.response.outBuffer;
-	client.response.code = 200;
-	client.response.BuildCGI();
+	client.response.body = cgi.response.body;
+	client.response.code = cgi.response.code;
+	if (client.response.code == 200)
+		client.response.BuildCGI();
+	else
+		client.response.Build();
 	client.response.Send();
 }
 

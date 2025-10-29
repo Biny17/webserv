@@ -17,6 +17,7 @@ void Parser::Reset()
 	req.query.clear();
 	req.version.clear();
 	req.path.clear();
+	req.loc_index = 0;
 }
 
 void Parser::Error(std::string msg, int error_code)

@@ -3,6 +3,9 @@
 
 #include <map>
 #include <string>
+#include "Location.hpp"
+
+class Location;
 
 struct Request {
 	std::string method;
@@ -13,6 +16,7 @@ struct Request {
 	int content_len;
 
 	std::string	path_from_root;
+	int			loc_index;
 };
 
 #endif // REQUEST_HPP

@@ -10,7 +10,7 @@ std::string	autoindex(std::string const & directory) {	//preciser le directory
 	answer += "<!DOCTYPE html>\n" \
 				"<html>\n" \
 				"<head>\n" \
-				"<meta charset='utf-8'>\n"
+				"<meta charset='UTF-8'>\n"
 				"<title>";
 	answer += "Index of " + directory + "/";
 	answer += "</title>\n" \

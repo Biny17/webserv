@@ -15,9 +15,10 @@ class Location {
 		std::string					root;
 		// std::string					redirect;
 		std::string					cgi_path;
-		std::string					cgi_extension;
+		std::vector<std::string>	cgi_extension;
 		std::string					upload_dir;
 		std::vector<std::string>	methods;
+		std::map<std::string, std::string>	extension;
 		// std::vector<Location>		locations;
 
 };

@@ -5,8 +5,10 @@
 void	handle_request(Server &server, Client &client, Request &request, Response &response) {
 	(void)client;
 	int	checker;
+	std::cout << "here" << std::endl;
 
 	checker = check_allowed_methods(server, request.path, request.method, request);
+	std::cout << checker << std::endl;
 	if (checker == 0) {
 		if (request.method != "GET" && request.method != "POST" && request.method != "DELETE")
 			response.code = 501;
@@ -25,8 +27,10 @@ void	handle_request(Server &server, Client &client, Request &request, Response &
 		build_get_response(server, client, request, response);
 	else if (request.method == "POST")
 		;
-	else if (request.method == "DELETE")
-		;
+	else if (request.method == "DELETE")	// 204 si le delete a eu lieu correctement et que rien n'a besoin d'etre envoye au client
+											// 200 si le delte est ok et qu'on renvoie une information lie au delete au client
+											// 202 si le delete est accepte mais pas encore delete
+		build_delete_response(server, request, response);
 	else {
 		std::cout << "Unkown method" << std::endl;
 		return ;

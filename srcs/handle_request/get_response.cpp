@@ -67,6 +67,7 @@ std::string	file_extension(std::string const &path, Location const &location) {
 void	build_get_response(Server &server, Client &client, Request const &request, Response &response) {
 	(void)client;
 
+	response.code = 200;
 	if (!(*server.locations.begin()).index.empty())
 	{
 		response.body = read_index(request.path, server, server.locations[request.loc_index]);	//response body

@@ -229,9 +229,9 @@ void	fill_extension(Server &server) {
 	std::vector<Location>::iterator	ite = server.locations.end();
 
 	for (it = server.locations.begin(); it != ite; ++it) {
-		(*it).extension[".html"] = "txt/html";
-		(*it).extension[".css"] = "txt/css";
-		(*it).extension[".js"] = "txt/javascript";
+		(*it).extension[".html"] = "text/html";
+		(*it).extension[".css"] = "text/css";
+		(*it).extension[".js"] = "text/javascript";
 		if (!(*it).cgi_extension.empty())
 		{
 			std::vector<std::string>::iterator	itl;
@@ -242,9 +242,9 @@ void	fill_extension(Server &server) {
 				if (*itl != ".py" && *itl != ".sh")
 					throw std::runtime_error("invalid cgi_extension or cgi not managed");
 				if (*itl == ".py")
-					(*it).extension[*itl] = "txt/python";
+					(*it).extension[*itl] = "text/python";
 				if (*itl == ".sh")
-					(*it).extension[*itl] = "txt/shell";
+					(*it).extension[*itl] = "text/shell";
 			}
 		}
 	}

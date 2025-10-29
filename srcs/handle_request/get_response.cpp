@@ -47,27 +47,21 @@ std::string	read_index(std::string const &path, Server const &server, Location c
 }
 
 //creation du response.content_type (NEED LE CHARSET ENCORE PAS FINI)
-std::string	file_extension(std::string const &path, std::string const &loc_path, std::vector<std::string> const &index_page) {
+std::string	file_extension(std::string const &path, Location const &location) {
 
-	std::map<std::string, std::string> test;
 	std::string	ext;
-
-	test[".html"] = "text/html";
-	test[".css"] = "text/css";
-	test[".js"] = "text/javascript";
-
-	if (path == loc_path)
-		ext = find_index(index_page);
+	if (path == location.path)
+		ext = find_index(location.index);
 	else
 		ext = path;
 	
 	if (ext.find_last_of('.') != ext.npos)
 		ext = ext.substr(ext.find_last_of('.'), ext.size());
-	if (test.find(ext) != test.end())
-		ext = test.find(ext)->second;
+	if (location.extension.find(ext) != location.extension.end())
+		ext = location.extension.find(ext)->second;
 	else
 		return ("");
-	return (ext);
+	return (ext + "; charset=utf-8");
 }
 
 void	build_get_response(Server &server, Client &client, Request const &request, Response &response) {
@@ -80,7 +74,7 @@ void	build_get_response(Server &server, Client &client, Request const &request, 
 			response.body = autoindex(request.path_from_root);
 			return ;
 		}
-		response.content_type = file_extension(request.path, server.locations[request.loc_index].path, server.locations[request.loc_index].index);
+		response.content_type = file_extension(request.path, server.locations[request.loc_index]);
 	}
 	else
 		response.body = autoindex(request.path_from_root);

@@ -5,7 +5,7 @@ async function delete_req() {
 		alert('Veuillez indiquer le nom du fichier à supprimer.');
 		return;
 	}
-	fetch('/delete?name=' + encodeURIComponent(filename), { method: 'DELETE' })
+	fetch('/' + encodeURIComponent(filename), { method: 'DELETE' })
 	.then(async res => {
 		if (res.ok) {
 			input.value = '';
@@ -35,3 +35,15 @@ async function fetchCgiList() {
 		alert('Could not load CGI list');
 	}
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('cgi-forms');
+  if (!form) return;
+
+  form.addEventListener('submit', function(event) {
+	event.preventDefault();
+	const selected = document.getElementById('cgi-list').value;
+	if (!selected) return;
+	window.location.href = `/cgi-bin/${encodeURIComponent(selected)}`;
+  });
+});

@@ -46,11 +46,19 @@ void	read_client_data(Client& client, Server& server)
 	client.parser.Print();
 
 	// Handle request
-	if (client.parser.state == COMPLETE)
-		handle_request(server, client, client.request, client.response);
 
-	if (client.request.path.find("cookie") != client.request.path.npos) // Temporary for cookies
-		client.switchCat();
+	if (client.request.path == "/cgi/list")
+		client.response.body = get_available_cgi();
+	else if (client.parser.state == COMPLETE)
+	{
+		if (client.request.path == "/cookie") // Temporary for cookies
+		{
+			client.switchCat();
+			client.request.path = "/";
+		}
+		else
+			handle_request(server, client, client.request, client.response);
+	}
 
 	client.response.Build();
 	client.response.Send();

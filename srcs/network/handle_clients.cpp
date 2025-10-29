@@ -36,22 +36,21 @@ void	read_client_data(Client& client, Server& server)
 	}
 
 	buf[bytes] = 0;
+	size_t i;
 
-	// Parse the request
-	client.parser.FillReq(buf);
-
-	if (client.parser.state != COMPLETE && client.parser.state != ERROR)
-		return ;
-
+	if (client.parser.state < BODY)
+		i = client.parser.FillReq(buf);
+	if (client.parser.state == CHECK)
+		client.checkLocation();
+	if (client.parser.state == BODY)
+		(client.parser.*client.parser.f)(buf, i);
+	if (client.parser.state == HANDLE)
+		client.RequestHandler();
+	if (client.parser.state == RESPONSE) {
+		client.response.Build();
+		client.response.Send();
+	}
 	client.parser.Print();
-
-	// Handle request
-	if (client.parser.state == COMPLETE)
-		handle_request(server, client, client.request, client.response);
-
-	if (client.request.path.find("cookie") != client.request.path.npos) // Temporary for cookies
-		client.switchCat();
-
-	client.response.Build();
-	client.response.Send();
+	// if (client.request.path.find("cookie") != client.request.path.npos) // Temporary for cookies
+	// 	client.switchCat();
 }

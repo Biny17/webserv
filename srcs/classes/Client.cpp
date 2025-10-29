@@ -60,23 +60,26 @@ size_t n_prefix_match(std::string &target, std::string &location)
 	return 0;
 }
 
-Location& findLocation(Request& req, Server& serv)
+void Client::checkLocation()
 {
-	Location& ret = serv.locations[0];
+	loc = &server.locations[0];
 	size_t biggest = 1;
 
 	size_t i = 0;
-	while(i < serv.locations.size()) {
-		size_t tmp = n_prefix_match(req.path, (serv.locations[i]).path);
-		std::cout << req.path << " " << (serv.locations[i]).path << "  " << tmp << std::endl;
+	while(i < server.locations.size()) {
+		size_t tmp = n_prefix_match(request.path, (server.locations[i]).path);
+		std::cout << request.path << " " << (server.locations[i]).path << "  " << tmp << std::endl;
 		if (tmp > biggest) {
 			biggest = tmp;
-			ret = serv.locations[i];
+			loc = &server.locations[i];
 		}
 		i++;
 	}
-	req.loc_index = i;
-	return ret;
+	request.loc_index = i;
+	BuildPath(*loc);
+	if (std::find(loc->methods.begin(), loc->methods.end(), request.method) == loc->methods.end())
+		return Error403(*loc);
+	parser.state = BODY;
 }
 
 void Client::Error403(Location& loc)
@@ -89,6 +92,7 @@ void Client::Error403(Location& loc)
 	}
 	response.code = 403;
 	response.headers.push_back(allow);
+	parser.state = ERROR;
 }
 
 void  Client::BuildPath(Location& loc)
@@ -99,25 +103,32 @@ void  Client::BuildPath(Location& loc)
 		request.local_path = loc.root + request.path;
 }
 
-static bool is_cgi(Location& loc, std::string& target, std::string& method)
+static bool is_cgi(Location& loc, std::string& target)
 {
-	return false;
+	for (int i = 0; i < loc.cgi_extension.size(); i++)
+	{
+		if (loc.cgi_extension[i] == get_extension(target))
+			return (true);
+	}
+	return (false);
+}
+
+void Client::PostFile()
+{
+
 }
 
 void Client::RequestHandler()
 {
-	Location& loc = findLocation(request, server);
+	std::cout << "location matched: " << loc->path << std::endl << std::endl;
 
-	std::cout << "location matched: " << loc.path << std::endl << std::endl;
-	if (std::find(loc.methods.begin(), loc.methods.end(), request.method) == loc.methods.end())
-		return Error403(loc);
-	BuildPath(loc);
 	// ajouter test cgi
-	if (is_cgi(loc, request.path, request.method))
-		add_cgi(server, *this, request.local_path);
+	if (is_cgi(*loc, request.path))
+		launch_cgi(request.local_path, server, *this);
 	else if (request.method == "GET")
 		get_static_file(server, *this, request, response);
-
+	else if (request.method == "POST")
+		PostFile();
 }
 
 void	Client::switchCat(void)

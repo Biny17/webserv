@@ -11,8 +11,10 @@ enum p_state {
 	VERSION,
 	HEAD_KEY,
 	HEAD_VAL,
+	CHECK,
 	BODY,
-	COMPLETE,
+	HANDLE,
+	RESPONSE,
 	ERROR
 };
 
@@ -35,8 +37,8 @@ class Parser {
 		void HeadKey(const std::string &buff, size_t& i);
 		void HeadValue(const std::string &buff, size_t& i);
 		void AfterHeadersCheck();
-		void Body(const std::string &buff, size_t& i);
 		void PostCheck();
+		void DefaultBody(const std::string &buff, size_t& i);
 		void TransferEncoding(const std::string &buff, size_t& i);
 
 	public:
@@ -44,6 +46,8 @@ class Parser {
 		Response& err;
 		bool ok;
 		p_state state;
+		void (Parser::*f)(const std::string &buff, size_t& i);
+
 		size_t FillReq(const std::string& buff);
 		Parser(Request& request, Response& response);
 		void Reset();

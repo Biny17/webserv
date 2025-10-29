@@ -17,6 +17,7 @@ struct Request {
 
 	std::string	local_path;
 	int			loc_index;
+	std::string body;
 };
 
 #endif // REQUEST_HPP

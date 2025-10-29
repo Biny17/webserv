@@ -21,6 +21,7 @@ class Client {
 		Response	response;
 		Parser		parser;
 		Timeout		timeout;
+		Location	*loc;
 
 		bool		isCGI;
 		int			referringFD;
@@ -33,6 +34,8 @@ class Client {
 		void 		RequestHandler();
 		void		Error403(Location& loc);
 		void		BuildPath(Location& loc);
+		void		PostFile();
+		void 		checkLocation();
 };
 
 #endif // CLIENT_HPP

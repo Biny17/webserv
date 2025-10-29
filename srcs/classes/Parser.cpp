@@ -1,7 +1,7 @@
 #include "webserv.hpp"
 
 Parser::Parser(Request& request, Response& response)
-	: max_body_size(16384), skip_leading_ws(true),
+	: max_body_size(16384), skip_leading_ws(true), f(&Parser::DefaultBody),
 	req(request), err(response), ok(true), state(INIT) {}
 
 void Parser::Reset()
@@ -118,7 +118,7 @@ void Parser::HeadKey(const std::string &buff, size_t& i)
 	if (i+1 < buff.length())
 	{
 		if (buff[i] == '\r' && buff[i+1] == '\n') {
-			state = COMPLETE;
+			state = BODY;
 			i += 2;
 			AfterHeadersCheck();
 			return;
@@ -166,6 +166,7 @@ void Parser::HeadValue(const std::string &buff, size_t& i)
 	else {
 		cur_value += buff.substr(start, crfl - start);
 		cur_value = cur_value.substr(0, cur_value.find_last_not_of(" \t") + 1);
+		cur_value = cur_value.substr(0, cur_value.find_first_of(';'));
 		req.headers[cur_key] = cur_value;
 		if (req.headers.size() > 100)
 			return Error("Too many headers", 431);
@@ -184,7 +185,7 @@ void Parser::AfterHeadersCheck()
 	{
 		if (req.headers.find("Content-Length") != req.headers.end() ||
 			req.headers.find("Transfer-Encoding") != req.headers.end())
-			return Error("GET request must not have a body", 400);
+			return Error("GET request shoudn't have a body", 400);
 	}
 	else if (req.method == "POST") {
 		PostCheck();
@@ -193,14 +194,19 @@ void Parser::AfterHeadersCheck()
 
 void Parser::PostCheck()
 {
+	std::map<std::string,std::string>::iterator ct = req.headers.find("Content-Type");
+	if (ct == req.headers.end() || ct->second != "multipart/form-data")
+		return Error("POST method require Content-Type: multipart/form-data", 400);
 	std::map<std::string,std::string>::iterator te = req.headers.find("Transfer-Encoding");
 	if (te != req.headers.end())
 	{
 		if (te->second != "chunked")
 			return Error("Unsupported Transfer-Encoding", 501);
 		else
-			return;
+			f = &Parser::TransferEncoding;
+		return;
 	}
+
 	std::map<std::string,std::string>::iterator ce = req.headers.find("Content-Length");
 	if (ce != req.headers.end())
 	{
@@ -238,6 +244,11 @@ size_t Parser::FillReq(const std::string& read_buff)
 		if (state == HEAD_VAL && i < buff.length())
 			HeadValue(buff, i);
 	}
-	buff = read_buff.substr(i);
+	if (state != ERROR && state != BODY)
+		buff = read_buff.substr(i);
 	return i;
+}
+
+void Parser::DefaultBody(const std::string &buff, size_t& i)
+{
 }

@@ -17,6 +17,7 @@
 # include <fstream>
 # include <sstream>
 # include <algorithm>
+# include "Timeout.hpp"
 # include "Request.hpp"
 # include "Response.hpp"
 # include "Parser.hpp"

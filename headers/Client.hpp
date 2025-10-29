@@ -20,6 +20,8 @@ class Client {
 		Request		request;
 		Response	response;
 		Parser		parser;
+		Timeout		timeout;
+
 		bool		isCGI;
 		int			referringFD;
 		pid_t		CGIpid;

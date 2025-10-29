@@ -105,8 +105,8 @@ void	Response::ReplaceCat(void)
 	pos = this->body.find(replace);
 	while (pos != this->body.npos)
 	{
-		this->body.replace(pos, 6, replace == "class=\"mouli1\"" ? "class=\"mouli2\"" : "class=\"mouli1\"");
-		pos += 6;
+		std::cout << this->body.substr(pos, 14) << std::endl;
+		this->body.replace(pos, 14, this->body.substr(pos, 14) == "class=\"mouli1\"" ? "class=\"mouli2\"" : "class=\"mouli1\"");
 		pos = this->body.find(replace);
 	}
 }
@@ -158,7 +158,7 @@ std::string	Response::ReadFile(const std::string &path)
 		return ("");
 	}
 
-	this->content_type = "text/html; charset=utf-8";
+	this->content_type = "text/html";
 
 	std::string s(
 		(std::istreambuf_iterator<char>(file)),
@@ -176,7 +176,7 @@ void	Response::Build(void)
 	std::string page = this->FindPage();
 	if (page != "")
 		this->body = this->ReadFile(page);
-	if (this->content_type == "text/html; charset=utf-8")
+	if (this->content_type == "text/html")
 		this->ReplaceCat();
 
 	this->outBuffer = this->Header() + this->body;
@@ -200,7 +200,7 @@ void	Response::BuildCGI(void)
 			this->body = cgi_body.insert(pos, this->body);
 		}
 
-		this->content_type = "text/html; charset=utf-8";
+		this->content_type = "text/html";
 	}
 
 	this->Build();
@@ -236,6 +236,7 @@ void	Response::Send(void)
 		this->code = 200;
 		this->content_type = "";
 		this->client.parser.Reset();
+		this->client.timeout.Stop();
 
 		return ;
 	}

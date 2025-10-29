@@ -55,7 +55,7 @@ void	close_fds(void)
 	}
 }
 
-int	exec_cgi(std::vector<std::string> const &cgi, Client& client, char **env) {
+int	exec_cgi(std::vector<std::string> const &cgi, Server& server, Client& client) {
 
 	char	*tab[] = {(char *)cgi[0].c_str(), (char *)cgi[1].c_str(), NULL};
 	int		pipefd[2];
@@ -64,6 +64,7 @@ int	exec_cgi(std::vector<std::string> const &cgi, Client& client, char **env) {
 
 	pipe(pipefd);
 	fdout = dup(pipefd[0]);
+	server.addClient(fdout);
 	pid = fork();
 	if (pid == -1)
 		return (-1);
@@ -73,19 +74,21 @@ int	exec_cgi(std::vector<std::string> const &cgi, Client& client, char **env) {
 		dup2(pipefd[1], STDOUT_FILENO);
 		close(pipefd[1]);
 		close(fdout);
-		std::string test = find_path(cgi[0], env);
-		execve(test.c_str(), tab, env);
+		std::string test = find_path(cgi[0], __environ);
+		execve(test.c_str(), tab, __environ);
 		std::string errmessage = "cgi execve failure - ";
 		errmessage += strerror(errno);
 		throw std::runtime_error(errmessage.c_str());
 	}
-	client.CGIpid = pid;
+	std::map<int, Client>::iterator cliIt = server.clients.find(fdout);
+	cliIt->second.setCGI(client.fd);
+	cliIt->second.CGIpid = pid;
 	close(pipefd[1]);
 	close(pipefd[0]);
 	return (fdout);
 }
 
-int	launch_cgi(std::string &filename, Client& client, char **env) {
+int	launch_cgi(std::string &filename, Server& server, Client& client) {
 
 	std::vector<std::string>	cgi;
 	if (access(filename.c_str(), F_OK))
@@ -102,5 +105,5 @@ int	launch_cgi(std::string &filename, Client& client, char **env) {
 	}
 	else
 		return (-1);
-	return(exec_cgi(cgi, client, env));
+	return(exec_cgi(cgi, server, client));
 }

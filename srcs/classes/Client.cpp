@@ -44,6 +44,7 @@ void	Client::setCGI(int referringFD)
 		std::cout << "Couldn't add the cgi to epoll" << std::endl;
 		this->server.removeClient(this->fd);
 	}
+	this->timeout.Start();
 }
 
 void	Client::switchCat(void)

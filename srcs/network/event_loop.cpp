@@ -7,12 +7,14 @@ void	try_timeouts(void)
 		std::map<int, Client>::iterator cliIt = servIt->clients.begin();
 		while (cliIt != servIt->clients.end())
 		{
-			if (cliIt->second.timeout.Check() == true)
+			if (cliIt->second.timeout.Check(cliIt->second.isCGI) == true)
 			{
-				int	current = cliIt->first;
-				++cliIt;
-				servIt->removeClient(current);
 				std::cout << "A client has been timeout on server " << servIt->server_name << std::endl;
+				Client&	client = cliIt->second;
+				++cliIt;
+				if (client.isCGI)
+					kill_cgi(client);
+				servIt->removeClient(client.fd);
 			}
 			else
 				++cliIt;
@@ -32,37 +34,38 @@ Server&	fetch_server(std::vector<Server>& servers, int fd)
 			return (*it);
 	}
 
-	return (servers[0]);
+	return (servers.front());
 }
 
 // Handle EPOLLERR events
 void	handle_epollerr(struct epoll_event& event)
 {
-	int		fd = event.data.fd;							// Get the fd of the socket of the event
-	Server&	server_request = fetch_server(servers, fd);	// Fetch the server of the client
+	int		fd = event.data.fd;					// Get the fd of the socket of the event
+	Server&	server = fetch_server(servers, fd);	// Fetch the server of the client
 
-	server_request.removeClient(fd);
+	server.removeClient(fd);
 }
 
 // Handle EPOLLIN events
 void	handle_epollin(struct epoll_event& event)
 {
-	int		fd = event.data.fd;							// Get the fd of the socket of the event
-	Server&	server_request = fetch_server(servers, fd);	// Fetch the server of the client
+	int		fd = event.data.fd;						// Get the fd of the socket of the event
+	Server&	server = fetch_server(servers, fd);		// Fetch the server of the client
 
-	if (server_request.isSockFD(fd))					// New client
-		accept_new_client(fd, server_request);
-	else												// Received from existing client
+	if (server.isSockFD(fd))						// New client
+		accept_new_client(fd, server);
+	else											// Received from existing client
 	{
-		std::map<int, Client>::iterator client_it = server_request.clients.find(fd);
-		if (client_it != server_request.clients.end())
+		std::map<int, Client>::iterator client_it = server.clients.find(fd);
+		if (client_it != server.clients.end())
 		{
-			if (client_it->second.timeout.Enabled() == false)
-				client_it->second.timeout.Start();
-			if (client_it->second.isCGI == true)		// The client is a CGI
-				listen_cgi(server_request, client_it->second);
+			Client&	client = client_it->second;
+			if (client.timeout.Enabled() == false)
+				client.timeout.Start();
+			if (client.isCGI == true)				// The client is a CGI
+				listen_cgi(server, client);
 			else
-				read_client_data(client_it->second, server_request);	// Process the request
+				read_client_data(client, server);	// Process the request
 		}
 	}
 }
@@ -71,10 +74,10 @@ void	handle_epollin(struct epoll_event& event)
 void	handle_epollout(struct epoll_event& event)
 {
 	int		fd = event.data.fd;
-	Server&	server_request = fetch_server(servers, fd);	// Fetch the server of the client
+	Server&	server = fetch_server(servers, fd);	// Fetch the server of the client
 
-	std::map<int, Client>::iterator client_it = server_request.clients.find(fd);
-	if (client_it != server_request.clients.end())
+	std::map<int, Client>::iterator client_it = server.clients.find(fd);
+	if (client_it != server.clients.end())
 		client_it->second.response.Send();
 }
 

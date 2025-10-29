@@ -14,7 +14,7 @@ class Timeout
 		void	Stop(void);
 		void	Update(void);
 		bool	Enabled(void) const;
-		bool	Check(void) const;
+		bool	Check(bool isCGI) const;
 
 };
 

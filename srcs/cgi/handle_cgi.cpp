@@ -25,6 +25,24 @@ void	wait_cgi(Client& cgi)
 		std::cout << WEXITSTATUS(status) << std::endl;	// Handle the error here
 }
 
+void	send_cgi(Server& server, Client& cgi)
+{
+	wait_cgi(cgi);
+
+	std::map<int, Client>::iterator	clientIt = server.clients.find(cgi.referringFD);
+	if (clientIt == server.clients.end())
+	{
+		server.removeClient(cgi.fd);
+		return;
+	}
+
+	Client&	client = clientIt->second;
+	client.response.body = cgi.response.outBuffer;
+	client.response.code = 200;
+	client.response.BuildCGI();
+	client.response.Send();
+}
+
 // Handle the CGI Request
 void	listen_cgi(Server& server, Client& cgi)
 {
@@ -36,20 +54,7 @@ void	listen_cgi(Server& server, Client& cgi)
 
 	if (bytes == 0)
 	{
-		wait_cgi(cgi);
-
-		std::map<int, Client>::iterator	clientIt = server.clients.find(cgi.referringFD);
-		if (clientIt == server.clients.end())
-		{
-			server.removeClient(cgi.fd);
-			return;
-		}
-
-		Client&	client = clientIt->second;
-		client.response.body = cgi.response.outBuffer;
-		client.response.BuildCGI();
-		client.response.Send();
-
+		send_cgi(server, cgi);
 		server.removeClient(cgi.fd);
 		return ;
 	}
@@ -59,14 +64,18 @@ void	listen_cgi(Server& server, Client& cgi)
 	return ;
 }
 
-void	add_cgi(Server& server, Client& client, std::string& filename)
+void	kill_cgi(Client& cgi)
 {
-	int cgiFD = launch_cgi(filename, client, __environ);
+	kill(cgi.CGIpid, SIGKILL);
+	wait_cgi(cgi);
 
-	if (cgiFD < 0)
-		return ;
+	std::map<int, Client>::iterator	clientIt = cgi.server.clients.find(cgi.referringFD);
+	if (clientIt == cgi.server.clients.end())
+		return;
 
-	server.addClient(cgiFD);
-	std::map<int, Client>::iterator clit = server.clients.find(cgiFD);
-	clit->second.setCGI(client.fd);
+	Client&	client = clientIt->second;
+	client.response.body = "CGI has been timeout";
+	client.response.code = 504;
+	client.response.Build();
+	client.response.Send();
 }

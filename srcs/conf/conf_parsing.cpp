@@ -96,9 +96,10 @@ static void	parse_param(std::vector<std::string> const &words, Location &locatio
 		location.cgi_path = *(it + 1);
 	}
 	else if (*it == "cgi_extension") {
-		if (size != 2)
-			throw std::runtime_error(*it + " argument error");
-		location.cgi_extension = *(it + 1);
+		// if (size != 2)
+			// throw std::runtime_error(*it + " argument error");
+		for (it = words.begin() + 1; it != ite; ++it)
+			location.cgi_extension.push_back(*it);
 	}
 	else
 		throw std::runtime_error("location unknown command : " + *it);
@@ -222,6 +223,33 @@ void	access_check(std::vector<Server> const &servers) {
 	}
 }
 
+void	fill_extension(Server &server) {
+
+	std::vector<Location>::iterator	it;
+	std::vector<Location>::iterator	ite = server.locations.end();
+
+	for (it = server.locations.begin(); it != ite; ++it) {
+		(*it).extension[".html"] = "txt/html";
+		(*it).extension[".css"] = "txt/css";
+		(*it).extension[".js"] = "txt/javascript";
+		if (!(*it).cgi_extension.empty())
+		{
+			std::vector<std::string>::iterator	itl;
+			std::vector<std::string>::iterator	itle = (*it).cgi_extension.end();
+
+			for (itl = (*it).cgi_extension.begin(); itl != itle; ++itl)
+			{
+				if (*itl != ".py" && *itl != ".sh")
+					throw std::runtime_error("invalid cgi_extension or cgi not managed");
+				if (*itl == ".py")
+					(*it).extension[*itl] = "txt/python";
+				if (*itl == ".sh")
+					(*it).extension[*itl] = "txt/shell";
+			}
+		}
+	}
+}
+
 //fonction de parsing du fichier .conf
 void	parse_conf(std::string filename, std::vector<Server> &servers) {
 
@@ -268,5 +296,9 @@ void	parse_conf(std::string filename, std::vector<Server> &servers) {
 	}
 	if (level != 0)
 		throw std::runtime_error("{ not close error");
+	std::vector<Server>::iterator	it;
+	std::vector<Server>::iterator	ite = servers.end();
+	for (it = servers.begin(); it != ite; ++it)
+		fill_extension(*it);
 	// access_check(servers);	//!!!!!! pas encore vraiment test !!!!!! 
 }

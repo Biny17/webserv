@@ -32,8 +32,11 @@ std::ostream	&operator<<(std::ostream &o, Location const &loc) {
 	}
 	if (!loc.cgi_path.empty())
 		o << "cgi_path : " << loc.cgi_path << std::endl;
-	if (!loc.cgi_extension.empty())
-		o << "cgi_path : " << loc.cgi_extension << std::endl;
+	if (!loc.extension.empty())
+	{
+		for (std::map<std::string, std::string>::const_iterator it = loc.extension.begin(); it != loc.extension.end(); ++it)
+			o << it->first << ", " << it->second << std::endl;
+	}
 	if (!loc.methods.empty())
 	{
 		o << "methods : ";

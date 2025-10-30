@@ -64,8 +64,7 @@ std::string	file_extension(std::string const &path, Location const &location) {
 	return (ext + "; charset=utf-8");
 }
 
-void	build_get_response(Server &server, Client &client, Request const &request, Response &response) {
-	(void)client;
+void	build_get_response(Server &server, Request const &request, Response &response) {
 
 	response.code = 200;
 	if (!(*server.locations.begin()).index.empty())

@@ -14,8 +14,13 @@ void	handle_request(Server &server, Client &client, Request &request, Response &
 		return ;
 	}
 	//maybe more to verify, it depends of the request method
-	if (request.method == "GET")
+	if (request.method == "GET") {
+		if (checker == -1) {
+			response.code = 404;
+			return ;
+		}
 		build_get_response(server, request, response);	//build get response
+	}
 	else if (request.method == "POST")
 		;
 	else if (request.method == "DELETE")

@@ -66,15 +66,15 @@ std::string	file_extension(std::string const &path, Location const &location) {
 
 void	build_get_response(Server &server, Request const &request, Response &response) {
 
-	response.code = 200;
 	if (!(*server.locations.begin()).index.empty())
 	{
 		response.body = read_index(request.path, server, server.locations[request.loc_index]);	//response body
 		if (response.body == "") {
-			response.body = autoindex(request.path_from_root);
+			response.code = 403;
 			return ;
 		}
 		response.content_type = file_extension(request.path, server.locations[request.loc_index]);
+		response.code = 200;
 	}
 	else
 		response.body = autoindex(request.path_from_root);

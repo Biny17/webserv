@@ -35,3 +35,15 @@ async function fetchCgiList() {
 		alert('Could not load CGI list');
 	}
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('cgi-forms');
+  if (!form) return;
+
+  form.addEventListener('submit', function(event) {
+	event.preventDefault();
+	const selected = document.getElementById('cgi-list').value;
+	if (!selected) return;
+	window.location.href = `/cgi-bin/${encodeURIComponent(selected)}`;
+  });
+});

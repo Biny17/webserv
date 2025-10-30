@@ -3,7 +3,7 @@
 // Read a CGI and add append it's string
 void	read_cgi(char* buf, Client& cgi)
 {
-	cgi.response.outBuffer += buf;
+	cgi.response.body += buf;
 }
 
 // waitpid for the cgi's subprocess when finished
@@ -22,7 +22,31 @@ void	wait_cgi(Client& cgi)
 		return ;
 
 	if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
-		std::cout << WEXITSTATUS(status) << std::endl;	// Handle the error here
+	{
+		cgi.response.code = 502;
+		cgi.response.body = "Cannot execute the CGI";
+	}
+}
+
+void	send_cgi(Server& server, Client& cgi)
+{
+	wait_cgi(cgi);
+
+	std::map<int, Client>::iterator	clientIt = server.clients.find(cgi.referringFD);
+	if (clientIt == server.clients.end())
+	{
+		server.removeClient(cgi.fd);
+		return;
+	}
+
+	Client&	client = clientIt->second;
+	client.response.body = cgi.response.body;
+	client.response.code = cgi.response.code;
+	if (client.response.code == 200)
+		client.response.BuildCGI();
+	else
+		client.response.Build();
+	client.response.Send();
 }
 
 // Handle the CGI Request
@@ -36,20 +60,7 @@ void	listen_cgi(Server& server, Client& cgi)
 
 	if (bytes == 0)
 	{
-		wait_cgi(cgi);
-
-		std::map<int, Client>::iterator	clientIt = server.clients.find(cgi.referringFD);
-		if (clientIt == server.clients.end())
-		{
-			server.removeClient(cgi.fd);
-			return;
-		}
-
-		Client&	client = clientIt->second;
-		client.response.body = cgi.response.outBuffer;
-		client.response.BuildCGI();
-		client.response.Send();
-
+		send_cgi(server, cgi);
 		server.removeClient(cgi.fd);
 		return ;
 	}
@@ -59,14 +70,18 @@ void	listen_cgi(Server& server, Client& cgi)
 	return ;
 }
 
-void	add_cgi(Server& server, Client& client, std::string& filename)
+void	kill_cgi(Client& cgi)
 {
-	int cgiFD = launch_cgi(filename, client, __environ);
+	kill(cgi.CGIpid, SIGKILL);
+	wait_cgi(cgi);
 
-	if (cgiFD < 0)
-		return ;
+	std::map<int, Client>::iterator	clientIt = cgi.server.clients.find(cgi.referringFD);
+	if (clientIt == cgi.server.clients.end())
+		return;
 
-	server.addClient(cgiFD);
-	std::map<int, Client>::iterator clit = server.clients.find(cgiFD);
-	clit->second.setCGI(client.fd);
+	Client&	client = clientIt->second;
+	client.response.body = "CGI has been timeout";
+	client.response.code = 504;
+	client.response.Build();
+	client.response.Send();
 }

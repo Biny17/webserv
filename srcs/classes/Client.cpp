@@ -9,6 +9,7 @@ Client::Client(Server &s)
 	this->CGIpid = -1;
 	this->cat = "mouli1";
 	this->changedCat = false;
+	this->timeout.Stop();
 }
 
 Client::Client(const Client& other)
@@ -19,6 +20,7 @@ Client::Client(const Client& other)
 	this->referringFD = other.referringFD;
 	this->cat = other.cat;
 	this->changedCat = other.changedCat;
+	this->timeout = other.timeout;
 }
 
 Client::~Client(void)
@@ -42,6 +44,7 @@ void	Client::setCGI(int referringFD)
 		std::cout << "Couldn't add the cgi to epoll" << std::endl;
 		this->server.removeClient(this->fd);
 	}
+	this->timeout.Start();
 }
 
 void	Client::switchCat(void)

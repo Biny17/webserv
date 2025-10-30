@@ -18,6 +18,8 @@ class Response {
 		std::string	Cat(void);
 		void		ReplaceCat(void);
 
+		std::string	header;
+
 	public:
 		Response(Client& client);
 		~Response(void);
@@ -32,6 +34,7 @@ class Response {
 		void	Build(void);
 		void	BuildCGI(void);
 		void	Send(void);
+		void	PrintHeader(void);
 
 };
 

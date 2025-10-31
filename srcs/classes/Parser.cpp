@@ -221,34 +221,101 @@ void Parser::PostCheck()
 		return Error("POST request must have a body", 400);
 }
 
-size_t Parser::FillReq(const std::string& read_buff)
+void Parser::StateParsing(const std::string& read_buff, size_t& i)
 {
-	buff += read_buff;
-	size_t i = 0;
 	if (state == ERROR)
-		return i;
+		return;
 	if (state == INIT)
 		state = METHOD;
-	if (state == METHOD && i < buff.length())
-		Method(buff, i);
-	if (state == PATH && i < buff.length())
-		Path(buff, i);
-	if (state == QUERY && i < buff.length())
-		Query(buff, i);
-	if (state == VERSION && i < buff.length())
-		Version(buff, i);
-	while ((state == HEAD_KEY || state == HEAD_VAL) && i < buff.length())
+	if (state == METHOD && i < p_buff.length())
+		Method(p_buff, i);
+	if (state == PATH && i < p_buff.length())
+		Path(p_buff, i);
+	if (state == QUERY && i < p_buff.length())
+		Query(p_buff, i);
+	if (state == VERSION && i < p_buff.length())
+		Version(p_buff, i);
+	while ((state == HEAD_KEY || state == HEAD_VAL) && i < p_buff.length())
 	{
 		if (state == HEAD_KEY)
-			HeadKey(buff, i);
-		if (state == HEAD_VAL && i < buff.length())
-			HeadValue(buff, i);
+			HeadKey(p_buff, i);
+		if (state == HEAD_VAL && i < p_buff.length())
+			HeadValue(p_buff, i);
 	}
 	if (state != ERROR && state != BODY)
-		buff = read_buff.substr(i);
-	return i;
+		p_buff = read_buff.substr(i);
+	return;
 }
 
-void Parser::DefaultBody(const std::string &buff, size_t& i)
+
+size_t Parser::FillReq(const std::string& read_buff)
 {
+	size_t i = 0;
+	size_t tmp;
+	if (p_buff.size() != 0) {
+		tmp = p_buff.length();
+		p_buff += read_buff;
+		StateParsing(p_buff, i);
+		i += -tmp;
+		return i;
+	}
+	else {
+		StateParsing(read_buff, i);
+		return i;
+	}
+}
+
+void Parser::DefaultBody(const std::string& buff, size_t i)
+{
+	size_t to_read = std::min(req.content_len - req.body.length(), buff.length() - i);
+	req.body += buff.substr(i, to_read);
+	if (req.body.length() == static_cast<size_t>(req.content_len))
+		state = HANDLE;
+}
+
+void Parser::TransferEncoding(const std::string &buff, size_t i)
+{
+    p_buff += buff;
+
+    while (i < p_buff.length()) {
+        if (req.content_len == 0) {
+            size_t crlf = p_buff.find("\r\n", i);
+            if (crlf == std::string::npos) {
+                return;
+            }
+
+            std::string chunk_size_str = p_buff.substr(i, crlf - i);
+            std::stringstream ss(chunk_size_str);
+            ss >> std::hex >> req.content_len;
+
+            if (ss.fail() || req.content_len < 0) {
+                Error("Invalid chunk size", 400);
+                return;
+            }
+            i = crlf + 2;
+            if (req.content_len == 0) {
+                size_t final_crlf = p_buff.find("\r\n", i);
+                if (final_crlf == i) {
+                    i += 2;
+                    state = HANDLE;
+                } else {
+                    Error("Invalid chunked encoding termination", 400);
+                }
+                return;
+            }
+        }
+        size_t to_read = std::min(static_cast<size_t>(req.content_len), p_buff.length() - i);
+        req.body += p_buff.substr(i, to_read);
+        req.content_len -= to_read;
+        i += to_read;
+        if (req.content_len == 0) {
+            if (i + 1 < p_buff.length() && p_buff[i] == '\r' && p_buff[i + 1] == '\n') {
+                i += 2;
+            } else {
+                Error("Invalid chunk data termination", 400);
+                return;
+            }
+        }
+    }
+    p_buff = p_buff.substr(i);
 }

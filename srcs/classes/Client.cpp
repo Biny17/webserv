@@ -80,6 +80,12 @@ void Client::checkLocation()
 	if (std::find(loc->methods.begin(), loc->methods.end(), request.method) == loc->methods.end())
 		return Error403(*loc);
 	parser.state = BODY;
+	if (request.content_len > server.max_upload) {
+		response.code = 413;
+		parser.state = ERROR;
+		return ;
+	}
+	parser.max_body_size = server.max_upload;
 }
 
 void Client::Error403(Location& loc)

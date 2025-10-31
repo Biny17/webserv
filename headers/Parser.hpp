@@ -25,8 +25,7 @@ class Parser {
 
 		std::string cur_key;
 		std::string cur_value;
-		std::string buff;
-		int max_body_size;
+		std::string p_buff;
 		bool skip_leading_ws;
 
 		void Error(std::string msg, int error_code);
@@ -38,15 +37,17 @@ class Parser {
 		void HeadValue(const std::string &buff, size_t& i);
 		void AfterHeadersCheck();
 		void PostCheck();
-		void DefaultBody(const std::string &buff, size_t& i);
-		void TransferEncoding(const std::string &buff, size_t& i);
+		void DefaultBody(const std::string &buff, size_t i);
+		void TransferEncoding(const std::string &buff, size_t i);
+		void StateParsing(const std::string& read_buff, size_t& i);
 
 	public:
+		int max_body_size;
 		Request& req;
 		Response& err;
 		bool ok;
 		p_state state;
-		void (Parser::*f)(const std::string &buff, size_t& i);
+		void (Parser::*f)(const std::string &buff, size_t i);
 
 		size_t FillReq(const std::string& buff);
 		Parser(Request& request, Response& response);

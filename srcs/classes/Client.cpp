@@ -121,7 +121,10 @@ static bool is_cgi(Location& loc, std::string& target)
 
 void Client::PostFile()
 {
+	size_t boundary_index = request.headers.find("Content-Type")->second.find("boundary=");
+	std::string boundary = request.headers.find("Content-Type")->second.substr(boundary_index + 9);
 
+	if ()
 }
 
 void Client::RequestHandler()

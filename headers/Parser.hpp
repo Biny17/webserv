@@ -47,6 +47,7 @@ class Parser {
 		Response& err;
 		bool ok;
 		p_state state;
+		std::string boundary;
 		void (Parser::*f)(const std::string &buff, size_t i);
 
 		size_t FillReq(const std::string& buff);

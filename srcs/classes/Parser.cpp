@@ -195,8 +195,12 @@ void Parser::AfterHeadersCheck()
 void Parser::PostCheck()
 {
 	std::map<std::string,std::string>::iterator ct = req.headers.find("Content-Type");
-	if (ct == req.headers.end() || ct->second != "multipart/form-data")
-		return Error("POST method require Content-Type: multipart/form-data", 400);
+	if (ct == req.headers.end() || ct->second.find("multipart/form-data") == std::string::npos
+			|| ct->second.find("boundary=") == std::string::npos)
+		return Error("POST method require Content-Type: multipart/form-data with boundary", 400);
+
+	boundary = ct->second.substr(ct->second.find("boundary=") + 9);
+
 	std::map<std::string,std::string>::iterator te = req.headers.find("Transfer-Encoding");
 	if (te != req.headers.end())
 	{
@@ -217,7 +221,7 @@ void Parser::PostCheck()
 		if (req.content_len > max_body_size)
 			return Error("Payload Too Large", 413);
 	}
-	else
+	else if (te == req.headers.end())
 		return Error("POST request must have a body", 400);
 }
 

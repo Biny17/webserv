@@ -16,7 +16,7 @@ std::string	find_index(std::vector<std::string> const &index_page) {
 		}
 	}
 	if (result.empty())
-		return (*index_page.begin());
+		return ("");
 	return(result);
 }
 
@@ -26,7 +26,6 @@ std::string	read_index(std::string const &path, Server const &server, Location c
 	std::string	buffer(1, '\0');
 	std::string	result;
 	int			fd;
-
 
 	if (path == location.path)
 		index = find_index(location.index);
@@ -54,7 +53,6 @@ std::string	file_extension(std::string const &path, Location const &location) {
 		ext = find_index(location.index);
 	else
 		ext = path;
-	
 	if (ext.find_last_of('.') != ext.npos)
 		ext = ext.substr(ext.find_last_of('.'), ext.size());
 	if (location.extension.find(ext) != location.extension.end())
@@ -66,7 +64,7 @@ std::string	file_extension(std::string const &path, Location const &location) {
 
 void	build_get_response(Server &server, Request const &request, Response &response) {
 
-	if (!(*server.locations.begin()).index.empty())
+	if (!(server.locations[request.loc_index]).index.empty())
 	{
 		response.body = read_index(request.path, server, server.locations[request.loc_index]);	//response body
 		if (response.body == "") {
@@ -76,7 +74,9 @@ void	build_get_response(Server &server, Request const &request, Response &respon
 		response.content_type = file_extension(request.path, server.locations[request.loc_index]);
 		response.code = 200;
 	}
-	else
+	else if (server.locations[request.loc_index].autoindex == 1)
 		response.body = autoindex(request.path_from_root);
+	else
+		response.code = 404;
 	return ;
 }

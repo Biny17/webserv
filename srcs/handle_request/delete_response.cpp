@@ -29,7 +29,7 @@ void	build_delete_response(Server const &server, Request const &request, Respons
 
 	if (access(file.c_str(), F_OK) == -1)												//check if the file exist
 	{
-		response.code = 400;	//peut etre 404 je sais pas vraiment
+		response.code = 404;
 		return ;
 	}
 

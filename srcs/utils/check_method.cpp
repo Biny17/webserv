@@ -21,7 +21,7 @@ static bool	check_method(Location const &location, std::string const &req_method
 int	check_allowed_methods(Server const &server, std::string const &req_path, std::string const &req_method, Request &request) {
 	std::vector<Location>::const_iterator	it;
 	std::vector<Location>::const_iterator	ite = server.locations.end();
-	std::vector<Location>::const_iterator	itbase;
+	std::vector<Location>::const_iterator	itbase = server.locations.end();
 	int										loc_index = 0;
 
 	for(it = server.locations.begin(); it != ite; ++it)
@@ -48,7 +48,7 @@ int	check_allowed_methods(Server const &server, std::string const &req_path, std
 		}
 		loc_index++;
 	}
-	if (req_path.find((*itbase).path) != req_path.npos)
+	if (itbase != server.locations.end() && req_path.find((*itbase).path) != req_path.npos)
 	{
 		std::string	path;
 		if ((*itbase).root.empty())

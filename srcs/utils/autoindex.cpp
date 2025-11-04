@@ -15,8 +15,7 @@ std::string	autoindex(std::string const & directory) {	//preciser le directory
 	answer += "Index of " + directory + "/";
 	answer += "</title>\n" \
 				"<meta name='viewport' content='width=device-width, initial-scale=1'>\n" \
-				"<link rel='stylesheet' type='text/css' media='screen' href='main.css'>\n" \
-				"<script src='main.js'></script>\n" \
+				// "<link rel='stylesheet' type='text/css' media='screen' href='main.css'>\n"
 				"</head>\n" \
 				"<body>\n";
 	content = readdir(dir);

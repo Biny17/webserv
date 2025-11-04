@@ -1,9 +1,5 @@
 #include "webserv.hpp"
 
-Response::Response()
-    :error_code(0), content_length(0), content_type("grr") ,msg("proute")
-{}
-
 void Parser::Print()
 {
     std::cout << std::endl << COLOR_BLUE << "------- REQUEST -------" << std::endl;

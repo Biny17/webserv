@@ -4,7 +4,6 @@
 # include "webserv.hpp"
 
 enum p_state {
-	INIT,
 	METHOD,
 	PATH,
 	QUERY,
@@ -42,14 +41,12 @@ class Parser {
 		void StateParsing(const std::string& read_buff, size_t& i);
 
 	public:
-		int max_body_size;
+		void (Parser::*f)(const std::string &buff, size_t i);
 		Request& req;
 		Response& err;
 		bool ok;
 		p_state state;
 		std::string boundary;
-		void (Parser::*f)(const std::string &buff, size_t i);
-
 		size_t FillReq(const std::string& buff);
 		Parser(Request& request, Response& response);
 		void Reset();

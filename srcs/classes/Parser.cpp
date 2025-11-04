@@ -1,12 +1,12 @@
 #include "webserv.hpp"
 
 Parser::Parser(Request& request, Response& response)
-	: max_body_size(16384), skip_leading_ws(true), f(&Parser::DefaultBody),
-	req(request), err(response), ok(true), state(INIT) {}
+	: skip_leading_ws(true), f(&Parser::DefaultBody),
+	req(request), err(response), ok(true), state(METHOD) {}
 
 void Parser::Reset()
 {
-	state = INIT;
+	state = METHOD;
 	ok = true;
 	skip_leading_ws = true;
 	cur_key.clear();
@@ -45,11 +45,13 @@ void Parser::Method(const std::string& buff, size_t& i)
 		Error("", 400);
 		return;
 	}
+
 	if (!valid_method(req.method)) {
 		Error("Unsupported method", 501);
 		return;
 	}
 	state = PATH;
+	printf("end of method: %d\n", state);
 	i++;
 }
 
@@ -218,8 +220,6 @@ void Parser::PostCheck()
 		ss >> req.content_len;
 		if (ss.fail() || !ss.eof() || ss.bad() || req.content_len < 0)
 			return Error("Invalid Content-Length", 400);
-		if (req.content_len > max_body_size)
-			return Error("Payload Too Large", 413);
 	}
 	else if (te == req.headers.end())
 		return Error("POST request must have a body", 400);
@@ -229,25 +229,27 @@ void Parser::StateParsing(const std::string& read_buff, size_t& i)
 {
 	if (state == ERROR)
 		return;
-	if (state == INIT)
-		state = METHOD;
-	if (state == METHOD && i < p_buff.length())
-		Method(p_buff, i);
-	if (state == PATH && i < p_buff.length())
-		Path(p_buff, i);
-	if (state == QUERY && i < p_buff.length())
-		Query(p_buff, i);
-	if (state == VERSION && i < p_buff.length())
-		Version(p_buff, i);
-	while ((state == HEAD_KEY || state == HEAD_VAL) && i < p_buff.length())
+	printf("\n%s\n", read_buff.c_str());
+	if (state == METHOD && i < read_buff.length())
+	{
+		Method(read_buff, i);
+	}
+	if (state == PATH && i < read_buff.length())
+		Path(read_buff, i);
+	if (state == QUERY && i < read_buff.length())
+		Query(read_buff, i);
+	if (state == VERSION && i < read_buff.length())
+		Version(read_buff, i);
+	while ((state == HEAD_KEY || state == HEAD_VAL) && i < read_buff.length())
 	{
 		if (state == HEAD_KEY)
-			HeadKey(p_buff, i);
-		if (state == HEAD_VAL && i < p_buff.length())
-			HeadValue(p_buff, i);
+			HeadKey(read_buff, i);
+		if (state == HEAD_VAL && i < read_buff.length())
+			HeadValue(read_buff, i);
 	}
 	if (state != ERROR && state != BODY)
 		p_buff = read_buff.substr(i);
+	Print();
 	return;
 }
 
@@ -273,6 +275,12 @@ void Parser::DefaultBody(const std::string& buff, size_t i)
 {
 	size_t to_read = std::min(req.content_len - req.body.length(), buff.length() - i);
 	req.body += buff.substr(i, to_read);
+
+	if (req.body.length() > 0)
+	{
+		std::cout << "---------- BODY ----------" << std::endl;
+		std::cout << req.body << std::endl;
+	}
 	if (req.body.length() == static_cast<size_t>(req.content_len))
 		state = HANDLE;
 }

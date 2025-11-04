@@ -87,12 +87,11 @@ void Client::checkLocation()
 	if (std::find(loc->methods.begin(), loc->methods.end(), request.method) == loc->methods.end())
 		return Error403(*loc);
 	parser.state = BODY;
-	if (request.content_len > server.max_upload) {
+	if (request.content_len > static_cast<int>(server.max_upload)) {
 		response.code = 413;
 		parser.state = ERROR;
 		return ;
 	}
-	parser.max_body_size = server.max_upload;
 }
 
 void Client::Error403(Location& loc)
@@ -116,9 +115,21 @@ void  Client::BuildPath(Location& loc)
 		request.local_path = loc.root + request.path;
 }
 
+static std::string get_extension(std::string& filename)
+{
+    std::string extension;
+    size_t  point;
+
+    point = filename.find_last_of('.');
+    if (point != std::string::npos) {
+        extension = filename.substr(point);
+    }
+    return extension;
+}
+
 static bool is_cgi(Location& loc, std::string& target)
 {
-	for (int i = 0; i < loc.cgi_extension.size(); i++)
+	for (size_t i = 0; i < loc.cgi_extension.size(); i++)
 	{
 		if (loc.cgi_extension[i] == get_extension(target))
 			return (true);
@@ -147,6 +158,8 @@ bool Client::PostPart(std::string& bnd, size_t &i)
 		return Error(400);
 	size_t fname_i = b.find("filename=\"", i);
 	std::string filename = b.substr(fname_i+10, b.find_first_of('"', fname_i+10));
+	if (!valid_filename(filename))
+		return Error(400);
 	if (access(filename.c_str(), F_OK) == 0)
 		return Error(409);
 	std::ofstream newfile(filename.c_str());

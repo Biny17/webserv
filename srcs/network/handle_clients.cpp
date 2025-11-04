@@ -37,11 +37,18 @@ void	read_client_data(Client& client, Server& server)
 
 	buf[bytes] = 0;
 	size_t i;
-
-	if (client.parser.state < BODY)
+	if (client.parser.state == METHOD || client.parser.state == PATH
+		|| client.parser.state == QUERY || client.parser.state == VERSION
+		|| client.parser.state == HEAD_KEY || client.parser.state == HEAD_VAL)
+	{
+		std::cout << "filling req" << std::endl;
 		i = client.parser.FillReq(buf);
+	}
 	if (client.parser.state == CHECK)
+	{
+		client.parser.Print();
 		client.checkLocation();
+	}
 	if (client.parser.state == BODY)
 		(client.parser.*client.parser.f)(buf, i);
 	if (client.parser.state == HANDLE)
@@ -50,7 +57,6 @@ void	read_client_data(Client& client, Server& server)
 		client.response.Build();
 		client.response.Send();
 	}
-	client.parser.Print();
 	// if (client.request.path.find("cookie") != client.request.path.npos) // Temporary for cookies
 	// 	client.switchCat();
 }

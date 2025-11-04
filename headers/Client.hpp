@@ -32,9 +32,11 @@ class Client {
 		bool		changedCat;
 		void		switchCat(void);
 		void 		RequestHandler();
+		bool		Error(int error_code);
 		void		Error403(Location& loc);
 		void		BuildPath(Location& loc);
 		void		PostFile();
+		bool        PostPart(std::string& boundary, size_t &i);
 		void 		checkLocation();
 };
 

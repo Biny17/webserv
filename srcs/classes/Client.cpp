@@ -30,6 +30,13 @@ Client::~Client(void)
 		close(this->fd);
 }
 
+bool	Client::Error(int error_code)
+{
+	response.code = error_code;
+	parser.state = ERROR;
+	return false;
+}
+
 // Define the client as a CGI and add it to epoll
 void	Client::setCGI(int referringFD)
 {
@@ -119,12 +126,53 @@ static bool is_cgi(Location& loc, std::string& target)
 	return (false);
 }
 
+bool Client::PostPart(std::string& bnd, size_t &i)
+{
+	std::string& b = request.body;
+
+	bool is_bd = b.compare(i, bnd.size(), bnd) == 0;
+	if (!is_bd)
+		return Error(400);
+	i += bnd.size();
+	bool crlf = b.compare(i, i+2, "\r\n") == 0;
+	bool end = b.compare(i, i+2, "--") == 0;
+	if (end)
+		return false;
+	if (!crlf)
+		return Error(400);
+	i += 2;
+	size_t header_end = b.find("\r\n\r\n", i);
+	if (header_end == std::string::npos
+		|| b.find("Content-Disposition: form-data") == std::string::npos)
+		return Error(400);
+	size_t fname_i = b.find("filename=\"", i);
+	std::string filename = b.substr(fname_i+10, b.find_first_of('"', fname_i+10));
+	if (access(filename.c_str(), F_OK) == 0)
+		return Error(409);
+	std::ofstream newfile(filename.c_str());
+	if (!newfile)
+		return Error(500);
+	i = header_end + 4;
+	size_t data_end = b.find("\r\n" + bnd, i);
+	if (data_end == std::string::npos)
+		return Error(400);
+	newfile << b.substr(i, data_end - i);
+	return true;
+}
+
 void Client::PostFile()
 {
-	size_t boundary_index = request.headers.find("Content-Type")->second.find("boundary=");
-	std::string boundary = request.headers.find("Content-Type")->second.substr(boundary_index + 9);
+	std::map<std::string, std::string>::iterator ct = request.headers.find("Content-Type");
+	std::string boundary = ct->second.substr(ct->second.find("boundary=") + 9);
+	boundary = boundary.substr(0, boundary.find_first_of("; "));
+	size_t i = 2;
 
-	if ()
+	if (request.body.compare(0, 2, "--") != 0)
+	{
+		Error(400);
+		return;
+	}
+	while (PostPart(boundary, i));
 }
 
 void Client::RequestHandler()

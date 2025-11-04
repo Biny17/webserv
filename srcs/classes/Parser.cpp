@@ -300,7 +300,6 @@ void Parser::TransferEncoding(const std::string &buff, size_t i)
             if (req.content_len == 0) {
                 size_t final_crlf = p_buff.find("\r\n", i);
                 if (final_crlf == i) {
-                    i += 2;
                     state = HANDLE;
                 } else {
                     Error("Invalid chunked encoding termination", 400);

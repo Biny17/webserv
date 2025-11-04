@@ -70,6 +70,7 @@ void	get_static_file(Server &server, Client &client, Request const &request, Res
 	if (!(*server.locations.begin()).index.empty())
 	{
 		// response.body = read_index(request.path, server, find_location(request.path, server.locations)/**server.locations.begin()*/);	//response body
+		std::cout << "location index: " << request.loc_index << std::endl;
 		response.body = read_index(request.path, server, server.locations[request.loc_index]/**server.locations.begin()*/);	//response body
 		if (response.body == "")
 			response.body = autoindex(request.local_path);

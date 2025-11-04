@@ -120,7 +120,7 @@ void Parser::HeadKey(const std::string &buff, size_t& i)
 	if (i+1 < buff.length())
 	{
 		if (buff[i] == '\r' && buff[i+1] == '\n') {
-			state = BODY;
+			state = CHECK;
 			i += 2;
 			AfterHeadersCheck();
 			return;
@@ -188,6 +188,7 @@ void Parser::AfterHeadersCheck()
 		if (req.headers.find("Content-Length") != req.headers.end() ||
 			req.headers.find("Transfer-Encoding") != req.headers.end())
 			return Error("GET request shoudn't have a body", 400);
+		req.content_len = 0;
 	}
 	else if (req.method == "POST") {
 		PostCheck();

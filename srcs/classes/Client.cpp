@@ -73,25 +73,28 @@ void Client::checkLocation()
 	size_t biggest = 1;
 
 	size_t i = 0;
+	request.loc_index = 0;
 	while(i < server.locations.size()) {
 		size_t tmp = n_prefix_match(request.path, (server.locations[i]).path);
-		std::cout << request.path << " " << (server.locations[i]).path << "  " << tmp << std::endl;
+		// std::cout << request.path << " " << (server.locations[i]).path << "  " << tmp << std::endl;
 		if (tmp > biggest) {
 			biggest = tmp;
 			loc = &server.locations[i];
+			request.loc_index = i;
 		}
 		i++;
 	}
-	request.loc_index = i;
 	BuildPath(*loc);
 	if (std::find(loc->methods.begin(), loc->methods.end(), request.method) == loc->methods.end())
 		return Error403(*loc);
-	parser.state = BODY;
+	// std::cout << "content_len: " << request.content_len << std::endl;
+	// std::cout << "max_upload: " << server.max_upload << std::endl;
 	if (request.content_len > static_cast<int>(server.max_upload)) {
 		response.code = 413;
 		parser.state = ERROR;
 		return ;
 	}
+	parser.state = BODY;
 }
 
 void Client::Error403(Location& loc)
@@ -196,7 +199,10 @@ void Client::RequestHandler()
 	if (is_cgi(*loc, request.path))
 		launch_cgi(request.local_path, server, *this);
 	else if (request.method == "GET")
+	{
+
 		get_static_file(server, *this, request, response);
+	}
 	else if (request.method == "POST")
 		PostFile();
 }

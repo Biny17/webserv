@@ -46,14 +46,17 @@ void	read_client_data(Client& client, Server& server)
 	}
 	if (client.parser.state == CHECK)
 	{
-		client.parser.Print();
+		std::cout << "CHECK" << std::endl;
 		client.checkLocation();
 	}
 	if (client.parser.state == BODY)
+	{
+		std::cout << "BODY" << std::endl;
 		(client.parser.*client.parser.f)(buf, i);
+	}
 	if (client.parser.state == HANDLE)
 		client.RequestHandler();
-	if (client.parser.state == RESPONSE) {
+	if (client.parser.state == RESPONSE || client.parser.state == ERROR) {
 		client.response.Build();
 		client.response.Send();
 	}

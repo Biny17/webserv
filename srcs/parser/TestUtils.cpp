@@ -22,4 +22,5 @@ void Parser::Print()
         std::cout << err.body << std::endl;
     }
     std::cout << COLOR_NC;
+    std::cout << std::endl;
 }

@@ -168,7 +168,7 @@ void Parser::HeadValue(const std::string &buff, size_t& i)
 	else {
 		cur_value += buff.substr(start, crfl - start);
 		cur_value = cur_value.substr(0, cur_value.find_last_not_of(" \t") + 1);
-		cur_value = cur_value.substr(0, cur_value.find_first_of(';'));
+		// cur_value = cur_value.substr(0, cur_value.find_first_of(';'));
 		req.headers[cur_key] = cur_value;
 		if (req.headers.size() > 100)
 			return Error("Too many headers", 431);
@@ -198,6 +198,8 @@ void Parser::AfterHeadersCheck()
 void Parser::PostCheck()
 {
 	std::map<std::string,std::string>::iterator ct = req.headers.find("Content-Type");
+
+	std::cout << "content type [" << ct->second << "]" << std::endl;
 	if (ct == req.headers.end() || ct->second.find("multipart/form-data") == std::string::npos
 			|| ct->second.find("boundary=") == std::string::npos)
 		return Error("POST method require Content-Type: multipart/form-data with boundary", 400);
@@ -230,7 +232,6 @@ void Parser::StateParsing(const std::string& read_buff, size_t& i)
 {
 	if (state == ERROR)
 		return;
-	printf("\n%s\n", read_buff.c_str());
 	if (state == METHOD && i < read_buff.length())
 	{
 		Method(read_buff, i);
@@ -259,6 +260,8 @@ size_t Parser::FillReq(const std::string& read_buff)
 {
 	size_t i = 0;
 	size_t tmp;
+
+	std::cout << "\n" << read_buff << "\n" << std::endl;
 	if (p_buff.size() != 0) {
 		tmp = p_buff.length();
 		p_buff += read_buff;
@@ -279,11 +282,12 @@ void Parser::DefaultBody(const std::string& buff, size_t i)
 
 	if (req.body.length() > 0)
 	{
-		std::cout << "---------- BODY ----------" << std::endl;
 		std::cout << req.body << std::endl;
 	}
 	if (req.body.length() == static_cast<size_t>(req.content_len))
+	{
 		state = HANDLE;
+	}
 }
 
 void Parser::TransferEncoding(const std::string &buff, size_t i)

@@ -148,8 +148,8 @@ bool Client::PostPart(std::string& bnd, size_t &i)
 	if (!is_bd)
 		return Error(400);
 	i += bnd.size();
-	bool crlf = b.compare(i, i+2, "\r\n") == 0;
-	bool end = b.compare(i, i+2, "--") == 0;
+	bool crlf = b.compare(i, 2, "\r\n") == 0;
+	bool end = b.compare(i, 2, "--") == 0;
 	if (end)
 		return false;
 	if (!crlf)
@@ -159,8 +159,9 @@ bool Client::PostPart(std::string& bnd, size_t &i)
 	if (header_end == std::string::npos
 		|| b.find("Content-Disposition: form-data") == std::string::npos)
 		return Error(400);
-	size_t fname_i = b.find("filename=\"", i);
-	std::string filename = b.substr(fname_i+10, b.find_first_of('"', fname_i+10));
+	size_t fname_i = b.find("filename=\"", i) + 10;
+	std::string filename = b.substr(fname_i, b.find_first_of('"', fname_i)-fname_i);
+	std::cout << "filename: " << filename << std::endl;
 	if (!valid_filename(filename))
 		return Error(400);
 	if (access(filename.c_str(), F_OK) == 0)
@@ -181,30 +182,30 @@ void Client::PostFile()
 	std::map<std::string, std::string>::iterator ct = request.headers.find("Content-Type");
 	std::string boundary = ct->second.substr(ct->second.find("boundary=") + 9);
 	boundary = boundary.substr(0, boundary.find_first_of("; "));
-	size_t i = 2;
+	size_t i = 0;
 
-	if (request.body.compare(0, 2, "--") != 0)
+	if (request.body.compare(i, 2, "--") != 0)
 	{
 		Error(400);
 		return;
 	}
+	i += 2;
 	while (PostPart(boundary, i));
 }
 
 void Client::RequestHandler()
 {
 	std::cout << "location matched: " << loc->path << std::endl << std::endl;
-
 	// ajouter test cgi
 	if (is_cgi(*loc, request.path))
 		launch_cgi(request.local_path, server, *this);
 	else if (request.method == "GET")
-	{
-
-		get_static_file(server, *this, request, response);
-	}
+		get_static_file(server, request, response);
 	else if (request.method == "POST")
 		PostFile();
+	else if (request.method == "DELETE")
+		build_delete_response(server, request, response);
+	parser.state = RESPONSE;
 }
 
 void	Client::switchCat(void)

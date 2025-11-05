@@ -47,7 +47,7 @@ int	check_allowed_methods(Server const &server, std::string const &req_path, std
 		path = server.root + req_path;
 	else
 		path = (*ref).root + req_path;
-	request.path_from_root = path;
+	request.local_path = path;
 	if (!access(path.c_str(), F_OK))
 		return(check_method(*ref, req_method));
 	return (-1);
@@ -71,7 +71,7 @@ int	check_allowed_methods(Server const &server, std::string const &req_path, std
 // 				path = (*it).root + req_path;
 // 			if (!access(path.c_str(), F_OK))
 // 			{
-// 				request.path_from_root = path;
+// 				request.local_path = path;
 // 				return(check_method(*it, req_method));
 // 			}
 // 			return (-1);
@@ -92,7 +92,7 @@ int	check_allowed_methods(Server const &server, std::string const &req_path, std
 // 			path = (*itbase).root + req_path;
 // 		if (!access(path.c_str(), F_OK))
 // 		{
-// 			request.path_from_root = path;
+// 			request.local_path = path;
 // 			return(check_method(*itbase, req_method));
 // 		}
 // 		return (-1);

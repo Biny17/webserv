@@ -7,6 +7,7 @@ bool valid_filename(std::string& filename)
     const std::string invalid_chars = "/\\?%*:|\"<>~";
     for (size_t i = 0; i < filename.length(); ++i) {
         if (invalid_chars.find(filename[i]) != std::string::npos) {
+            std::cout << "invalid char |" << filename[i] << "|" << std::endl;
             return false;
         }
     }

@@ -60,21 +60,26 @@ std::string	file_extension(std::string const &path, Location const &location) {
 	return (ext + "; charset=utf-8");
 }
 
-void	build_get_response(Server &server, Request const &request, Response &response) {
+void	get_static_file(Server &server, Request const &request, Response &response)
+{
+	int content = content_type(request.local_path);
 
-	int content = content_type(request.path_from_root);
-	if (!(server.locations[request.loc_index]).index.empty() || content == 1)
+	std::cout << "local_path: " << request.local_path << std::endl;
+	std::cout << "content: "<< content << std::endl;
+	std::cout << "loc_index: " << request.loc_index << std::endl;
+	if (!(server.locations[request.loc_index]).index.empty() || content == 1) // 1 is file
 	{
-		response.body = read_index(request.path_from_root, server, server.locations[request.loc_index], content);	//response body
+		response.body = read_index(request.local_path, server, server.locations[request.loc_index], content);	//response body
 		if (response.body == "") {
 			response.code = 403;
 			return ;
 		}
 		response.content_type = file_extension(request.path, server.locations[request.loc_index]);
 		response.code = 200;
+		std::cout << "on va là ?" << std::endl;
 	}
 	else if (server.locations[request.loc_index].autoindex == 1)
-		response.body = autoindex(request.path_from_root, request);
+		response.body = autoindex(request.local_path, request);
 	else
 		response.code = 404;
 	return ;

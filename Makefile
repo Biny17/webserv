@@ -28,6 +28,7 @@ SRCS		=	main.cpp							\
 				utils/check_method.cpp				\
 				utils/autoindex.cpp					\
 				utils/path_utils.cpp				\
+				utils/percent_encoding.cpp			\
 				handle_request/get_response.cpp		\
 				handle_request/handle_request.cpp	\
 				handle_request/delete_response.cpp

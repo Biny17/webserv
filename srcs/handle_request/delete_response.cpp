@@ -1,5 +1,4 @@
 #include "webserv.hpp"
-#include <fcntl.h>
 #include <cstdio>
 
 void	build_delete_response(Server const &server, Request const &request, Response &response) {

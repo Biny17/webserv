@@ -13,6 +13,7 @@
 # include <sys/types.h>
 # include <sys/wait.h>
 # include <dirent.h>
+# include <fcntl.h>
 # include <cstring>
 # include <fstream>
 # include <sstream>

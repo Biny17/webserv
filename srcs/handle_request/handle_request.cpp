@@ -1,5 +1,4 @@
 #include "webserv.hpp"
-#include <fcntl.h>
 
 //checkpoint for every request (supposed to build the client.respond)
 void	handle_request(Server &server, Client &client, Request &request, Response &response) {

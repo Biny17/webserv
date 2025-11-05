@@ -1,5 +1,4 @@
 #include "webserv.hpp"
-#include <fcntl.h>
 #include <filesystem>
 
 std::string	find_index(std::vector<std::string> const &index_page) {

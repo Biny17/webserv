@@ -1,5 +1,4 @@
 #include "webserv.hpp"
-#include<fcntl.h>
 
 //check if the content given in path is a directory or a file,
 //ret value :

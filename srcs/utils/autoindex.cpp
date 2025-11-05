@@ -1,6 +1,6 @@
 #include "webserv.hpp"
 
-std::string	autoindex(std::string const & directory) {	//preciser le directory
+std::string	autoindex(std::string const & directory, Request const &request) {	//preciser le directory
 	DIR				*dir = opendir(directory.c_str());	//man opendir
 	struct dirent	*content;
 	std::string		answer;
@@ -73,7 +73,10 @@ std::string	autoindex(std::string const & directory) {	//preciser le directory
 	while (content) {
 		std::string	filename = content->d_name;
 		if (*filename.begin() != '.'){
-			answer += "<a href=\"" + filename + "\">" + filename + "</a>\n";
+			std::string pathv2(request.path);
+			if (*pathv2.rbegin() != '/')
+				pathv2.push_back('/');
+			answer += "<a href=\"" + pathv2 + filename + "\">" + filename + "</a>\n";
 		}
 		content = readdir(dir);		//a chaque appel de readdir on passe au fichier suivant
 	}

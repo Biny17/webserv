@@ -1,5 +1,6 @@
 #include "webserv.hpp"
 #include <fcntl.h>
+#include <filesystem>
 
 std::string	find_index(std::vector<std::string> const &index_page) {
 
@@ -64,7 +65,9 @@ std::string	file_extension(std::string const &path, Location const &location) {
 
 void	build_get_response(Server &server, Request const &request, Response &response) {
 
-	if (!(server.locations[request.loc_index]).index.empty())
+	int content = content_type(request.path, server, server.locations[request.loc_index]);
+	std::cout << "content type = " << content << std::endl;
+	if (!(server.locations[request.loc_index]).index.empty() || content == 1)
 	{
 		response.body = read_index(request.path, server, server.locations[request.loc_index]);	//response body
 		if (response.body == "") {
@@ -75,7 +78,7 @@ void	build_get_response(Server &server, Request const &request, Response &respon
 		response.code = 200;
 	}
 	else if (server.locations[request.loc_index].autoindex == 1)
-		response.body = autoindex(request.path_from_root);
+		response.body = autoindex(request.path_from_root, request);
 	else
 		response.code = 404;
 	return ;

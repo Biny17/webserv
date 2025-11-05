@@ -43,8 +43,9 @@ void	read_client_data(Client& client, Server& server)
 	if (client.parser.state != COMPLETE && client.parser.state != ERROR)
 		return ;
 
-	client.parser.Print();
+	// client.parser.Print();
 
+	std::cout << COLOR_BLUE << "REQUEST LINE : " << client.request.method << " " << client.request.path << " " << client.request.version << COLOR_NC << std::endl;
 	// Handle request
 
 	if (client.request.path == "/cgi/list")

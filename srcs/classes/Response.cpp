@@ -178,6 +178,8 @@ void	Response::Build(void)
 		this->body = this->ReadFile(page);
 	if (this->content_type == "text/html; charset=utf-8")
 		this->ReplaceCat();
+	if (this->body == "")
+		this->body = this->Reason();
 
 	this->outBuffer = this->Header() + this->body;
 }

@@ -1,5 +1,5 @@
 #include "webserv.hpp"
-#include <fcntl.h>
+#include <filesystem>
 
 std::string	find_index(std::vector<std::string> const &index_page) {
 
@@ -16,26 +16,23 @@ std::string	find_index(std::vector<std::string> const &index_page) {
 		}
 	}
 	if (result.empty())
-		return (*index_page.begin());
+		return ("");
 	return(result);
 }
 
-std::string	read_index(std::string const &path, Server const &server, Location const &location) {
+std::string	read_index(std::string const &path, Server const &server, Location const &location, int content_type) {
 
-	std::string	index;						
+	(void)server;
+	std::string	index;
 	std::string	buffer(1, '\0');
-	std::string	result;
+	std::string	result;	
 	int			fd;
 
-
-	if (path == location.path)
-		index = find_index(location.index);
+	if (content_type == 2)
+		index = path + find_index(location.index);
 	else
 		index = path;
-	if (!location.root.empty())
-		fd = open((location.root + location.path + index).c_str(), O_RDONLY);
-	else
-		fd = open((server.root + location.path + index).c_str(), O_RDONLY);
+	fd = open(index.c_str(), O_RDONLY);
 	if (fd == -1)
 		return (perror("open"), "");
 
@@ -54,7 +51,6 @@ std::string	file_extension(std::string const &path, Location const &location) {
 		ext = find_index(location.index);
 	else
 		ext = path;
-	
 	if (ext.find_last_of('.') != ext.npos)
 		ext = ext.substr(ext.find_last_of('.'), ext.size());
 	if (location.extension.find(ext) != location.extension.end())
@@ -64,19 +60,22 @@ std::string	file_extension(std::string const &path, Location const &location) {
 	return (ext + "; charset=utf-8");
 }
 
-void	build_get_response(Server &server, Client &client, Request const &request, Response &response) {
-	(void)client;
+void	build_get_response(Server &server, Request const &request, Response &response) {
 
-	if (!(*server.locations.begin()).index.empty())
+	int content = content_type(request.path_from_root);
+	if (!(server.locations[request.loc_index]).index.empty() || content == 1)
 	{
-		response.body = read_index(request.path, server, server.locations[request.loc_index]);	//response body
+		response.body = read_index(request.path_from_root, server, server.locations[request.loc_index], content);	//response body
 		if (response.body == "") {
-			response.body = autoindex(request.path_from_root);
+			response.code = 403;
 			return ;
 		}
 		response.content_type = file_extension(request.path, server.locations[request.loc_index]);
+		response.code = 200;
 	}
+	else if (server.locations[request.loc_index].autoindex == 1)
+		response.body = autoindex(request.path_from_root, request);
 	else
-		response.body = autoindex(request.path_from_root);
+		response.code = 404;
 	return ;
 }

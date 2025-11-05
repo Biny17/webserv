@@ -13,6 +13,7 @@
 # include <sys/types.h>
 # include <sys/wait.h>
 # include <dirent.h>
+# include <fcntl.h>
 # include <cstring>
 # include <fstream>
 # include <sstream>
@@ -34,7 +35,9 @@ extern std::vector<Server> servers;
 // Utils
 extern volatile sig_atomic_t shutdown_serv;
 void		handle_shutdown(int sig);
-std::string	autoindex(std::string const & directory);
+std::string	autoindex(std::string const & directory, Request const &request);
 int			check_allowed_methods(Server const &server, std::string const &req_path, std::string const &req_method, Request &request);
 bool        valid_filename(std::string& filename);
+int			content_type(std::string const &path);
+
 #endif // WEBSERV_HPP

@@ -95,7 +95,10 @@ std::string	Response::Header(void)
 		header << headers[i] << "\r\n";
 	}
 	header << "\r\n";
-	return (header.str());
+
+	this->header = header.str();
+
+	return (this->header);
 }
 
 void	Response::ReplaceCat(void)
@@ -176,8 +179,10 @@ void	Response::Build(void)
 	std::string page = this->FindPage();
 	if (page != "")
 		this->body = this->ReadFile(page);
-	if (this->content_type == "text/html")
+	if (this->content_type == "text/html; charset=utf-8")
 		this->ReplaceCat();
+	if (this->body == "")
+		this->body = this->Reason();
 
 	this->outBuffer = this->Header() + this->body;
 }
@@ -214,15 +219,13 @@ void	Response::Send(void)
 	if (bytes < 0)
 		return ;
 
-	std::cout << std::endl << COLOR_GREEN << "------- RESPONSE -------" << std::endl;
-	std::cout << outBuffer.substr(0, bytes) << COLOR_NC;
-
 	if (bytes > 0)
 		this->outBuffer.erase(0, bytes);
 
 	if (this->outBuffer.empty())
 	{
-		std::cout << std::endl;
+		client.response.PrintHeader();
+
 		if (this->GetConnection() == "close")
 		{
 			this->client.server.removeClient(this->client.fd);
@@ -243,4 +246,14 @@ void	Response::Send(void)
 
 	if (this->client.epollStatus & EPOLLIN)
 		set_epoll_event(this->client.server.epfd, this->client, EPOLLOUT);
+}
+
+void	Response::PrintHeader(void)
+{
+	if (this->code < 400)
+		std::cout << COLOR_GREEN;
+	else
+		std::cout << COLOR_RED;
+	std::cout << std::endl << "------- RESPONSE HEADER -------" << std::endl;
+	std::cout << this->header << COLOR_NC;
 }

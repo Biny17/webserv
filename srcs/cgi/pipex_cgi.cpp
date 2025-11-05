@@ -55,9 +55,37 @@ void	close_fds(void)
 	}
 }
 
-int	exec_cgi(std::vector<std::string> const &cgi, Server& server, Client& client) {
-
+void	exec_child(std::vector<std::string> const &cgi, Client& client, int	fdout, int pipefd[2])
+{
 	char	*tab[] = {(char *)cgi[0].c_str(), (char *)cgi[1].c_str(), NULL};
+
+	std::vector<char*>	env;
+	for (char **current = environ; *current; ++current) {
+		env.push_back(*current);
+	}
+	std::string query = "QUERY_STRING=" + client.request.query;
+	env.push_back(const_cast<char *>(query.c_str()));
+	if (client.request.method == "POST")
+	{
+		std::string length = "CONTENT-LENGTH=" + client.request.headers["Content-Length"];
+		env.push_back(const_cast<char *>(length.c_str()));
+		// dup2(client.request.body, STDIN_FILENO);
+	}
+	env.push_back(NULL);
+	close_fds();
+	close(pipefd[0]);
+	dup2(pipefd[1], STDOUT_FILENO);
+	close(pipefd[1]);
+	close(fdout);
+	std::string test = find_path(cgi[0], __environ);
+	execve(test.c_str(), tab, env.data());
+	std::string errmessage = "cgi execve failure - ";
+	errmessage += strerror(errno);
+	throw std::runtime_error(errmessage.c_str());
+}
+
+int	exec_cgi(std::vector<std::string> const &cgi, Server& server, Client& client)
+{
 	int		pipefd[2];
 	int		fdout;
 	pid_t	pid;
@@ -68,18 +96,8 @@ int	exec_cgi(std::vector<std::string> const &cgi, Server& server, Client& client
 	pid = fork();
 	if (pid == -1)
 		return (-1);
-	if (pid == 0) {
-		close_fds();
-		close(pipefd[0]);
-		dup2(pipefd[1], STDOUT_FILENO);
-		close(pipefd[1]);
-		close(fdout);
-		std::string test = find_path(cgi[0], __environ);
-		execve(test.c_str(), tab, __environ);
-		std::string errmessage = "cgi execve failure - ";
-		errmessage += strerror(errno);
-		throw std::runtime_error(errmessage.c_str());
-	}
+	if (pid == 0)
+		exec_child(cgi, client, fdout, pipefd);
 	std::map<int, Client>::iterator cliIt = server.clients.find(fdout);
 	cliIt->second.setCGI(client.fd);
 	cliIt->second.CGIpid = pid;

@@ -29,6 +29,10 @@ SRCS		=	main.cpp							\
 				utils/autoindex.cpp					\
 				utils/file_utils.cpp				\
 				handle_request/get_response.cpp
+				utils/path_utils.cpp				\
+				handle_request/get_response.cpp		\
+				handle_request/handle_request.cpp	\
+				handle_request/delete_response.cpp
 
 OBJS		= $(patsubst %.cpp, $(OBJ_DIR)%.o, $(SRCS))
 DEPS		= $(OBJS:.o=.d)

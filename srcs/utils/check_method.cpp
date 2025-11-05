@@ -21,46 +21,82 @@ static bool	check_method(Location const &location, std::string const &req_method
 int	check_allowed_methods(Server const &server, std::string const &req_path, std::string const &req_method, Request &request) {
 	std::vector<Location>::const_iterator	it;
 	std::vector<Location>::const_iterator	ite = server.locations.end();
-	std::vector<Location>::const_iterator	itbase = server.locations.end();
+	std::vector<Location>::const_iterator	ref = server.locations.end();
+	size_t									pos = 0;
 	int										loc_index = 0;
 
-	for(it = server.locations.begin(); it != ite; ++it)
+	for (it = server.locations.begin(); it != ite; ++it)
 	{
-		std::string	path;
-		if ((*it).path != "/" && req_path.find((*it).path) != req_path.npos)
+		pos = req_path.find((*it).path);
+		if (pos != req_path.npos)
 		{
-			request.loc_index = loc_index;
-			if ((*it).root.empty())
-				path = server.root + req_path;
-			else
-				path = (*it).root + req_path;
-			if (!access(path.c_str(), F_OK))
+			if (ref == ite || pos >= req_path.find((*ref).path))
 			{
-				request.path_from_root = path;
-				return(check_method(*it, req_method));
+				ref = it;
+				request.loc_index = loc_index;
 			}
-			return (-1);
-		}
-		if ((*it).path == "/")
-		{
-			request.loc_index = loc_index;
-			itbase = it;
 		}
 		loc_index++;
 	}
-	if (itbase != server.locations.end() && req_path.find((*itbase).path) != req_path.npos)
-	{
-		std::string	path;
-		if ((*itbase).root.empty())
-			path = server.root + req_path;
-		else
-			path = (*itbase).root + req_path;
-		if (!access(path.c_str(), F_OK))
-		{
-			request.path_from_root = path;
-			return(check_method(*itbase, req_method));
-		}
+
+	if (ref == ite)
 		return (-1);
-	}
+
+	std::string	path;
+	if ((*ref).root.empty())
+		path = server.root + req_path;
+	else
+		path = (*ref).root + req_path;
+	request.path_from_root = path;
+	if (!access(path.c_str(), F_OK))
+		return(check_method(*ref, req_method));
 	return (-1);
 }
+
+// int	check_allowed_methods(Server const &server, std::string const &req_path, std::string const &req_method, Request &request) {
+// 	std::vector<Location>::const_iterator	it;
+// 	std::vector<Location>::const_iterator	ite = server.locations.end();
+// 	std::vector<Location>::const_iterator	itbase = server.locations.end();
+// 	int										loc_index = 0;
+
+// 	for(it = server.locations.begin(); it != ite; ++it)
+// 	{
+// 		std::string	path;
+// 		if ((*it).path != "/" && req_path.find((*it).path) != req_path.npos)
+// 		{
+// 			request.loc_index = loc_index;
+// 			if ((*it).root.empty())
+// 				path = server.root + req_path;
+// 			else
+// 				path = (*it).root + req_path;
+// 			if (!access(path.c_str(), F_OK))
+// 			{
+// 				request.path_from_root = path;
+// 				return(check_method(*it, req_method));
+// 			}
+// 			return (-1);
+// 		}
+// 		if ((*it).path == "/")
+// 		{
+// 			request.loc_index = loc_index;
+// 			itbase = it;
+// 		}
+// 		loc_index++;
+// 	}
+// 	if (itbase != server.locations.end() && req_path.find((*itbase).path) != req_path.npos)
+// 	{
+// 		std::string	path;
+// 		if ((*itbase).root.empty())
+// 			path = server.root + req_path;
+// 		else
+// 			path = (*itbase).root + req_path;
+// 		if (!access(path.c_str(), F_OK))
+// 		{
+// 			request.path_from_root = path;
+// 			return(check_method(*itbase, req_method));
+// 		}
+// 		return (-1);
+// 	}
+// 	return (-1);
+// }
+

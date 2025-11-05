@@ -36,7 +36,6 @@ extern volatile sig_atomic_t shutdown_serv;
 void		handle_shutdown(int sig);
 std::string	autoindex(std::string const & directory, Request const &request);
 int			check_allowed_methods(Server const &server, std::string const &req_path, std::string const &req_method, Request &request);
-std::string	rebuild_path(Server const &server, Location const &location, std::string const &path);
-int			content_type(std::string const &path, Server const &server, Location const &location);
+int			content_type(std::string const &path);
 
 #endif // WEBSERV_HPP

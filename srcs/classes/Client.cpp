@@ -1,5 +1,6 @@
 #include "Client.hpp"
 #include <algorithm>
+#include "../../headers/webserv.hpp"
 
 Client::Client(Server &s)
 	:server(s), response(*this), parser(this->request, this->response)
@@ -140,41 +141,35 @@ static bool is_cgi(Location& loc, std::string& target)
 	return (false);
 }
 
-bool Client::PostPart(std::string& bnd, size_t &i)
+bool Client::PostPart(std::string& bnd, size_t &cur)
 {
-	std::string& b = request.body;
+    std::string& b = request.body;
 
-	bool is_bd = b.compare(i, bnd.size(), bnd) == 0;
-	if (!is_bd)
-		return Error(400);
-	i += bnd.size();
-	bool crlf = b.compare(i, 2, "\r\n") == 0;
-	bool end = b.compare(i, 2, "--") == 0;
-	if (end)
-		return false;
-	if (!crlf)
-		return Error(400);
-	i += 2;
-	size_t header_end = b.find("\r\n\r\n", i);
-	if (header_end == std::string::npos
-		|| b.find("Content-Disposition: form-data") == std::string::npos)
-		return Error(400);
-	size_t fname_i = b.find("filename=\"", i) + 10;
-	std::string filename = b.substr(fname_i, b.find_first_of('"', fname_i)-fname_i);
-	std::cout << "filename: " << filename << std::endl;
-	if (!valid_filename(filename))
-		return Error(400);
-	if (access(filename.c_str(), F_OK) == 0)
-		return Error(409);
-	std::ofstream newfile(filename.c_str());
-	if (!newfile)
-		return Error(500);
-	i = header_end + 4;
-	size_t data_end = b.find("\r\n" + bnd, i);
-	if (data_end == std::string::npos)
-		return Error(400);
-	newfile << b.substr(i, data_end - i);
-	return true;
+    if (!extract_boundary(b, cur, bnd))
+        return Error(400);
+    bool crlf = b.compare(cur, 2, "\r\n") == 0;
+    bool end = b.compare(cur, 2, "--") == 0;
+	cur += 2;
+    if (end)
+        return false;
+    if (!crlf)
+        return Error(400);
+    size_t header_end;
+    if (!validate_headers(b, cur, header_end))
+        return Error(400);
+    std::string filename = extract_filename(b, cur);
+    if (!valid_filename(filename))
+        return Error(400);
+    if (access(filename.c_str(), F_OK) == 0)
+        return Error(409);
+    cur = header_end + 4;
+    size_t data_end = b.find("\r\n", cur);
+    if (data_end == std::string::npos)
+        return Error(400);
+    if (!write_file(filename, b, cur, data_end))
+        return Error(500);
+	cur = data_end + 2;
+    return true;
 }
 
 void Client::PostFile()
@@ -182,15 +177,15 @@ void Client::PostFile()
 	std::map<std::string, std::string>::iterator ct = request.headers.find("Content-Type");
 	std::string boundary = ct->second.substr(ct->second.find("boundary=") + 9);
 	boundary = boundary.substr(0, boundary.find_first_of("; "));
-	size_t i = 0;
+	size_t cur = 0;
 
-	if (request.body.compare(i, 2, "--") != 0)
+	if (request.body.compare(cur, 2, "--") != 0)
 	{
 		Error(400);
 		return;
 	}
-	i += 2;
-	while (PostPart(boundary, i));
+	cur += 2;
+	while (PostPart(boundary, cur));
 }
 
 void Client::RequestHandler()

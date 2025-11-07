@@ -167,7 +167,9 @@ bool Client::PostPart(std::string& bnd, size_t &cur)
     if (data_end == std::string::npos)
         return Error(400);
     if (!write_file(filename, b, cur, data_end))
+	{
         return Error(500);
+	}
 	cur = data_end + 2;
     return true;
 }

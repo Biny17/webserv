@@ -163,13 +163,12 @@ bool Client::PostPart(std::string& bnd, size_t &cur)
     if (access(filename.c_str(), F_OK) == 0)
         return Error(409);
     cur = header_end + 4;
+	// print_hex_string(b.substr(cur));
     size_t data_end = b.find("\r\n", cur);
     if (data_end == std::string::npos)
         return Error(400);
     if (!write_file(filename, b, cur, data_end))
-	{
-        return Error(500);
-	}
+		return Error(500);
 	cur = data_end + 2;
     return true;
 }
@@ -180,19 +179,12 @@ void Client::PostFile()
 	std::string boundary = ct->second.substr(ct->second.find("boundary=") + 9);
 	boundary = boundary.substr(0, boundary.find_first_of("; "));
 	size_t cur = 0;
-
-	if (request.body.compare(cur, 2, "--") != 0)
-	{
-		Error(400);
-		return;
-	}
-	cur += 2;
 	while (PostPart(boundary, cur));
 }
 
 void Client::RequestHandler()
 {
-	std::cout << "location matched: " << loc->path << std::endl << std::endl;
+	// std::cout << "location matched: " << loc->path << std::endl << std::endl;
 	// ajouter test cgi
 	if (is_cgi(*loc, request.path))
 		launch_cgi(request.local_path, server, *this);

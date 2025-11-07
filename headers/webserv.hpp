@@ -43,4 +43,5 @@ bool        extract_boundary(const std::string& body, size_t& i, const std::stri
 bool        validate_headers(const std::string& body, size_t& i, size_t& header_end);
 std::string extract_filename(const std::string& body, size_t& i);
 bool        write_file(const std::string& filename, const std::string& body, size_t& i, size_t data_end);
+void        print_hex_string(const std::string& str);
 #endif // WEBSERV_HPP

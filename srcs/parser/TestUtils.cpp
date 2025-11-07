@@ -1,4 +1,5 @@
 #include "webserv.hpp"
+#include <iomanip>
 
 void Parser::Print()
 {
@@ -22,5 +23,33 @@ void Parser::Print()
         std::cout << err.body << std::endl;
     }
     std::cout << COLOR_NC;
+    std::cout << std::endl;
+}
+
+
+void print_hex_string(const std::string& str) {
+    // Save the current formatting state to restore it later
+    std::ios oldState(NULL);
+    oldState.copyfmt(std::cout);
+
+    std::cout << "Hex Representation: ";
+
+    // Set the stream for two-digit hex output
+    std::cout << std::hex // Print integers in hexadecimal
+              << std::uppercase // Use uppercase letters (A-F)
+              << std::setfill('0'); // Pad with '0' to ensure two digits
+
+    for (std::string::size_type i = 0; i < str.length(); ++i) {
+        // Cast the character to an integer type (unsigned int or int)
+        // to get its numeric value instead of printing it as a character.
+        // The static_cast<unsigned int> ensures the value is treated as a positive number.
+        std::cout << std::setw(2)
+                  << static_cast<unsigned int>(static_cast<unsigned char>(str[i]))
+                  << " "; // Add a space for separation
+    }
+
+    // Restore the original formatting state
+    std::cout.copyfmt(oldState);
+
     std::cout << std::endl;
 }

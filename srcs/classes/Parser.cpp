@@ -51,7 +51,6 @@ void Parser::Method(const std::string& buff, size_t& i)
 		return;
 	}
 	state = PATH;
-	printf("end of method: %d\n", state);
 	i++;
 }
 
@@ -199,7 +198,7 @@ void Parser::PostCheck()
 {
 	std::map<std::string,std::string>::iterator ct = req.headers.find("Content-Type");
 
-	std::cout << "content type [" << ct->second << "]" << std::endl;
+	// std::cout << "content type [" << ct->second << "]" << std::endl;
 	if (ct == req.headers.end() || ct->second.find("multipart/form-data") == std::string::npos
 			|| ct->second.find("boundary=") == std::string::npos)
 		return Error("POST method require Content-Type: multipart/form-data with boundary", 400);

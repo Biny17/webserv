@@ -16,22 +16,24 @@ bool valid_filename(std::string& filename)
     return true;
 }
 
-bool extract_boundary(const std::string& body, size_t& cur, const std::string& bnd) {
-    if (body.compare(cur, bnd.size(), bnd) != 0) {
+bool extract_boundary(const std::string& body, size_t& cur, const std::string& boundary)
+{
+    if (body.compare(cur, 2, "--") != 0)
+		return false;
+	cur += 2;
+    // std::cout << COLOR_YELLOW << body.substr(cur) << COLOR_NC << std::endl;
+    if (body.compare(cur, boundary.size(), boundary) != 0)
         return false;
-    }
-    cur += bnd.size();
+    cur += boundary.size();
     return true;
 }
 
 bool validate_headers(const std::string& body, size_t& cur, size_t& header_end) {
     header_end = body.find("\r\n\r\n", cur);
-    if (header_end == std::string::npos
-        || body.find("Content-Disposition: form-data", cur, header_end-cur)
-            == std::string::npos)
-    {
+    std::string tmp = body.substr(cur, header_end-cur);
+    size_t content_disposition = tmp.find("Content-Disposition: form-data");
+    if (header_end == std::string::npos || content_disposition == std::string::npos)
         return false;
-    }
     return true;
 }
 

@@ -27,7 +27,7 @@ class Parser {
 		std::string p_buff;
 		bool skip_leading_ws;
 
-		void Error(std::string msg, int error_code);
+		void Error(int error_code);
 		void Method(const std::string& buff, size_t& i);
 		void Path(const std::string& buff, size_t& i);
 		void Query(const std::string &buff, size_t& i);
@@ -46,7 +46,6 @@ class Parser {
 		Response& err;
 		bool ok;
 		p_state state;
-		std::string boundary;
 		size_t FillReq(const std::string& buff);
 		Parser(Request& request, Response& response);
 		void Reset();

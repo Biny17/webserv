@@ -36,7 +36,7 @@ class Client {
 		void		Error403(Location& loc);
 		void		BuildPath(Location& loc);
 		void		PostFile();
-		bool        PostPart(std::string& boundary, size_t &i);
+		bool        MultipartFormData();
 		void 		checkLocation();
 };
 

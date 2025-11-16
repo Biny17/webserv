@@ -20,21 +20,17 @@ void Parser::Reset()
 	req.loc_index = 0;
 }
 
-void Parser::Error(std::string msg, int error_code)
+void Parser::Error(int error_code)
 {
 	state = ERROR;
 	ok = false;
-	if (msg == "")
-		err.body = "Bad Request";
-	else
-		err.body = msg;
 	err.code = error_code;
 }
 
 void Parser::Method(const std::string& buff, size_t& i)
 {
 	if (parse_token(buff, req.method, i, 15) > 6) {
-		Error("Unsupported method", 501);
+		Error(501);
 		return ;
 	}
 
@@ -42,12 +38,12 @@ void Parser::Method(const std::string& buff, size_t& i)
 		return;
 
 	if (buff[i] != ' ') {
-		Error("", 400);
+		Error(400);
 		return;
 	}
 
 	if (!valid_method(req.method)) {
-		Error("Unsupported method", 501);
+		Error(501);
 		return;
 	}
 	state = PATH;
@@ -60,7 +56,7 @@ void Parser::Path(const std::string& buff, size_t& i)
 	while (i < buff.length() && is_abspath(buff[i]))
 		i++;
 	if ((req.path.length() + i - start) > URI_MAX) {
-		Error("Uri is too long", 414);
+		Error(414);
 		return;
 	}
 	req.path += buff.substr(start, i - start);
@@ -71,7 +67,7 @@ void Parser::Path(const std::string& buff, size_t& i)
 		i++;
 	}
 	else
-		Error("", 400);
+		Error(400);
 }
 
 void Parser::Query(const std::string &buff, size_t& i)
@@ -82,7 +78,7 @@ void Parser::Query(const std::string &buff, size_t& i)
 		i++;
 	req.query += buff.substr(start, i - start);
 	if (req.query.length()+req.path.length() > URI_MAX)
-		return Error("Uri is too long", 414);
+		return Error(414);
 	if (i == buff.length())
 		return;
 	if (buff[i] == ' ') {
@@ -90,7 +86,7 @@ void Parser::Query(const std::string &buff, size_t& i)
 		i++;
 	}
 	else
-		Error("", 400);
+		Error(400);
 }
 
 void Parser::Version(const std::string &buff, size_t& i)
@@ -102,7 +98,7 @@ void Parser::Version(const std::string &buff, size_t& i)
 		i++;
 	req.version += buff.substr(start, i-start);
 	if (req.version != "HTTP/1.1" && req.version != "HTTP/1.0")
-		return Error("Unsupported HTTP version", 505);
+		return Error(505);
 	if (i+1 < buff.length())
 	{
 		if (buff[i] == '\r' && buff[i+1] == '\n') {
@@ -110,7 +106,7 @@ void Parser::Version(const std::string &buff, size_t& i)
 			i = i+2;
 		}
 		else
-			Error("", 400);
+			Error(400);
 	}
 }
 
@@ -131,12 +127,12 @@ void Parser::HeadKey(const std::string &buff, size_t& i)
 	while (i < buff.length() && is_token(buff[i]))
 		i++;
 	if ((i-start + cur_key.length()) > HEADER_MAX)
-		return Error("Request Header Fields Too Large", 431);
+		return Error(431);
 	cur_key += buff.substr(start, i - start);
 	if (i == buff.length())
 		return;
 	if (buff[i] != ':') {
-		Error("", 400);
+		Error(400);
 		return;
 	}
 	state = HEAD_VAL;
@@ -159,7 +155,7 @@ void Parser::HeadValue(const std::string &buff, size_t& i)
 	size_t crfl = buff.find("\r\n", i);
 	if (crfl == std::string::npos) {
 		if (cur_value.length() + (i - buff.length()) > HEADER_MAX)
-			return Error("Request Header Fields Too Large", 431);
+			return Error(431);
 		cur_value += buff.substr(start, i - buff.length());
 		i = buff.length();
 		return;
@@ -170,7 +166,7 @@ void Parser::HeadValue(const std::string &buff, size_t& i)
 		// cur_value = cur_value.substr(0, cur_value.find_first_of(';'));
 		req.headers[cur_key] = cur_value;
 		if (req.headers.size() > 100)
-			return Error("Too many headers", 431);
+			return Error(431);
 		cur_key.clear();
 		cur_value.clear();
 		state = HEAD_KEY;
@@ -181,12 +177,12 @@ void Parser::HeadValue(const std::string &buff, size_t& i)
 void Parser::AfterHeadersCheck()
 {
 	if (req.headers.find("Host") == req.headers.end())
-		return Error("Host header is required", 400);
+		return Error(400);
 	if (req.method == "GET")
 	{
 		if (req.headers.find("Content-Length") != req.headers.end() ||
 			req.headers.find("Transfer-Encoding") != req.headers.end())
-			return Error("GET request shoudn't have a body", 400);
+			return Error(400);
 		req.content_len = 0;
 	}
 	else if (req.method == "POST") {
@@ -197,34 +193,33 @@ void Parser::AfterHeadersCheck()
 void Parser::PostCheck()
 {
 	std::map<std::string,std::string>::iterator ct = req.headers.find("Content-Type");
-
-	// std::cout << "content type [" << ct->second << "]" << std::endl;
-	if (ct == req.headers.end() || ct->second.find("multipart/form-data") == std::string::npos
-			|| ct->second.find("boundary=") == std::string::npos)
-		return Error("POST method require Content-Type: multipart/form-data with boundary", 400);
-
-	boundary = ct->second.substr(ct->second.find("boundary=") + 9);
-
 	std::map<std::string,std::string>::iterator te = req.headers.find("Transfer-Encoding");
+	std::map<std::string,std::string>::iterator ce = req.headers.find("Content-Length");
+
+	if (ct == req.headers.end())
+		return Error(400);
+	else if (ct->second.rfind("multipart/form-data", 0) != std::string::npos)
+	{
+		if (ct->second.find("boundary=") == std::string::npos)
+			return Error(400);
+	}
 	if (te != req.headers.end())
 	{
 		if (te->second != "chunked")
-			return Error("Unsupported Transfer-Encoding", 501);
+			return Error(501);
 		else
 			f = &Parser::TransferEncoding;
 		return;
 	}
-
-	std::map<std::string,std::string>::iterator ce = req.headers.find("Content-Length");
-	if (ce != req.headers.end())
+	else if (ce != req.headers.end())
 	{
 		std::stringstream ss(ce->second);
 		ss >> req.content_len;
 		if (ss.fail() || !ss.eof() || ss.bad() || req.content_len < 0)
-			return Error("Invalid Content-Length", 400);
+			return Error(400);
 	}
-	else if (te == req.headers.end())
-		return Error("POST request must have a body", 400);
+	else
+		return Error(400);
 }
 
 void Parser::StateParsing(const std::string& read_buff, size_t& i)
@@ -305,7 +300,7 @@ void Parser::TransferEncoding(const std::string &buff, size_t i)
             ss >> std::hex >> req.content_len;
 
             if (ss.fail() || req.content_len < 0) {
-                Error("Invalid chunk size", 400);
+                Error(400);
                 return;
             }
             i = crlf + 2;
@@ -314,7 +309,7 @@ void Parser::TransferEncoding(const std::string &buff, size_t i)
                 if (final_crlf == i) {
                     state = HANDLE;
                 } else {
-                    Error("Invalid chunked encoding termination", 400);
+                    Error(400);
                 }
                 return;
             }
@@ -327,7 +322,7 @@ void Parser::TransferEncoding(const std::string &buff, size_t i)
             if (i + 1 < p_buff.length() && p_buff[i] == '\r' && p_buff[i + 1] == '\n') {
                 i += 2;
             } else {
-                Error("Invalid chunk data termination", 400);
+                Error(400);
                 return;
             }
         }

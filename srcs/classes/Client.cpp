@@ -141,45 +141,66 @@ static bool is_cgi(Location& loc, std::string& target)
 	return (false);
 }
 
-bool Client::PostPart(std::string& bnd, size_t &cur)
+bool Client::MultipartFormData()
 {
     std::string& b = request.body;
+	std::map<std::string, std::string>::iterator ct = request.headers.find("Content-Type");
+	std::string bnd = ct->second.substr(ct->second.find("boundary=") + 9);
+	bnd = bnd.substr(0, bnd.find_first_of("; "));
+	size_t cur = 0;
 
-    if (!extract_boundary(b, cur, bnd))
-        return Error(400);
-    bool crlf = b.compare(cur, 2, "\r\n") == 0;
-    bool end = b.compare(cur, 2, "--") == 0;
-	cur += 2;
-    if (end)
-        return false;
-    if (!crlf)
-        return Error(400);
-    size_t header_end;
-    if (!validate_headers(b, cur, header_end))
-        return Error(400);
-    std::string filename = extract_filename(b, cur);
-    if (!valid_filename(filename))
-        return Error(400);
-    if (access(filename.c_str(), F_OK) == 0)
-        return Error(409);
-    cur = header_end + 4;
-	// print_hex_string(b.substr(cur));
-    size_t data_end = b.find("\r\n", cur);
-    if (data_end == std::string::npos)
-        return Error(400);
-    if (!write_file(filename, b, cur, data_end))
-		return Error(500);
-	cur = data_end + 2;
-    return true;
+	while (true)
+	{
+		if (!extract_boundary(b, cur, bnd))
+			return Error(400);
+		bool crlf = b.compare(cur, 2, "\r\n") == 0;
+		bool end = b.compare(cur, 2, "--") == 0;
+		cur += 2;
+		if (end)
+			break;
+		if (!crlf)
+			return Error(400);
+		size_t header_end;
+		if (!validate_headers(b, cur, header_end))
+			return Error(400);
+		std::string filename = extract_filename(b, cur);
+		if (!valid_filename(filename))
+			return Error(400);
+		if (access(filename.c_str(), F_OK) == 0)
+			return Error(409);
+		cur = header_end + 4;
+		// print_hex_string(b.substr(cur));
+		size_t data_end = b.find("\r\n", cur);
+		if (data_end == std::string::npos)
+			return Error(400);
+		if (!write_file(filename, b, cur, data_end))
+			return Error(500);
+		cur = data_end + 2;
+	}
 }
 
 void Client::PostFile()
 {
-	std::map<std::string, std::string>::iterator ct = request.headers.find("Content-Type");
-	std::string boundary = ct->second.substr(ct->second.find("boundary=") + 9);
-	boundary = boundary.substr(0, boundary.find_first_of("; "));
-	size_t cur = 0;
-	while (PostPart(boundary, cur));
+	std::string content_type = request.headers.find("Content-Type")->second;
+	if (content_type.find("multipart/form-data") != std::string::npos)
+	{
+		if (!MultipartFormData())
+			return;
+		response.code = 201;
+		parser.state = RESPONSE;
+		return;
+	}
+	else
+	{
+		std::string filename = request.local_path;
+		if (access(filename.c_str(), F_OK) == 0)
+		{
+			response.code = 409;
+			parser.state = ERROR;
+			return;
+		}
+		// TODO
+	}
 }
 
 void Client::RequestHandler()

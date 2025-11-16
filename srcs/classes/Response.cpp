@@ -176,15 +176,15 @@ std::string	Response::ReadFile(const std::string &path)
 // Build the response of the server
 void	Response::Build(void)
 {
-	std::string page = this->FindPage();
+	std::string page = FindPage();
 	if (page != "")
-		this->body = this->ReadFile(page);
+		this->body = ReadFile(page);
 	if (this->content_type == "text/html; charset=utf-8")
-		this->ReplaceCat();
+		ReplaceCat();
 	if (this->body == "")
-		this->body = this->Reason();
+		this->body = Reason();
 
-	this->outBuffer = this->Header() + this->body;
+	this->outBuffer = Header() + this->body;
 }
 
 void	Response::BuildCGI(void)

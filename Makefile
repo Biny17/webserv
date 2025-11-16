@@ -13,6 +13,7 @@ SRCS		=	main.cpp							\
 				cgi/pipex_cgi.cpp					\
 				classes/Client.cpp					\
 				classes/Location.cpp				\
+				classes/Mime.cpp					\
 				classes/Parser.cpp					\
 				classes/Response.cpp				\
 				classes/Server.cpp					\
@@ -22,12 +23,12 @@ SRCS		=	main.cpp							\
 				network/event_loop.cpp				\
 				network/handle_clients.cpp			\
 				network/launch_server.cpp			\
-				parser/parse_utils.cpp				\
-				parser/TestUtils.cpp				\
+				utils/parse_utils.cpp				\
+				utils/TestUtils.cpp					\
 				utils/exit_signal.cpp				\
 				utils/check_method.cpp				\
 				utils/autoindex.cpp					\
-				utils/file_post_utils.cpp			\
+				utils/post_utils.cpp				\
 				utils/path_utils.cpp				\
 				utils/percent_encoding.cpp			\
 				handle_request/get_response.cpp		\

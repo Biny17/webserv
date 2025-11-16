@@ -47,7 +47,7 @@ std::string extract_filename(const std::string& body, size_t& cur) {
     return body.substr(fname_i, closing_quote_i - fname_i);
 }
 
-bool write_file(const std::string& filename, const std::string& body, size_t& cur, size_t data_end) {
+bool write_file(const std::string& filename, const std::string& body, size_t cur, size_t data_end) {
     std::ofstream newfile(filename.c_str());
     if (!newfile) {
         return false;

@@ -199,7 +199,18 @@ void Client::PostFile()
 			parser.state = ERROR;
 			return;
 		}
-		// TODO
+		if (!write_file(filename, request.body, 0, request.body.length()))
+		{
+			response.code = 500;
+			parser.state = ERROR;
+			return;
+		}
+		else
+		{
+			response.code = 201;
+			parser.state = RESPONSE;
+			return;
+		}
 	}
 }
 

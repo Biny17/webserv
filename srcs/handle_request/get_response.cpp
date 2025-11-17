@@ -20,62 +20,44 @@ std::string	find_index(std::vector<std::string> const &index_page) {
 	return(result);
 }
 
-std::string	read_index(std::string const &path, Server const &server, Location const &location, int content_type) {
+bool	fetch_file(std::string const &path, Location const &location, std::string& result)
+{
+	std::ifstream myfile;
+	myfile.open(path);
+	if (!myfile.is_open())
+		return false;
+	myfile.seekg(0, std::ios::end);
+    result.reserve(myfile.tellg());
+    myfile.seekg(0, std::ios::beg);
 
-	(void)server;
-	std::string	index;
-	std::string	buffer(1, '\0');
-	std::string	result;
-	int			fd;
-
-	if (content_type == 2)
-		index = path + find_index(location.index);
-	else
-		index = path;
-	fd = open(index.c_str(), O_RDONLY);
-	if (fd == -1)
-		return (perror("open"), "");
-
-	while (read(fd, &buffer[0], 1))
-		result += buffer;
-
-	close(fd);
-	return (result);
-}
-
-//creation du response.content_type (NEED LE CHARSET ENCORE PAS FINI)
-std::string	file_extension(std::string const &path, Location const &location) {
-
-	std::string	ext;
-	if (path == location.path)
-		ext = find_index(location.index);
-	else
-		ext = path;
-	if (ext.find_last_of('.') != ext.npos)
-		ext = ext.substr(ext.find_last_of('.'), ext.size());
-	if (location.extension.find(ext) != location.extension.end())
-		ext = location.extension.find(ext)->second;
-	else
-		return ("");
-	return (ext + "; charset=utf-8");
+	result.assign((std::istreambuf_iterator<char>(myfile)),
+				   std::istreambuf_iterator<char>());
+	return true;
 }
 
 void	get_static_file(Server &server, Request const &request, Response &response)
 {
-	int content = content_type(request.local_path);
+	int content = target_type(request.local_path);
+	std::string req_path = request.local_path;
+	Location& location = server.locations[request.loc_index];
 
-	// std::cout << "local_path: " << request.local_path << std::endl;
-	// std::cout << "content: "<< content << std::endl;
-	// std::cout << "loc_index: " << request.loc_index << std::endl;
-	if (!(server.locations[request.loc_index]).index.empty() || content == 1) // 1 is file
+	if (content == 1) // 1 is file
 	{
-		response.body = read_index(request.local_path, server, server.locations[request.loc_index], content);	//response body
-		if (response.body == "") {
-			response.code = 403;
-			return ;
+		if (!fetch_file(req_path, location, response.body))
+			response.code = 500;
+		else {
+			response.content_type = Mime::GetType(get_extension(request.local_path));
+			response.code = 200;
 		}
-		response.content_type = file_extension(request.path, server.locations[request.loc_index]);
-		response.code = 200;
+	}
+	else if (content == 2 && !location.index.empty())
+	{
+		if (!fetch_file(req_path, location, response.body))
+			response.code = 500;
+		else {
+			response.content_type = "text/html";
+			response.code = 200;
+		}
 	}
 	else if (server.locations[request.loc_index].autoindex == 1)
 		response.body = autoindex(request.local_path, request);

@@ -3,7 +3,7 @@
 //check if the content given in path is a directory or a file,
 //ret value :
 //1 if file, 2 if directory, 0 if undefined
-int		content_type(std::string const &path) {
+int		target_type(std::string const &path) {
 	if (access(path.c_str(), F_OK) == -1)		//return 0 if undefined
 		return (0);
 
@@ -15,4 +15,16 @@ int		content_type(std::string const &path) {
 	if (fd != -1)
 		return (close(fd), 1);
 	return (0);
+}
+
+std::string get_extension(const std::string& filename)
+{
+    std::string extension;
+    size_t  point;
+
+    point = filename.find_last_of('.');
+    if (point != std::string::npos) {
+        extension = filename.substr(point);
+    }
+    return extension;
 }

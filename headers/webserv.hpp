@@ -28,6 +28,7 @@
 # include "network.hpp"
 # include "cgi.hpp"
 # include "color.hpp"
+# include "Mime.hpp"
 
 // Global because I love the 42norm
 extern std::vector<Server> servers;
@@ -38,12 +39,13 @@ void		handle_shutdown(int sig);
 std::string	autoindex(std::string const & directory, Request const &request);
 int			check_allowed_methods(Server const &server, std::string const &req_path, std::string const &req_method, Request &request);
 bool        valid_filename(std::string& filename);
-int			content_type(std::string const &path);
+int			target_type(std::string const &path);
 bool        extract_boundary(const std::string& body, size_t& i, const std::string& bnd);
 bool        validate_headers(const std::string& body, size_t& i, size_t& header_end);
 std::string extract_filename(const std::string& body, size_t& i);
 bool        write_file(const std::string& filename, const std::string& body, size_t i, size_t data_end);
 void        print_hex_string(const std::string& str);
 std::string&	decode(std::string& str);
+std::string get_extension(const std::string& filename);
 
 #endif // WEBSERV_HPP

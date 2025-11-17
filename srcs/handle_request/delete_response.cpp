@@ -10,7 +10,7 @@ void	build_delete_response(Server const &server, Request const &request, Respons
 		return ;
 	}
 
-	int content = content_type(request.local_path);
+	int content = target_type(request.local_path);
 	if (content == 2)
 		response.code = 400;
 	else if (content == 0)

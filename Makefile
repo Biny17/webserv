@@ -24,9 +24,8 @@ SRCS		=	main.cpp							\
 				network/handle_clients.cpp			\
 				network/launch_server.cpp			\
 				utils/parse_utils.cpp				\
-				utils/TestUtils.cpp					\
+				utils/test_utils.cpp				\
 				utils/exit_signal.cpp				\
-				utils/check_method.cpp				\
 				utils/autoindex.cpp					\
 				utils/post_utils.cpp				\
 				utils/path_utils.cpp				\

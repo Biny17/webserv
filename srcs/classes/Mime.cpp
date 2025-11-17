@@ -2,21 +2,26 @@
 #include <string>
 #include "../../headers/Mime.hpp"
 
-const std::map<std::string, std::string> Mime::mimeMap = {
-    {"text/plain", ".txt"},
-    {"text/html", ".html"},
-    {"text/css", ".css"},
-    {"text/javascript", ".js"},
-    {"image/jpeg", ".jpg"},
-    {"image/png", ".png"},
-    {"image/gif", ".gif"},
-    {"application/json", ".json"},
-    {"application/xml", ".xml"},
-    {"application/pdf", ".pdf"},
-    {"application/zip", ".zip"},
-    {"audio/mpeg", ".mp3"},
-    {"video/mp4", ".mp4"}
-};
+static std::map<std::string, std::string> createMimeMap()
+{
+    std::map<std::string, std::string> m;
+    m.insert(std::make_pair(std::string("text/plain"), std::string(".txt")));
+    m.insert(std::make_pair(std::string("text/html"), std::string(".html")));
+    m.insert(std::make_pair(std::string("text/css"), std::string(".css")));
+    m.insert(std::make_pair(std::string("text/javascript"), std::string(".js")));
+    m.insert(std::make_pair(std::string("image/jpeg"), std::string(".jpg")));
+    m.insert(std::make_pair(std::string("image/png"), std::string(".png")));
+    m.insert(std::make_pair(std::string("image/gif"), std::string(".gif")));
+    m.insert(std::make_pair(std::string("application/json"), std::string(".json")));
+    m.insert(std::make_pair(std::string("application/xml"), std::string(".xml")));
+    m.insert(std::make_pair(std::string("application/pdf"), std::string(".pdf")));
+    m.insert(std::make_pair(std::string("application/zip"), std::string(".zip")));
+    m.insert(std::make_pair(std::string("audio/mpeg"), std::string(".mp3")));
+    m.insert(std::make_pair(std::string("video/mp4"), std::string(".mp4")));
+    return m;
+}
+
+const std::map<std::string, std::string> Mime::mimeMap = createMimeMap();
 
 std::string Mime::GetExtension(std::string mime_type)
 {
@@ -34,6 +39,6 @@ std::string Mime::GetType(std::string extension)
         if (it->second == extension)
             return it->first;
     }
-    return "application/octet-stream";
+    return "";
 }
 

@@ -119,18 +119,6 @@ void  Client::BuildPath(Location& loc)
 		request.local_path = loc.root + request.path;
 }
 
-static std::string get_extension(std::string& filename)
-{
-    std::string extension;
-    size_t  point;
-
-    point = filename.find_last_of('.');
-    if (point != std::string::npos) {
-        extension = filename.substr(point);
-    }
-    return extension;
-}
-
 static bool is_cgi(Location& loc, std::string& target)
 {
 	for (size_t i = 0; i < loc.cgi_extension.size(); i++)
@@ -177,6 +165,7 @@ bool Client::MultipartFormData()
 			return Error(500);
 		cur = data_end + 2;
 	}
+	return true;
 }
 
 void Client::PostFile()
@@ -188,36 +177,16 @@ void Client::PostFile()
 			return;
 		response.code = 201;
 		parser.state = RESPONSE;
-		return;
 	}
 	else
 	{
-		std::string filename = request.local_path;
-		if (access(filename.c_str(), F_OK) == 0)
-		{
-			response.code = 409;
-			parser.state = ERROR;
-			return;
-		}
-		if (!write_file(filename, request.body, 0, request.body.length()))
-		{
-			response.code = 500;
-			parser.state = ERROR;
-			return;
-		}
-		else
-		{
-			response.code = 201;
-			parser.state = RESPONSE;
-			return;
-		}
+		response.code = 204;
+		parser.state = RESPONSE;
 	}
 }
 
 void Client::RequestHandler()
 {
-	// std::cout << "location matched: " << loc->path << std::endl << std::endl;
-	// ajouter test cgi
 	if (is_cgi(*loc, request.path))
 		launch_cgi(request.local_path, server, *this);
 	else if (request.method == "GET")

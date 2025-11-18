@@ -20,10 +20,10 @@ std::string	find_index(std::vector<std::string> const &index_page) {
 	return(result);
 }
 
-bool	fetch_file(std::string const &path, Location const &location, std::string& result)
+bool	fetch_file(std::string const &path, std::string& result)
 {
 	std::ifstream myfile;
-	myfile.open(path);
+	myfile.open(path.c_str());
 	if (!myfile.is_open())
 		return false;
 	myfile.seekg(0, std::ios::end);
@@ -43,7 +43,7 @@ void	get_static_file(Server &server, Request const &request, Response &response)
 
 	if (content == 1) // 1 is file
 	{
-		if (!fetch_file(req_path, location, response.body))
+		if (!fetch_file(req_path, response.body))
 			response.code = 500;
 		else {
 			response.content_type = Mime::GetType(get_extension(request.local_path));
@@ -52,7 +52,7 @@ void	get_static_file(Server &server, Request const &request, Response &response)
 	}
 	else if (content == 2 && !location.index.empty())
 	{
-		if (!fetch_file(req_path, location, response.body))
+		if (!fetch_file(req_path, response.body))
 			response.code = 500;
 		else {
 			response.content_type = "text/html";

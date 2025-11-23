@@ -52,6 +52,7 @@ void	get_static_file(Server &server, Request const &request, Response &response)
 	}
 	else if (content == 2 && !location.index.empty())
 	{
+		req_path += find_index(location.index);
 		if (!fetch_file(req_path, response.body))
 			response.code = 500;
 		else {

@@ -188,6 +188,8 @@ void Parser::AfterHeadersCheck()
 	else if (req.method == "POST") {
 		PostCheck();
 	}
+	decode(req.path);
+	decode(req.query);
 }
 
 void Parser::PostCheck()

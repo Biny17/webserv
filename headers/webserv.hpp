@@ -45,7 +45,7 @@ bool        validate_headers(const std::string& body, size_t& i, size_t& header_
 std::string extract_filename(const std::string& body, size_t& i);
 bool        write_file(const std::string& filename, const std::string& body, size_t i, size_t data_end);
 void        print_hex_string(const std::string& str);
-std::string&	decode(std::string& str);
+void    	decode(std::string& str);
 std::string get_extension(const std::string& filename);
 
 #endif // WEBSERV_HPP

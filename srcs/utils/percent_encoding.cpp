@@ -1,12 +1,12 @@
 #include "webserv.hpp"
 
-std::string&	decode(std::string& str)
+void	decode(std::string& str)
 {
 	size_t pos = 0;
 	while ((pos = str.find('%', pos)) != std::string::npos)
 	{
 		if (pos + 2 >= str.size())
-			return (str);
+			return ;
 		unsigned char c1 = static_cast<unsigned char>(str[pos + 1]);
 		unsigned char c2 = static_cast<unsigned char>(str[pos + 2]);
 		if (!std::isxdigit(c1) || !std::isxdigit(c2))
@@ -20,5 +20,5 @@ std::string&	decode(std::string& str)
 		str.replace(pos, 3, 1, decoded);
 		++pos;
 	}
-	return (str);
+	return ;
 }

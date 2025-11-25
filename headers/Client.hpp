@@ -33,7 +33,7 @@ class Client {
 		void		switchCat(void);
 		void 		RequestHandler();
 		bool		Error(int error_code);
-		void		Error403(Location& loc);
+		void		Error405(Location& loc);
 		void		BuildPath(Location& loc);
 		void		PostFile();
 		bool        MultipartFormData();

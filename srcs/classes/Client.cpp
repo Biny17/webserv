@@ -87,7 +87,12 @@ void Client::checkLocation()
 	}
 	BuildPath(*loc);
 	if (std::find(loc->methods.begin(), loc->methods.end(), request.method) == loc->methods.end())
-		return Error403(*loc);
+	{
+		if (loc->methods.size() == 0)
+			return (void)Error(403);
+		else
+			return Error405(*loc);
+	}
 	// std::cout << "content_len: " << request.content_len << std::endl;
 	// std::cout << "max_upload: " << server.max_upload << std::endl;
 	if (request.content_len > static_cast<int>(server.max_upload)) {
@@ -98,7 +103,7 @@ void Client::checkLocation()
 	parser.state = BODY;
 }
 
-void Client::Error403(Location& loc)
+void Client::Error405(Location& loc)
 {
 	std::string allow("Allow: ");
 	for (std::vector<std::string>::iterator it = loc.methods.begin(); it != loc.methods.end(); it++) {

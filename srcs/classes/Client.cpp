@@ -100,6 +100,12 @@ void Client::checkLocation()
 		parser.state = ERROR;
 		return ;
 	}
+	if (request.headers.find("Host")->second != server.server_name)
+	{
+		response.code = 400;
+		parser.state = ERROR;
+		return ;
+	}
 	parser.state = BODY;
 }
 

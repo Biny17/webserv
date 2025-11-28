@@ -137,7 +137,7 @@ static void	parse_line(std::vector<std::string> const &words, std::vector<Server
 		delete_loc_doublon(servers.back().locations, *(it + 1));
 		construct_back<Location>(servers.back().locations);
 		servers.back().locations.back().path = *(it + 1);
-		add_trailing_slash(servers.back().locations.back().path);
+		add_leading_slash(trim_trailing_slash(servers.back().locations.back().path));
 		level++;
 	}
 	else if (*it == "}") {

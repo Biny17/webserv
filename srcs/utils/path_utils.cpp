@@ -1,20 +1,26 @@
 #include "webserv.hpp"
 
 //check if the content given in path is a directory or a file,
-//ret value :
-//1 if file, 2 if directory, 0 if undefined
-int		target_type(std::string const &path) {
+
+Target::Type target_type(std::string const &path)
+{
 	if (access(path.c_str(), F_OK) == -1)		//return 0 if undefined
-		return (0);
+		return (Target::UNKNOWN);
 
 	int fd = open(path.c_str(), O_DIRECTORY);	//return 2 if directory
 	if (fd != -1)
-		return (close(fd), 2);
+	{
+		std::cout << COLOR_BROWN << "It's a DIRECTORY ! " << COLOR_NC << std::endl;
+		return (close(fd), Target::DIR);
+	}
 
 	fd = open(path.c_str(), O_RDONLY);			//return 1 if file
 	if (fd != -1)
-		return (close(fd), 1);
-	return (0);
+	{
+		std::cout << COLOR_BROWN << "It's a FILE ! " << COLOR_NC << std::endl;
+		return (close(fd), Target::FILE);
+	}
+	return (Target::UNKNOWN);
 }
 
 std::string get_extension(const std::string& filename)
@@ -39,6 +45,13 @@ std::string& add_trailing_slash(std::string& path)
 {
 	if (path.empty() || *(path.end()-1) != '/')
 		path += '/';
+	return path;
+}
+
+std::string& add_leading_slash(std::string& path)
+{
+	if (path.empty() || *(path.begin()) != '/')
+		path = '/' + path;
 	return path;
 }
 

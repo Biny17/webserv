@@ -30,6 +30,10 @@
 # include "color.hpp"
 # include "Mime.hpp"
 
+namespace Target {
+    enum Type { UNKNOWN, FILE, DIR };
+}
+
 // Global because I love the 42norm
 extern std::vector<Server> servers;
 
@@ -39,7 +43,7 @@ void		handle_shutdown(int sig);
 std::string	autoindex(std::string const & directory, Request const &request);
 int			check_allowed_methods(Server const &server, std::string const &req_path, std::string const &req_method, Request &request);
 bool        valid_filename(std::string& filename);
-int			target_type(std::string const &path);
+Target::Type target_type(std::string const &path);
 bool        extract_boundary(const std::string& body, size_t& i, const std::string& bnd);
 bool        validate_headers(const std::string& body, size_t& i, size_t& header_end);
 std::string extract_filename(const std::string& body, size_t& i);
@@ -50,5 +54,7 @@ std::string get_extension(const std::string& filename);
 std::string path_add(std::string base, std::string addition);
 std::string& trim_trailing_slash(std::string& str);
 std::string& add_trailing_slash(std::string& path);
+std::string& add_leading_slash(std::string& path);
+
 
 #endif // WEBSERV_HPP

@@ -35,13 +35,13 @@ bool	fetch_file(std::string const &path, std::string& result)
 	return true;
 }
 
-void	get_static_file(Server &server, Request const &request, Response &response)
+void	get_static_file(Request const &request, Response &response)
 {
-	int content = target_type(request.local_path);
+	Target::Type content = target_type(request.local_path);
 	std::string req_path = request.local_path;
 	Location& location = *request.location;
 
-	if (content == 1) // 1 is file
+	if (content == Target::FILE)
 	{
 		if (!fetch_file(req_path, response.body))
 			response.code = 500;
@@ -50,7 +50,7 @@ void	get_static_file(Server &server, Request const &request, Response &response)
 			response.code = 200;
 		}
 	}
-	else if (content == 2 && !location.index.empty())
+	else if (content == Target::DIR && !location.index.empty())
 	{
 		req_path += find_index(location.index);
 		if (!fetch_file(req_path, response.body))
@@ -60,7 +60,7 @@ void	get_static_file(Server &server, Request const &request, Response &response)
 			response.code = 200;
 		}
 	}
-	else if ((*request.location).autoindex == true)
+	else if (content == Target::DIR && (*request.location).autoindex == true)
 		response.body = autoindex(request.local_path, request);
 	else
 		response.code = 404;

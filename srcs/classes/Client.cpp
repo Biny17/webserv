@@ -71,20 +71,20 @@ size_t n_prefix_match(std::string &target, std::string &location)
 
 void Client::SetLocation()
 {
-	request.location = &server.locations[0];
 	size_t biggest = 1;
-
 	size_t i = 0;
-	add_trailing_slash(request.path);
+	std::string find_loc(request.path);
+	request.location = &server.locations[0];
+
 	while(i < server.locations.size()) {
-		size_t tmp = n_prefix_match(request.path, (server.locations[i]).path);
+		size_t tmp = n_prefix_match(find_loc, (server.locations[i]).path);
 		if (tmp > biggest) {
 			biggest = tmp;
 			request.location = &server.locations[i];
 		}
 		i++;
 	}
-	BuildPath(*request.location);
+	BuildPath();
 	std::vector<std::string>& methods = request.location->methods;
 	if (std::find(methods.begin(), methods.end(), request.method) == methods.end())
 	{
@@ -117,14 +117,20 @@ void Client::Error405(Location& loc)
 	parser.state = ERROR;
 }
 
-void  Client::BuildPath(Location& loc)
+void  Client::BuildPath()
 {
-	std::string giga_path(request.path);
-	giga_path.erase(0, loc.path.length());
-	if (loc.root.empty())
-		request.local_path = path_add(server.root, giga_path);
+	std::string local_root;
+
+	request.local_path = request.path;
+	std::cout << "Location: " << request.location->path << std::endl;
+	std::cout << "before: " << request.local_path << std::endl;
+	request.local_path.erase(0, request.location->path.length());
+	std::cout << "after: " << request.local_path << std::endl;
+	if (request.location->root.empty())
+		local_root = server.root;
 	else
-		request.local_path = path_add(loc.root, giga_path);
+		local_root = request.location->root;
+	request.local_path = path_add(local_root, request.local_path);
 	std::cout << "Built path: " << request.local_path << std::endl;
 }
 
@@ -198,7 +204,7 @@ void Client::RequestHandler()
 	if (is_cgi(*request.location, request.path))
 		launch_cgi(request.local_path, server, *this);
 	else if (request.method == "GET")
-		get_static_file(server, request, response);
+		get_static_file(request, response);
 	else if (request.method == "POST")
 		PostFile();
 	else if (request.method == "DELETE")

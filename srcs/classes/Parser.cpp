@@ -17,7 +17,6 @@ void Parser::Reset()
 	req.query.clear();
 	req.version.clear();
 	req.path.clear();
-	req.loc_index = 0;
 }
 
 void Parser::Error(int error_code)
@@ -257,7 +256,6 @@ size_t Parser::FillReq(const std::string& read_buff)
 	size_t i = 0;
 	size_t tmp;
 
-	std::cout << "\n" << read_buff << "\n" << std::endl;
 	if (p_buff.size() != 0) {
 		tmp = p_buff.length();
 		p_buff += read_buff;

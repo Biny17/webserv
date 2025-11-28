@@ -12,6 +12,7 @@ Client::Client(Server &s)
 	this->cat = "mouli1";
 	this->changedCat = false;
 	this->timeout.Stop();
+	this->request.location = &server.locations[0];
 }
 
 Client::Client(const Client& other)
@@ -68,43 +69,37 @@ size_t n_prefix_match(std::string &target, std::string &location)
 	return 0;
 }
 
-void Client::checkLocation()
+void Client::SetLocation()
 {
-	loc = &server.locations[0];
+	request.location = &server.locations[0];
 	size_t biggest = 1;
 
 	size_t i = 0;
-	request.loc_index = 0;
+	add_trailing_slash(request.path);
 	while(i < server.locations.size()) {
 		size_t tmp = n_prefix_match(request.path, (server.locations[i]).path);
-		// std::cout << request.path << " " << (server.locations[i]).path << "  " << tmp << std::endl;
 		if (tmp > biggest) {
 			biggest = tmp;
-			loc = &server.locations[i];
-			request.loc_index = i;
+			request.location = &server.locations[i];
 		}
 		i++;
 	}
-	BuildPath(*loc);
-	if (std::find(loc->methods.begin(), loc->methods.end(), request.method) == loc->methods.end())
+	BuildPath(*request.location);
+	std::vector<std::string>& methods = request.location->methods;
+	if (std::find(methods.begin(), methods.end(), request.method) == methods.end())
 	{
-		if (loc->methods.size() == 0)
+		if (methods.size() == 0)
 			return (void)Error(403);
 		else
-			return Error405(*loc);
+			return Error405(*request.location);
 	}
-	// std::cout << "content_len: " << request.content_len << std::endl;
-	// std::cout << "max_upload: " << server.max_upload << std::endl;
-	if (request.content_len > static_cast<int>(server.max_upload)) {
-		response.code = 413;
-		parser.state = ERROR;
-		return ;
-	}
+	if (request.content_len > static_cast<int>(server.max_upload))
+		return (void)Error(413);
 	if (request.headers.find("Host")->second != server.server_name)
 	{
-		response.code = 400;
-		parser.state = ERROR;
-		return ;
+		std::cout << "Host header doesn't match server name" << std::endl;
+		std::cout << request.headers.find("Host")->second << " != " << server.server_name << std::endl;
+		return (void)Error(400);
 	}
 	parser.state = BODY;
 }
@@ -124,10 +119,13 @@ void Client::Error405(Location& loc)
 
 void  Client::BuildPath(Location& loc)
 {
+	std::string giga_path(request.path);
+	giga_path.erase(0, loc.path.length());
 	if (loc.root.empty())
-		request.local_path = server.root + request.path;
+		request.local_path = path_add(server.root, giga_path);
 	else
-		request.local_path = loc.root + request.path;
+		request.local_path = path_add(loc.root, giga_path);
+	std::cout << "Built path: " << request.local_path << std::endl;
 }
 
 static bool is_cgi(Location& loc, std::string& target)
@@ -168,7 +166,6 @@ bool Client::MultipartFormData()
 		if (access(filename.c_str(), F_OK) == 0)
 			return Error(409);
 		cur = header_end + 4;
-		// print_hex_string(b.substr(cur));
 		size_t data_end = b.find("\r\n", cur);
 		if (data_end == std::string::npos)
 			return Error(400);
@@ -198,7 +195,7 @@ void Client::PostFile()
 
 void Client::RequestHandler()
 {
-	if (is_cgi(*loc, request.path))
+	if (is_cgi(*request.location, request.path))
 		launch_cgi(request.local_path, server, *this);
 	else if (request.method == "GET")
 		get_static_file(server, request, response);

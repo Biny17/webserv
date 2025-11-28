@@ -1,6 +1,7 @@
 #include "webserv.hpp"
 
 std::string	autoindex(std::string const & directory, Request const &request) {	//preciser le directory
+	std::cout << COLOR_GREEN << "opendir: " << directory.c_str() << std::endl;
 	DIR				*dir = opendir(directory.c_str());	//man opendir
 	struct dirent	*content;
 	std::string		answer;

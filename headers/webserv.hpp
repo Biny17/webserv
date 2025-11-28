@@ -47,5 +47,8 @@ bool        write_file(const std::string& filename, const std::string& body, siz
 void        print_hex_string(const std::string& str);
 void    	decode(std::string& str);
 std::string get_extension(const std::string& filename);
+std::string path_add(std::string base, std::string addition);
+std::string& trim_trailing_slash(std::string& str);
+std::string& add_trailing_slash(std::string& path);
 
 #endif // WEBSERV_HPP

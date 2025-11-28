@@ -28,3 +28,30 @@ std::string get_extension(const std::string& filename)
     }
     return extension;
 }
+
+std::string& trim_trailing_slash(std::string& path)
+{
+	path.erase(path.find_last_not_of('/')+1);
+	return path;
+}
+
+std::string& add_trailing_slash(std::string& path)
+{
+	if (path.empty() || *(path.end()-1) != '/')
+		path += '/';
+	return path;
+}
+
+std::string path_add(std::string base, std::string addition)
+{
+	std::cout << COLOR_BROWN << "base: " << base <<
+		" | addition: " << addition << COLOR_NC << std::endl;
+	if (base.empty())
+		return addition;
+	if (addition.empty())
+		return base;
+	base = trim_trailing_slash(base);
+	addition.erase(0, addition.find_first_not_of('/'));
+	return base + "/" + addition;
+}
+

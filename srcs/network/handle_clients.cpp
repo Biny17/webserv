@@ -45,7 +45,8 @@ void	read_client_data(Client& client, Server& server)
 	}
 	if (client.parser.state == CHECK)
 	{
-		client.checkLocation();
+		std::cout << COLOR_LIGHT_RED << client.request.path << COLOR_NC << std::endl;
+		client.SetLocation();
 	}
 	if (client.parser.state == BODY)
 	{

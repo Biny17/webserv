@@ -69,9 +69,9 @@ static void	parse_param(std::vector<std::string> const &words, Location &locatio
 		if (size != 2)
 			throw std::runtime_error(*it + " argument error");
 		if (*(it + 1) == "on")
-			location.autoindex = 1;
+			location.autoindex = true;
 		else if (*(it + 1) == "off")
-			location.autoindex = 0;
+			location.autoindex = false;
 		else
 			throw std::runtime_error(*it + " argument error");
 	}
@@ -137,6 +137,7 @@ static void	parse_line(std::vector<std::string> const &words, std::vector<Server
 		delete_loc_doublon(servers.back().locations, *(it + 1));
 		construct_back<Location>(servers.back().locations);
 		servers.back().locations.back().path = *(it + 1);
+		add_trailing_slash(servers.back().locations.back().path);
 		level++;
 	}
 	else if (*it == "}") {
@@ -300,5 +301,5 @@ void	parse_conf(std::string filename, std::vector<Server> &servers) {
 	std::vector<Server>::iterator	ite = servers.end();
 	for (it = servers.begin(); it != ite; ++it)
 		fill_extension(*it);
-	// access_check(servers);	//!!!!!! pas encore vraiment test !!!!!! 
+	// access_check(servers);	//!!!!!! pas encore vraiment test !!!!!!
 }

@@ -54,6 +54,9 @@ CGI Handler:
     ✔ Process CGI output @done (10/29/2025, 3:08:35 PM)
 
 FileUploadHandler:
-    ☐ Handle multipart/form-data
-    ☐ Save uploaded files to designated directory
-    ☐ Make file size limits
+    ✔ Handle multipart/form-data @done (11/28/2025, 6:14:04 PM)
+    ✔ Save uploaded files to designated directory @done (11/28/2025, 6:14:03 PM)
+    ✔ Make file size limits @done (11/28/2025, 6:14:01 PM)
+
+Endgame:
+    ☐ fix auto index and path construction

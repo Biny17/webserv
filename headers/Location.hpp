@@ -9,7 +9,7 @@ class Location {
 		Location(void);
 		~Location(void);
 
-		int							autoindex;
+		bool						autoindex;
 		std::string					path;
 		std::vector<std::string>	index;
 		std::string					root;

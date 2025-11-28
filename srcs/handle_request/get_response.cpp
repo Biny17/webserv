@@ -39,7 +39,7 @@ void	get_static_file(Server &server, Request const &request, Response &response)
 {
 	int content = target_type(request.local_path);
 	std::string req_path = request.local_path;
-	Location& location = server.locations[request.loc_index];
+	Location& location = *request.location;
 
 	if (content == 1) // 1 is file
 	{
@@ -60,7 +60,7 @@ void	get_static_file(Server &server, Request const &request, Response &response)
 			response.code = 200;
 		}
 	}
-	else if (server.locations[request.loc_index].autoindex == 1)
+	else if ((*request.location).autoindex == true)
 		response.body = autoindex(request.local_path, request);
 	else
 		response.code = 404;

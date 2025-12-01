@@ -95,7 +95,10 @@ void Client::SetLocation()
 	}
 	if (request.content_len > static_cast<int>(server.max_upload))
 		return (void)Error(413);
-	if (request.headers.find("Host")->second != server.server_name)
+	std::string host_without_port = request.headers.find("Host")->second;
+	host_without_port = host_without_port.substr(0, host_without_port.find_last_of(':'));
+	// std::cout << "host without port: " << host_without_port << std::endl;
+	if (host_without_port != server.server_name)
 	{
 		std::cout << "Host header doesn't match server name" << std::endl;
 		std::cout << request.headers.find("Host")->second << " != " << server.server_name << std::endl;

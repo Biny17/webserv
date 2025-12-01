@@ -179,7 +179,7 @@ void	Response::Build(void)
 	std::string page = FindPage();
 	if (page != "")
 		this->body = ReadFile(page);
-	if (this->content_type == "text/html; charset=utf-8")
+	if (this->content_type == "text/html")
 		ReplaceCat();
 	if (this->body == "")
 		this->body = Reason();

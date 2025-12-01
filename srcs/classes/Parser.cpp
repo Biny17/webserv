@@ -17,6 +17,9 @@ void Parser::Reset()
 	req.query.clear();
 	req.version.clear();
 	req.path.clear();
+	p_buff.clear();
+	req.body.clear();
+	f = &Parser::DefaultBody;
 }
 
 void Parser::Error(int error_code)
@@ -276,7 +279,8 @@ void Parser::DefaultBody(const std::string& buff, size_t i)
 
 	if (req.body.length() > 0)
 	{
-		std::cout << req.body << std::endl;
+		std::cout << COLOR_LIGHT_GRAY << "body size: "
+		<< req.body.length() << COLOR_NC << std::endl;
 	}
 	if (req.body.length() == static_cast<size_t>(req.content_len))
 	{

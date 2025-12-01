@@ -18,13 +18,21 @@ bool valid_filename(std::string& filename)
 
 bool extract_boundary(const std::string& body, size_t& cur, const std::string& boundary)
 {
+    std::cout << COLOR_LIGHT_RED;
     if (body.compare(cur, 2, "--") != 0)
+    {
+        std::cout << "\nexpected '--' got: " << body.substr(cur, 2) << std::endl;
 		return false;
+    }
 	cur += 2;
     // std::cout << COLOR_YELLOW << body.substr(cur) << COLOR_NC << std::endl;
     if (body.compare(cur, boundary.size(), boundary) != 0)
+    {
+        std::cout << "\nexpected boundary got: " << body.substr(cur, boundary.size()) << std::endl;
         return false;
+    }
     cur += boundary.size();
+    std::cout << COLOR_NC;
     return true;
 }
 

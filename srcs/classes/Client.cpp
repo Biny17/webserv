@@ -60,11 +60,13 @@ void	Client::setCGI(int referringFD)
 size_t n_prefix_match(std::string &target, std::string &location)
 {
 	size_t n = 0;
-	while (target[n] == location[n]
-			&& n < target.length()
-			&& n < location.length())
+	while (n < target.length()
+			&& n < location.length()
+			&& target[n] == location[n])
 		n++;
-	if (n == location.length())
+	// std::cout << COLOR_LIGHT_PURPLE << "rest of target: "
+	// 	<< target[n+1] << " " << target.substr(n) << COLOR_NC << std::endl;
+	if (n == location.length() && (n == target.length() || target[n] == '/'))
 		return n;
 	return 0;
 }
@@ -125,10 +127,10 @@ void  Client::BuildPath()
 	std::string local_root;
 
 	request.local_path = request.path;
-	std::cout << "Location: " << request.location->path << std::endl;
-	std::cout << "before: " << request.local_path << std::endl;
+	print_location_info(*request.location);
+	// std::cout << "before: " << request.local_path << std::endl;
 	request.local_path.erase(0, request.location->path.length());
-	std::cout << "after: " << request.local_path << std::endl;
+	// std::cout << "after: " << request.local_path << std::endl;
 	if (request.location->root.empty())
 		local_root = server.root;
 	else

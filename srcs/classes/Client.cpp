@@ -174,6 +174,7 @@ bool Client::MultipartFormData()
 		std::string filename = extract_filename(b, cur);
 		if (!valid_filename(filename))
 			return Error(400);
+		filename = path_add(request.local_path, filename);
 		if (access(filename.c_str(), F_OK) != 0)
 			return Error(409);
 		cur = header_end + 4;

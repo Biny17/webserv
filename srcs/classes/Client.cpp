@@ -172,7 +172,7 @@ bool Client::MultipartFormData()
 		std::string filename = extract_filename(b, cur);
 		if (!valid_filename(filename))
 			return Error(400);
-		if (access(filename.c_str(), F_OK) == 0)
+		if (access(filename.c_str(), F_OK) != 0)
 			return Error(409);
 		cur = header_end + 4;
 		size_t data_end = b.find("\r\n", cur);
@@ -206,8 +206,17 @@ void Client::RequestHandler()
 {
 	if (is_cgi(*request.location, request.path))
 		launch_cgi(request.local_path, server, *this);
+	else if (request.method == "GET" && request.path == "/cgi/list")
+		response.body = get_available_cgi();
 	else if (request.method == "GET")
+	{
+		if (request.path == "/cookie")
+		{
+			switchCat();
+			request.local_path = "./www";
+		}
 		get_static_file(request, response);
+	}
 	else if (request.method == "POST")
 		PostFile();
 	else if (request.method == "DELETE")

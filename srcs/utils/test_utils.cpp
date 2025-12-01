@@ -18,7 +18,7 @@ void Parser::Print()
     }
     else
     {
-        std::cout << "Error !" << std::endl;
+        std::cout << "Parsing Error !" << std::endl;
         std::cout << err.code << std::endl;
         std::cout << err.body << std::endl;
     }

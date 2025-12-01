@@ -175,7 +175,7 @@ bool Client::MultipartFormData()
 		if (!valid_filename(filename))
 			return Error(400);
 		filename = path_add(request.local_path, filename);
-		if (access(filename.c_str(), F_OK) != 0)
+		if (access(filename.c_str(), F_OK) == 0)
 			return Error(409);
 		cur = header_end + 4;
 		size_t data_end = b.find("\r\n", cur);

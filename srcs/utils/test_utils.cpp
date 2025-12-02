@@ -57,13 +57,6 @@ void print_hex_string(const std::string& str) {
 void print_location_info(Location& location)
 {
     std::cout << COLOR_LIGHT_GREEN << std::endl;
-    std::cout << "Location path: " << location.path << std::endl;
-    std::cout << "root: " << location.root << std::endl;
-    std::cout << "methods: ";
-    for (size_t i = 0; i < location.methods.size(); i++)
-    {
-        std::cout << location.methods[i] << " ";
-    }
-    std::cout << std::endl;
+    std::cout << location << std::endl;
     std::cout << COLOR_NC << std::endl;
 }

@@ -87,6 +87,20 @@ void Client::SetLocation()
 		i++;
 	}
 	BuildPath();
+
+
+	// POUR LES REDIRECTION
+
+	Location &location = *request.location;
+	if (!location.redirect.empty())
+	{
+		// request.location = &server.locations[0];
+		return((void)Error(301));
+	}
+
+	//
+
+
 	std::vector<std::string>& methods = request.location->methods;
 	if (std::find(methods.begin(), methods.end(), request.method) == methods.end())
 	{

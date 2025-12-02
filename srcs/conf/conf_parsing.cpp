@@ -96,10 +96,17 @@ static void	parse_param(std::vector<std::string> const &words, Location &locatio
 		location.cgi_path = *(it + 1);
 	}
 	else if (*it == "cgi_extension") {
-		// if (size != 2)
-			// throw std::runtime_error(*it + " argument error");
 		for (it = words.begin() + 1; it != ite; ++it)
 			location.cgi_extension.push_back(*it);
+	}
+	else if (*it == "return") {
+		if (size != 3)
+			throw std::runtime_error(*it + " argument error");
+		for (size_t i = 0; i < (*(it + 1)).size(); i++)
+			if (!std::isdigit((*(it + 1))[i]))
+				throw std::runtime_error(*it + " argument error");
+		std::pair<int, std::string>	err(std::atoi((*(it + 1)).c_str()), *(it + 2));
+		location.redirect.insert(err);
 	}
 	else
 		throw std::runtime_error("location unknown command : " + *it);

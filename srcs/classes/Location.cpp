@@ -19,8 +19,8 @@ std::ostream	&operator<<(std::ostream &o, Location const &loc) {
 	if (!loc.root.empty())
 		o << "root : " << loc.root << std::endl;
 	o << "autoindex : " << loc.autoindex << std::endl;
-	// if (!loc.redirect.empty())
-	// 	o << "redirect : " << loc.path << std::endl;
+	if (!loc.redirect.empty())
+		o << "redirect : " << loc.redirect.begin()->first << " " << loc.redirect.begin()->second << std::endl;
 	if (!loc.upload_dir.empty())
 		o << "upload_dir : " << loc.path << std::endl;
 	if (!loc.index.empty())

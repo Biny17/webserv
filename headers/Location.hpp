@@ -13,14 +13,12 @@ class Location {
 		std::string					path;
 		std::vector<std::string>	index;
 		std::string					root;
-		// std::string					redirect;
+		std::map<int, std::string>	redirect;
 		std::string					cgi_path;
 		std::vector<std::string>	cgi_extension;
 		std::string					upload_dir;
 		std::vector<std::string>	methods;
 		std::map<std::string, std::string>	extension;
-		// std::vector<Location>		locations;
-
 };
 std::ostream	&operator<<(std::ostream &o, Location const &loc);
 

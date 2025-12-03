@@ -16,15 +16,14 @@ void	build_delete_response(Server const &server, Request const &request, Respons
 	}
 
 	int content = target_type(request.local_path);
-	if (content == 2)
+	if (content == Target::DIR)
 		response.code = 400;
-	else if (content == 0)
-		response.code = 403;
 	else
 	{
-		std::remove(request.local_path.c_str());
-		response.code = 204;
+		if (std::remove(request.local_path.c_str()) == 0)
+			response.code = 204;
+		else
+			response.code = 500;
 	}
-
 	return ;
 }

@@ -12,7 +12,7 @@ class Location {
 		bool						autoindex;
 		std::string					path;
 		std::vector<std::string>	index;
-		std::string					root;
+		std::string					alias;
 		std::map<int, std::string>	redirect;
 		std::string					cgi_path;
 		std::vector<std::string>	cgi_extension;

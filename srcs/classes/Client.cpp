@@ -137,10 +137,10 @@ void  Client::BuildPath()
 	// std::cout << "before: " << request.local_path << std::endl;
 	request.local_path.erase(0, request.location->path.length());
 	// std::cout << "after: " << request.local_path << std::endl;
-	if (request.location->root.empty())
+	if (request.location->alias.empty())
 		local_root = server.root;
 	else
-		local_root = request.location->root;
+		local_root = request.location->alias;
 	request.local_path = path_add(local_root, request.local_path);
 	std::cout << "Built path: " << request.local_path << std::endl;
 }

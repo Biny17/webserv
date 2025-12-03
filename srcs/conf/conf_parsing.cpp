@@ -79,10 +79,10 @@ static void	parse_param(std::vector<std::string> const &words, Location &locatio
 		for (it = words.begin() + 1; it != words.end(); ++it)
 			location.index.push_back(*it);
 	}
-	else if (*it == "root") {
+	else if (*it == "alias") {
 		if (size != 2)
 			throw std::runtime_error(*it + " argument error");
-		location.root = *(it + 1);
+		location.alias = *(it + 1);
 	}
 	else if (*it == "allow_methods")
 		for (it = words.begin() + 1; it != ite; ++it) {
@@ -171,14 +171,14 @@ void	check_location(Server const &server) {
 		//check les path des location
 		for (it = server.locations.begin(); it != ite; ++it)
 		{
-			if ((*it).root.empty())
+			if ((*it).alias.empty())
 			{
 				if (access((server.root + (*it).path).c_str(), F_OK))
 					throw std::runtime_error("cant access " + (*it).path);
 			}
 			else
 			{
-				if (access(((*it).root + (*it).path).c_str(), F_OK))
+				if (access(((*it).alias + (*it).path).c_str(), F_OK))
 					throw std::runtime_error("cant access " + (*it).path);
 			}
 
@@ -187,14 +187,14 @@ void	check_location(Server const &server) {
 			std::vector<std::string>::const_iterator itle = (*it).index.end();
 			for (itl = (*it).index.begin(); itl != itle; ++itl)
 			{
-				if ((*it).root.empty())
+				if ((*it).alias.empty())
 				{
 					if (access((server.root + (*it).path + *itl).c_str(), F_OK))
 						throw std::runtime_error("cant access " + *itl);
 				}
 				else
 				{
-					if (access(((*it).root + (*it).path + *itl).c_str(), F_OK))
+					if (access(((*it).alias + (*it).path + *itl).c_str(), F_OK))
 						throw std::runtime_error("cant access " + *itl);
 				}
 			}

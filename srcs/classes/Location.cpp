@@ -16,8 +16,8 @@ std::ostream	&operator<<(std::ostream &o, Location const &loc) {
 	std::cout << "++++++++++++++++++++++Location+++++++++++++++++++" << std::endl;
 	if (!loc.path.empty())
 		o << "path : " << loc.path << std::endl;
-	if (!loc.root.empty())
-		o << "root : " << loc.root << std::endl;
+	if (!loc.alias.empty())
+		o << "root : " << loc.alias << std::endl;
 	o << "autoindex : " << loc.autoindex << std::endl;
 	if (!loc.redirect.empty())
 		o << "redirect : " << loc.redirect.begin()->first << " " << loc.redirect.begin()->second << std::endl;

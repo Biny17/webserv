@@ -235,12 +235,12 @@ void	Response::Send(void)
 		if (this->client.epollStatus & EPOLLOUT)
 			set_epoll_event(this->client.server.epfd, this->client, EPOLLIN);
 
-		this->body = "";
-		this->code = 200;
-		this->content_type = "";
-		this->client.parser.Reset();
-		this->client.timeout.Stop();
-
+		body = "";
+		code = 200;
+		content_type = "";
+		client.parser.Reset();
+		client.timeout.Stop();
+		headers.clear();
 		return ;
 	}
 

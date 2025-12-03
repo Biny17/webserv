@@ -39,7 +39,7 @@ static void	parse_param(std::vector<std::string> const &words, Server &server) {
 				throw std::runtime_error(*it + " argument error");
 		server.max_upload = std::atoi((*(it + 1)).c_str());
 	}
-	else if (*it == "root") {
+	else if (*it == "root" || *it == "alias") {
 		if (size != 2)
 			throw std::runtime_error(*it + " argument error");
 		server.root = *(it + 1);

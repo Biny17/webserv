@@ -110,9 +110,9 @@ int	launch_cgi(std::string &filename, Server& server, Client& client) {
 
 	std::vector<std::string>	cgi;
 	if (access(filename.c_str(), F_OK))
-		return (-1);
+		return (404);
 	if (filename.find_last_of('.') == filename.npos)
-		return (-1);
+		return (501);
 	if (filename.substr(filename.find_last_of('.'), filename.size()) == ".py") {
 		cgi.push_back("python");
 		cgi.push_back(filename);
@@ -122,6 +122,6 @@ int	launch_cgi(std::string &filename, Server& server, Client& client) {
 		cgi.push_back(filename);
 	}
 	else
-		return (-1);
-	return(exec_cgi(cgi, server, client));
+		return (501);
+	return(exec_cgi(cgi, server, client)); // quoi faire avec ce mysterieux fd ?
 }

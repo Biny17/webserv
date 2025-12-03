@@ -215,8 +215,9 @@ void Client::RequestHandler()
 {
 	if (is_cgi(*request.location, request.path))
 	{
-		launch_cgi(request.local_path, server, *this);
-		return ;
+		int cgi_res = launch_cgi(request.local_path, server, *this);
+		if (cgi_res >= 400)
+			response.code = cgi_res;
 	}
 	else if (request.method == "GET" && request.path == "/cgi/list")
 		response.body = get_available_cgi();

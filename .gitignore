@@ -7,3 +7,4 @@ objs
 # Binary
 webserv
 en.subject.pdf
+config/test.conf

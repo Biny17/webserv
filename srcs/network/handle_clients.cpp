@@ -61,6 +61,4 @@ void	read_client_data(Client& client, Server& server)
 		client.response.Build();
 		client.response.Send();
 	}
-	// if (client.request.path.find("cookie") != client.request.path.npos) // Temporary for cookies
-	// 	client.switchCat();
 }

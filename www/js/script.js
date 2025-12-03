@@ -11,8 +11,7 @@ async function delete_req() {
 			input.value = '';
 			alert('File ' + filename + ' deleted');
 		} else {
-			const text = await res.text().catch(() => '');
-			alert('Delete failed: ' + (text || res.status));
+			alert('Delete failed: ' + res.status);
 		}
 	})
 }

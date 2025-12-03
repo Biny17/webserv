@@ -4,6 +4,11 @@
 void	build_delete_response(Server const &server, Request const &request, Response &response) {
 
 	(void)server;
+	if (request.local_path.find("..") != request.local_path.npos)
+	{
+		response.code = 400;
+		return ;
+	}
 	if (access(request.local_path.c_str(), F_OK) == -1)												//check if the file exist
 	{
 		response.code = 404;

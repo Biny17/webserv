@@ -255,5 +255,7 @@ void	Response::PrintHeader(void)
 	else
 		std::cout << COLOR_RED;
 	std::cout << std::endl << "------- RESPONSE HEADER -------" << std::endl;
-	std::cout << this->header << COLOR_NC;
+	std::cout << this->header;
+	std::cout << COLOR_NC;
+	std::cout.flush();
 }

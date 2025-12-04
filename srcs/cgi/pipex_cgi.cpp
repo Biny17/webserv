@@ -55,30 +55,43 @@ void	close_fds(void)
 	}
 }
 
-void	exec_child(std::vector<std::string> const &cgi, Client& client, int	fdout, int pipefd[2])
+void	exec_child(std::vector<std::string> const &cgi, Client& client, int	fdout, int pipe_in[2], int pipe_out[2])
 {
 	char	*tab[] = {(char *)cgi[0].c_str(), (char *)cgi[1].c_str(), NULL};
 
-	std::vector<char*>	env;
+	std::vector<std::string> env;
 	for (char **current = environ; *current; ++current) {
 		env.push_back(*current);
 	}
-	std::string query = "QUERY_STRING=" + client.request.query;
-	env.push_back(const_cast<char *>(query.c_str()));
+	env.push_back("SERVER_NAME=" + client.server.server_name);
+	env.push_back("REQUEST_METHOD=" + client.request.method);
+	env.push_back("SCRIPT_NAME=" + client.request.path);
+	if (client.request.method == "GET")
+		env.push_back("QUERY_STRING=" + client.request.query);
 	if (client.request.method == "POST")
 	{
-		std::string length = "CONTENT-LENGTH=" + client.request.headers["Content-Length"];
-		env.push_back(const_cast<char *>(length.c_str()));
-		// dup2(client.request.body, STDIN_FILENO);
+		env.push_back("CONTENT_LENGTH=" + client.request.headers["Content-Length"]);
+		env.push_back("CONTENT_TYPE=" + client.request.headers["Content-Type"]);
+
+		dup2(pipe_in[0], STDIN_FILENO);
+
 	}
-	env.push_back(NULL);
+
+	std::vector<char*> envp;
+	envp.reserve(env.size() + 1);
+	for (std::vector<std::string>::iterator it = env.begin(); it != env.end(); ++it)
+		envp.push_back(const_cast<char*>(it->c_str()));
+	envp.push_back(NULL);
+
 	close_fds();
-	close(pipefd[0]);
-	dup2(pipefd[1], STDOUT_FILENO);
-	close(pipefd[1]);
+	close(pipe_in[1]);
+	close(pipe_in[0]);
+	close(pipe_out[0]);
+	dup2(pipe_out[1], STDOUT_FILENO);
+	close(pipe_out[1]);
 	close(fdout);
 	std::string test = find_path(cgi[0], __environ);
-	execve(test.c_str(), tab, env.data());
+	execve(test.c_str(), tab, envp.data());
 	std::string errmessage = "cgi execve failure - ";
 	errmessage += strerror(errno);
 	throw std::runtime_error(errmessage.c_str());
@@ -86,23 +99,51 @@ void	exec_child(std::vector<std::string> const &cgi, Client& client, int	fdout, 
 
 int	exec_cgi(std::vector<std::string> const &cgi, Server& server, Client& client)
 {
-	int		pipefd[2];
+	int		pipe_out[2];
+	int		pipe_in[2];
 	int		fdout;
 	pid_t	pid;
 
-	pipe(pipefd);
-	fdout = dup(pipefd[0]);
+	if (pipe(pipe_out) == -1)
+		return (-1);
+	if (pipe(pipe_in) == -1) {
+		close(pipe_out[0]); close(pipe_out[1]);
+		return (-1);
+	}
+	fdout = dup(pipe_out[0]);
 	server.addClient(fdout);
 	pid = fork();
-	if (pid == -1)
+	if (pid == -1) {
+		close(pipe_out[0]); close(pipe_out[1]);
+		close(pipe_in[0]); close(pipe_in[1]);
+		close(fdout);
 		return (-1);
+	}
 	if (pid == 0)
-		exec_child(cgi, client, fdout, pipefd);
+		exec_child(cgi, client, fdout, pipe_in, pipe_out);
+
+	if (client.request.method == "POST")
+	{
+		const char *buf = client.request.body.c_str();
+		size_t to_write = client.request.body.size();
+		long written = 0;
+		while (to_write > 0) {
+			long n = write(pipe_in[1], buf + written, to_write);
+			if (n <= 0)
+				break;
+			written += n;
+			to_write -= n;
+		}
+	}
+
+	close(pipe_in[1]);
+	close(pipe_in[0]);
+	close(pipe_out[1]);
+	close(pipe_out[0]);
+
 	std::map<int, Client>::iterator cliIt = server.clients.find(fdout);
 	cliIt->second.setCGI(client.fd);
 	cliIt->second.CGIpid = pid;
-	close(pipefd[1]);
-	close(pipefd[0]);
 	return (fdout);
 }
 

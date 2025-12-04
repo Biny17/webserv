@@ -135,7 +135,8 @@ void  Client::BuildPath()
 	request.local_path = request.path;
 	print_location_info(*request.location);
 	// std::cout << "before: " << request.local_path << std::endl;
-	request.local_path.erase(0, request.location->path.length());
+	if (!request.location->alias.empty())
+		request.local_path.erase(0, request.location->path.length());
 	// std::cout << "after: " << request.local_path << std::endl;
 	if (request.location->alias.empty())
 		local_root = server.root;

@@ -219,8 +219,9 @@ void Parser::PostCheck()
 	{
 		std::stringstream ss(ce->second);
 		ss >> req.content_len;
-		if (ss.fail() || !ss.eof() || ss.bad() || req.content_len < 0)
+		if (ss.fail() || !ss.eof() || ss.bad() || req.content_len <= 0)
 			return Error(400);
+		req.body.reserve(req.content_len);
 	}
 	else
 		return Error(400);
@@ -275,15 +276,17 @@ size_t Parser::FillReq(const std::string& read_buff)
 void Parser::DefaultBody(const std::string& buff, size_t i)
 {
 	size_t to_read = std::min(req.content_len - req.body.length(), buff.length() - i);
-	req.body += buff.substr(i, to_read);
 
-	if (req.body.length() > 0)
-	{
-		std::cout << COLOR_LIGHT_GRAY << "body size: "
-		<< req.body.length() << COLOR_NC << std::endl;
-	}
+	std::cout << COLOR_LIGHT_GREEN << "["
+			<< req.body.length() << "/" << req.content_len
+			<< "] reading " << to_read << " bytes, "
+			<< "buffer size: " << buff.length()
+			<< COLOR_NC << std::endl;
+	req.body += buff.substr(i, to_read);
 	if (req.body.length() == static_cast<size_t>(req.content_len))
 	{
+		std::cout << COLOR_LIGHT_GREEN << "Finished body, size: "
+				  << req.body.length() << COLOR_NC << std::endl;
 		state = HANDLE;
 	}
 }

@@ -27,16 +27,17 @@ void	accept_new_client(int sockfd, Server& server)
 // Handle client request
 void	read_client_data(Client& client, Server& server)
 {
-	char	buf[REQUEST_BUFF_SIZE + 1];
-	ssize_t	bytes = recv(client.fd, buf, REQUEST_BUFF_SIZE, 0);
+	std::string buf;
+	buf.resize(REQUEST_BUFF_SIZE);
+	ssize_t	bytes = recv(client.fd, &buf[0], REQUEST_BUFF_SIZE, 0);
 
 	if (bytes <= 0)
 	{
 		server.removeClient(client.fd);
 		return ;
 	}
-
-	buf[bytes] = 0;
+	buf.resize(bytes);
+	std::cout << COLOR_LIGHT_GREEN << "Received " << bytes << " bytes from client " << client.fd << COLOR_NC << std::endl;
 	size_t i = 0;
 	if (client.parser.state == METHOD || client.parser.state == PATH
 		|| client.parser.state == QUERY || client.parser.state == VERSION

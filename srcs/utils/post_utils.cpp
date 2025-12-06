@@ -1,4 +1,6 @@
 #include "../../headers/webserv.hpp"
+#include <cerrno>
+#include <cstring>
 
 bool valid_filename(std::string& filename)
 {
@@ -21,7 +23,8 @@ bool extract_boundary(const std::string& body, size_t& cur, const std::string& b
     std::cout << COLOR_LIGHT_RED;
     if (body.compare(cur, 2, "--") != 0)
     {
-        std::cout << "\nexpected '--' got: " << body.substr(cur, 2) << std::endl;
+        std::cout << "\nexpected '--' got: " << body.substr(cur, 20)
+        << " at: " << cur << std::endl;
 		return false;
     }
 	cur += 2;
@@ -58,6 +61,8 @@ std::string extract_filename(const std::string& body, size_t& cur) {
 bool write_file(const std::string& filename, const std::string& body, size_t cur, size_t data_end) {
     std::ofstream newfile(filename.c_str());
     if (!newfile) {
+        std::cout << "Failed to open file: " << filename << std::endl;
+        std::cout << "Error: " << std::strerror(errno) << std::endl;
         return false;
     }
     newfile << body.substr(cur, data_end - cur);

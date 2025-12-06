@@ -37,7 +37,7 @@ void	read_client_data(Client& client, Server& server)
 		return ;
 	}
 	buf.resize(bytes);
-	std::cout << COLOR_LIGHT_GREEN << "Received " << bytes << " bytes from client " << client.fd << COLOR_NC << std::endl;
+	// std::cout << COLOR_LIGHT_GREEN << "Received " << bytes << " bytes from client " << client.fd << COLOR_NC << std::endl;
 	size_t i = 0;
 	if (client.parser.state == METHOD || client.parser.state == PATH
 		|| client.parser.state == QUERY || client.parser.state == VERSION

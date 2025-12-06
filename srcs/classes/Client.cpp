@@ -184,12 +184,12 @@ bool Client::MultipartFormData()
 		if (access(filename.c_str(), F_OK) == 0)
 			return Error(409);
 		cur = header_end + 4;
-		size_t data_end = b.find("\r\n", cur);
+		size_t data_end = b.find(bnd, cur) - 2;
 		if (data_end == std::string::npos)
 			return Error(400);
-		if (!write_file(filename, b, cur, data_end))
+		if (!write_file(filename, b, cur, data_end - 2))
 			return Error(500);
-		cur = data_end + 2;
+		cur = data_end;
 	}
 	return true;
 }

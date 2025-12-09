@@ -5,7 +5,7 @@ async function delete_req() {
 		alert('Veuillez indiquer le nom du fichier à supprimer.');
 		return;
 	}
-	fetch('/' + encodeURIComponent(filename), { method: 'DELETE' })
+	fetch('/data/' + encodeURIComponent(filename), { method: 'DELETE' })
 	.then(async res => {
 		if (res.ok) {
 			input.value = '';

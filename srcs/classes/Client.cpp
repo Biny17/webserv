@@ -90,8 +90,22 @@ void Client::SetLocation()
 	Location &location = *request.location;
 	if (!location.redirect.empty())
 	{
-		response.headers.push_back("Location: " + location.redirect.begin()->second);
-		return((void)Error(location.redirect.begin()->first));
+		if (location.redirect.begin()->first == 301) {
+			if (match_location(location.redirect.begin()->second, server.locations) == true)
+			{
+				response.headers.push_back("Location: " + location.redirect.begin()->second);
+				return((void)Error(301));
+			}
+		}
+		else
+		{
+			if (match_location(location.redirect.begin()->second, server.locations) == false)
+			{
+				response.headers.push_back("Location: " + location.redirect.begin()->second);
+				return((void)Error(302));
+			}
+		}
+		return((void)Error(400));
 	}
 	std::vector<std::string>& methods = request.location->methods;
 	if (std::find(methods.begin(), methods.end(), request.method) == methods.end())

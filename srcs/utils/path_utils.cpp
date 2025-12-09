@@ -68,3 +68,14 @@ std::string path_add(std::string base, std::string addition)
 	return base + "/" + addition;
 }
 
+bool	match_location(std::string &srcs, std::vector<Location> &locations)
+{
+	std::vector<Location>::iterator	it = locations.begin();
+	std::vector<Location>::iterator	ite = locations.end();
+
+	for (it = locations.begin(); it != ite; ++it) {
+		if ((*it).path == srcs)
+			return (true);
+	}
+	return (false);
+}

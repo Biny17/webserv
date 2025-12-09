@@ -56,5 +56,6 @@ std::string& trim_trailing_slash(std::string& str);
 std::string& add_trailing_slash(std::string& path);
 std::string& add_leading_slash(std::string& path);
 void print_location_info(Location& location);
+bool	match_location(std::string &srcs, std::vector<Location> &locations);
 
 #endif // WEBSERV_HPP

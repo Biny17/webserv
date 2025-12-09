@@ -42,7 +42,7 @@ def main():
 
 		messages = []
 		for filename, content in files:
-			path = os.path.join("../data", os.path.basename(filename))
+			path = os.path.join("www/data", os.path.basename(filename))
 			with open(path, "wb") as f:
 				f.write(content)
 			messages.append(f"✅ File <strong>{filename}</strong> uploaded successfully.")

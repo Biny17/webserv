@@ -42,6 +42,7 @@ all: $(NAME)
 
 $(NAME): $(OBJS)
 	$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME)
+	@mkdir -p www/data
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.cpp
 	@mkdir -p $(dir $@)

@@ -166,75 +166,6 @@ static void	parse_line(std::vector<std::string> const &words, std::vector<Server
 	}
 }
 
-//check every location of a server bloc and test access to it and access to every index file in it
-void	check_location(Server const &server) {
-
-		std::vector<Location>::const_iterator	it;
-		std::vector<Location>::const_iterator	ite = server.locations.end();
-
-		//check les path des location
-		for (it = server.locations.begin(); it != ite; ++it)
-		{
-			if ((*it).alias.empty())
-			{
-				if (access((server.root + (*it).path).c_str(), F_OK))
-					throw std::runtime_error("cant access " + (*it).path);
-			}
-			else
-			{
-				if (access(((*it).alias + (*it).path).c_str(), F_OK))
-					throw std::runtime_error("cant access " + (*it).path);
-			}
-
-			//check les index file du bloc location
-			std::vector<std::string>::const_iterator itl;
-			std::vector<std::string>::const_iterator itle = (*it).index.end();
-			for (itl = (*it).index.begin(); itl != itle; ++itl)
-			{
-				if ((*it).alias.empty())
-				{
-					if (access((server.root + (*it).path + *itl).c_str(), F_OK))
-						throw std::runtime_error("cant access " + *itl);
-				}
-				else
-				{
-					if (access(((*it).alias + (*it).path + *itl).c_str(), F_OK))
-						throw std::runtime_error("cant access " + *itl);
-				}
-			}
-		}
-}
-
-//check for access error in different path or file in server configuration
-void	access_check(std::vector<Server> const &servers) {
-
-	std::vector<Server>::const_iterator	it;
-	std::vector<Server>::const_iterator	ite = servers.end();
-
-	for (it = servers.begin(); it != ite; ++it)
-	{
-		check_location(*it);
-
-		//check for access error in server index
-		std::vector<std::string>::const_iterator	ita;
-		std::vector<std::string>::const_iterator	itae = (*it).index_page.end();
-		for (ita = (*it).index_page.begin(); ita != itae; ++ita)
-		{
-			if (access(((*it).root + *ita).c_str(), F_OK))
-				throw std::runtime_error("cant access " + *ita);
-		}
-
-		//check for access error in error file
-		std::map<int, std::string>::const_iterator	itl;
-		std::map<int, std::string>::const_iterator	itle = (*it).err_page.end();
-		for (itl = (*it).err_page.begin(); itl != itle; ++itl)
-		{
-			if (access(((*it).root + itl->second).c_str(), F_OK))
-				throw std::runtime_error("cant access " + itl->second);
-		}
-	}
-}
-
 void	fill_extension(Server &server) {
 
 	std::vector<Location>::iterator	it;
@@ -312,5 +243,4 @@ void	parse_conf(std::string filename, std::vector<Server> &servers) {
 	std::vector<Server>::iterator	ite = servers.end();
 	for (it = servers.begin(); it != ite; ++it)
 		fill_extension(*it);
-	// access_check(servers);	//!!!!!! pas encore vraiment test !!!!!!
 }

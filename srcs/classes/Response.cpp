@@ -72,7 +72,7 @@ std::string	Response::Date(void)
 
 std::string	Response::GetConnection(void)
 {
-	if (this->client.request.headers.find("Connection") != this->client.request.headers.end())
+	if (this->code != 413 && this->client.request.headers.find("Connection") != this->client.request.headers.end())
 		return (client.request.headers["Connection"]);
 	return ("close");
 }
@@ -217,16 +217,19 @@ void	Response::Send(void)
 	ssize_t	bytes = send(this->client.fd, this->outBuffer.c_str(), this->outBuffer.size(), 0);
 
 	if (bytes < 0)
+	{
+		this->client.server.removeClient(this->client.fd);
 		return ;
+	}
 
-	if (bytes > 0)
+	if (bytes >= 0)
 		this->outBuffer.erase(0, bytes);
 
 	if (this->outBuffer.empty())
 	{
 		client.response.PrintHeader();
 
-		if (this->GetConnection() == "close")
+		if (this->GetConnection() == "close" || code == 413)
 		{
 			this->client.server.removeClient(this->client.fd);
 			return ;

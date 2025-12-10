@@ -54,7 +54,7 @@ void	get_static_file(Request const &request, Response &response)
 	{
 		req_path += find_index(location.index);
 		if (!fetch_file(req_path, response.body))
-			response.code = 500;
+			response.code = 404;
 		else {
 			response.content_type = "text/html";
 			response.code = 200;
@@ -62,7 +62,9 @@ void	get_static_file(Request const &request, Response &response)
 	}
 	else if (content == Target::DIR && (*request.location).autoindex == true)
 		response.body = autoindex(request.local_path, request);
-	else
+	else if (content == Target::NOTFOUND)
 		response.code = 404;
+	else
+		response.code = 500;
 	return ;
 }

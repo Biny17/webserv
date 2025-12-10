@@ -31,7 +31,7 @@
 # include "Mime.hpp"
 
 namespace Target {
-    enum Type { UNKNOWN, FILE, DIR };
+    enum Type { NOTFOUND, FILE, DIR, ERROR };
 }
 
 // Global because I love the 42norm

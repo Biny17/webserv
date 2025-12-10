@@ -5,7 +5,7 @@
 Target::Type target_type(std::string const &path)
 {
 	if (access(path.c_str(), F_OK) == -1)		//return 0 if undefined
-		return (Target::UNKNOWN);
+		return (Target::NOTFOUND);
 
 	int fd = open(path.c_str(), O_DIRECTORY);	//return 2 if directory
 	if (fd != -1)
@@ -20,7 +20,7 @@ Target::Type target_type(std::string const &path)
 		std::cout << COLOR_BROWN << "It's a FILE ! " << COLOR_NC << std::endl;
 		return (close(fd), Target::FILE);
 	}
-	return (Target::UNKNOWN);
+	return (Target::ERROR);
 }
 
 std::string get_extension(const std::string& filename)

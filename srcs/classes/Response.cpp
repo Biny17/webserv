@@ -84,7 +84,7 @@ std::string	Response::Header(void)
 	header << "HTTP/1.1 " << this->code << " " << this->Reason() << "\r\n";
 	header << "Date: " << this->Date() << "\r\n";
 	header << "Server: webserv\r\n";
-	header << this->Cat();
+	header << "Set-Cookie: cookie=" + this->client.cat + "\r\n";
 	if (this->body != "")
 	{
 		header << "Content-Type: " << this->content_type << "\r\n";
@@ -112,14 +112,6 @@ void	Response::ReplaceCat(void)
 		this->body.replace(pos, 14, this->body.substr(pos, 14) == "class=\"mouli1\"" ? "class=\"mouli2\"" : "class=\"mouli1\"");
 		pos = this->body.find(replace);
 	}
-}
-
-std::string	Response::Cat()
-{
-	if (this->client.changedCat == false)
-		return ("");
-	this->client.changedCat = false;
-	return ("Set-Cookie: cookie=" + this->client.cat + "\r\n");
 }
 
 std::string	Response::FindPage(void)

@@ -16,7 +16,6 @@ class Response {
 		void		AppendError(std::string &file, std::string &codestring);
 		std::string	ReadFile(const std::string &path, std::string &codestring);
 		std::string	Header(void);
-		std::string	Cat(void);
 		void		ReplaceCat(void);
 
 		std::string	header;

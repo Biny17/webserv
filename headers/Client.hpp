@@ -27,7 +27,6 @@ class Client {
 		void		setCGI(int referringFD);
 
 		std::string	cat;
-		bool		changedCat;
 		void		switchCat(void);
 		void 		RequestHandler();
 		bool		Error(int error_code);

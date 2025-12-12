@@ -10,7 +10,6 @@ Client::Client(Server &s)
 	this->isCGI = false;
 	this->CGIpid = -1;
 	this->cat = "mouli1";
-	this->changedCat = false;
 	this->timeout.Stop();
 	this->request.location = &server.locations[0];
 }
@@ -22,7 +21,6 @@ Client::Client(const Client& other)
 	this->CGIpid = other.CGIpid;
 	this->referringFD = other.referringFD;
 	this->cat = other.cat;
-	this->changedCat = other.changedCat;
 	this->timeout = other.timeout;
 }
 
@@ -245,9 +243,11 @@ void Client::RequestHandler()
 		if (request.path == "/cookie")
 		{
 			switchCat();
-			request.local_path = server.root;
+			response.headers.push_back("Location: /");
+			response.code = 302;
 		}
-		get_static_file(request, response);
+		else
+			get_static_file(request, response);
 	}
 	else if (request.method == "POST")
 		PostFile();
@@ -258,7 +258,6 @@ void Client::RequestHandler()
 
 void	Client::switchCat(void)
 {
-	this->changedCat = true;
 	if (this->request.headers.find("Cookie") != this->request.headers.end())
 		this->cat = this->request.headers["Cookie"].substr(7, 13);
 	this->cat = this->cat == "mouli1" ? "mouli2" : "mouli1";

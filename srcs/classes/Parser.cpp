@@ -217,9 +217,7 @@ void Parser::PostCheck()
 	}
 	else if (ce != req.headers.end())
 	{
-		std::stringstream ss(ce->second);
-		ss >> req.content_len;
-		if (ss.fail() || !ss.eof() || ss.bad() || req.content_len <= 0)
+		if (!safe_atoui(ce->second, req.content_len))
 			return Error(400);
 		req.body.reserve(req.content_len);
 	}
@@ -279,8 +277,7 @@ void Parser::DefaultBody(const std::string& buff, size_t i)
 
 	std::cout << COLOR_LIGHT_GREEN << "["
 			<< req.body.length() << "/" << req.content_len
-			<< "] reading " << to_read << " bytes, "
-			<< "buffer size: " << buff.length()
+			<< "] reading " << to_read << " bytes"
 			<< COLOR_NC << std::endl;
 	req.body += buff.substr(i, to_read);
 	if (req.body.length() == static_cast<size_t>(req.content_len))

@@ -13,7 +13,7 @@ struct Request {
 	std::string query;
 	std::string version;
 	std::map<std::string, std::string> headers;
-	int content_len;
+	unsigned int content_len;
 
 	std::string	local_path;
 	std::string body;

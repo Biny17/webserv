@@ -54,6 +54,8 @@ static void	parse_param(std::vector<std::string> const &words, Server &server) {
 		for (size_t i = 0; i < (*(it + 1)).size(); i++)
 			if (!std::isdigit((*(it + 1))[i]))
 				throw std::runtime_error(*it + " argument error");
+		if (!is_readable_file(*(it+2)))
+			throw std::runtime_error(*it + " file is not readable");
 		std::pair<int, std::string>	err(std::atoi((*(it + 1)).c_str()), *(it + 2));
 		server.err_page.insert(err);
 	}

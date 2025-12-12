@@ -1,6 +1,4 @@
 #include "webserv.hpp"
-#include <filesystem>
-#include <sys/stat.h>
 
 std::string	find_index(std::vector<std::string> const &index_page) {
 
@@ -40,12 +38,13 @@ bool	fetch_file(std::string const &path, std::string& result)
 void	get_static_file(Request const &request, Response &response)
 {
 	Target::Type content = target_type(request.local_path);
-	std::string req_path = request.local_path;
+	std::string local_path = request.local_path;
 	Location& location = *request.location;
 
 	if (content == Target::FILE)
 	{
-		if (!fetch_file(req_path, response.body))
+		std::cout << COLOR_LIGHT_PURPLE << "static file: " << local_path << COLOR_NC << std::endl;
+		if (!fetch_file(local_path, response.body))
 			response.code = 500;
 		else {
 			response.content_type = Mime::GetType(get_extension(request.local_path));
@@ -54,9 +53,11 @@ void	get_static_file(Request const &request, Response &response)
 	}
 	else if (content == Target::DIR && !location.index.empty())
 	{
-		req_path += find_index(location.index);
-		if (!fetch_file(req_path, response.body))
-			response.code = 404;
+		// local_path += find_index(location.index);
+		local_path = path_add(local_path, find_index(location.index));
+		std::cout << COLOR_LIGHT_PURPLE << "static index file: " << local_path << COLOR_NC << std::endl;
+		if (!fetch_file(local_path, response.body))
+			response.code = 500;
 		else {
 			response.content_type = "text/html";
 			response.code = 200;

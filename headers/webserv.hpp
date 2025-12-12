@@ -30,6 +30,9 @@
 # include "cgi.hpp"
 # include "color.hpp"
 # include "Mime.hpp"
+# include <sys/stat.h>
+# include <filesystem>
+
 
 namespace Target {
     enum Type { NOTFOUND, FILE, DIR, ERROR };
@@ -60,5 +63,6 @@ void print_location_info(Location& location);
 bool	match_location(std::string &srcs, std::vector<Location> &locations);
 bool	fetch_file(std::string const &path, std::string& result);
 bool safe_atoui(std::string arr, unsigned int &out);
+bool	is_readable_file(const std::string &path);
 
 #endif // WEBSERV_HPP

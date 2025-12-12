@@ -113,7 +113,7 @@ void Client::SetLocation()
 		else
 			return Error405(*request.location);
 	}
-	if (request.content_len > static_cast<int>(server.max_upload))
+	if (static_cast<unsigned int>(request.content_len) > server.max_upload)
 		return (void)Error(413);
 	std::string host_without_port = request.headers.find("Host")->second;
 	host_without_port = host_without_port.substr(0, host_without_port.find_last_of(':'));

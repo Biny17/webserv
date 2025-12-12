@@ -79,3 +79,16 @@ bool	match_location(std::string &srcs, std::vector<Location> &locations)
 	}
 	return (false);
 }
+
+bool	is_readable_file(const std::string &path)
+{
+	struct stat statv;
+
+	if (stat(path.c_str(), &statv) == -1)
+		return false;
+	if (!S_ISREG(statv.st_mode))
+		return false;
+	if (access(path.c_str(), R_OK) == -1)
+		return false;
+	return true;
+}

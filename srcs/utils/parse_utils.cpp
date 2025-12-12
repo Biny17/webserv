@@ -97,3 +97,17 @@ bool valid_h_value(const std::string &value)
     }
     return true;
 }
+
+bool safe_atoui(std::string arr, unsigned int &out)
+{
+    out = 0;
+    for (int i = 0; i < static_cast<int>(arr.length()); i++) {
+        if (!std::isdigit(arr[i]))
+            return false;
+        int digit = arr[i] - '0';
+        if (out > (std::numeric_limits<unsigned int>::max() - digit) / 10)
+            return false;
+        out = out * 10 + digit;
+    }
+    return true;
+}

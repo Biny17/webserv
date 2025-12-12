@@ -40,7 +40,8 @@ static void	parse_param(std::vector<std::string> const &words, Server &server) {
 		for (size_t i = 0; i < (*(it + 1)).size(); i++)
 			if (!std::isdigit((*(it + 1))[i]))
 				throw std::runtime_error(*it + " argument error");
-		server.max_upload = std::atoi((*(it + 1)).c_str());
+		if (!safe_atoui(*(it + 1), server.max_upload))
+			throw std::runtime_error(*it + " argument too big ^^'");
 	}
 	else if (*it == "root") {
 		if (size != 2)

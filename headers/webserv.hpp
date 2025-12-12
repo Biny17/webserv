@@ -18,6 +18,7 @@
 # include <fstream>
 # include <sstream>
 # include <algorithm>
+# include <limits>
 # include "Timeout.hpp"
 # include "Request.hpp"
 # include "Response.hpp"
@@ -58,4 +59,6 @@ std::string& add_leading_slash(std::string& path);
 void print_location_info(Location& location);
 bool	match_location(std::string &srcs, std::vector<Location> &locations);
 bool	fetch_file(std::string const &path, std::string& result);
+bool safe_atoui(std::string arr, unsigned int &out);
+
 #endif // WEBSERV_HPP

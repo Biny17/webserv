@@ -16,7 +16,7 @@ class Server {
 		std::string					server_name;
 		std::vector<int>			listen;
 		std::string					root;
-		unsigned long				max_upload;
+		unsigned int				max_upload;
 		std::vector<std::string>	index_page;
 		std::vector<Location>		locations;
 		std::map<int, std::string>	err_page;

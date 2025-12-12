@@ -134,11 +134,8 @@ std::string	Response::FindPage(void)
 	return (search->second);
 }
 
-void	Response::AppendError(std::string &file)
+void	Response::AppendError(std::string &file, std::string &code_string)
 {
-	std::stringstream code_stream;
-	code_stream << this->code;
-	std::string code_string = code_stream.str();
 	std::string	error_msg = this->body != "" ? this->body : this->Reason();
 
 	size_t pos = file.find("</title>");
@@ -152,33 +149,26 @@ void	Response::AppendError(std::string &file)
 		file.insert(pos, error_msg);
 }
 
-std::string	Response::ReadFile(const std::string &path)
+std::string	Response::ReadFile(const std::string &path, std::string &code_string)
 {
-	std::ifstream file(path.c_str());
-	if (!file)
-	{
-		std::cout << "An error occured while opening the request response" << std::endl;
-		return ("");
-	}
-
 	this->content_type = "text/html";
-
-	std::string s(
-		(std::istreambuf_iterator<char>(file)),
-		std::istreambuf_iterator<char>()
-	);
-
+	std::string s;
+	if (!fetch_file(path, s))
+		s = std::string("<p>") + code_string + std::string(" ") + std::string(Reason()) + std::string("</p>");
 	if (path.substr(path.find_last_of('/') + 1) == "error.html")
-		this->AppendError(s);
+		this->AppendError(s, code_string);
 	return (s);
 }
 
 // Build the response of the server
 void	Response::Build(void)
 {
+	std::stringstream code_stream;
+	code_stream << this->code;
+	std::string code_string = code_stream.str();
 	std::string page = FindPage();
 	if (page != "")
-		this->body = ReadFile(page);
+		this->body = ReadFile(page, code_string);
 	if (this->content_type == "text/html")
 		ReplaceCat();
 	if (this->body == "")

@@ -13,8 +13,8 @@ class Response {
 		std::string	Date(void);
 		std::string	GetConnection(void);
 		std::string	FindPage(void);
-		void		AppendError(std::string &file);
-		std::string	ReadFile(const std::string &path);
+		void		AppendError(std::string &file, std::string &codestring);
+		std::string	ReadFile(const std::string &path, std::string &codestring);
 		std::string	Header(void);
 		std::string	Cat(void);
 		void		ReplaceCat(void);

@@ -1,5 +1,6 @@
 #include "webserv.hpp"
 #include <filesystem>
+#include <sys/stat.h>
 
 std::string	find_index(std::vector<std::string> const &index_page) {
 
@@ -23,13 +24,14 @@ std::string	find_index(std::vector<std::string> const &index_page) {
 bool	fetch_file(std::string const &path, std::string& result)
 {
 	std::ifstream myfile;
-	myfile.open(path.c_str());
-	if (!myfile.is_open())
-		return false;
-	myfile.seekg(0, std::ios::end);
-    result.reserve(myfile.tellg());
-    myfile.seekg(0, std::ios::beg);
+	struct stat stat_v;
 
+	if (stat(path.c_str(), &stat_v) == -1 || !S_ISREG(stat_v.st_mode))
+		return false;
+	myfile.open(path.c_str());
+	if (!myfile.is_open() || !myfile.good())
+		return false;
+    result.reserve(static_cast<size_t>(stat_v.st_size));
 	result.assign((std::istreambuf_iterator<char>(myfile)),
 				   std::istreambuf_iterator<char>());
 	return true;

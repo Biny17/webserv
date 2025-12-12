@@ -137,7 +137,7 @@ void Client::Error405(Location& loc)
 			allow += ", ";
 		allow += *it;
 	}
-	response.code = 403;
+	response.code = 405;
 	response.headers.push_back(allow);
 	parser.state = ERROR;
 }

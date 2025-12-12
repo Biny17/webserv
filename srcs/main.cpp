@@ -13,6 +13,8 @@ void	print_servers(std::vector<Server> servers)
 
 int	main(int ac, char **av)
 {
+	int epfd = -1;
+
 	if (ac > 2)
 	{
 		std::cout << "Invalid amount of arguments, please launch the program with a config file" << std::endl;
@@ -30,10 +32,12 @@ int	main(int ac, char **av)
 			return (1);
 		}
 		// print_servers(servers);
-		launch_server(servers);
+		launch_server(servers, epfd);
 	}
 	catch (std::exception& e) {
 		std::cout << "An error has occured: " << e.what() << std::endl;
+		if (epfd >= 0)
+			close(epfd);
 		return (1);
 	}
 	return (0);

@@ -20,7 +20,10 @@ static void	parse_param(std::vector<std::string> const &words, Server &server) {
 			for (size_t i = 0; i < (*it).size(); i++)
 				if (!std::isdigit((*it)[i]))
 					throw std::runtime_error(*it + " argument error");
-			server.listen.push_back(std::atoi((*it).c_str()));
+			int port = std::atoi((*it).c_str());
+			if (port > 65535 || port < 0)
+				throw std::runtime_error(*it + " argument error");
+			server.listen.push_back(port);
 	}
 	else if (*it == "server_name") {
 		if (size != 2)

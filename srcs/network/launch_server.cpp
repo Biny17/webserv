@@ -138,7 +138,7 @@ bool	init_sockets(Server& server)
 }
 
 // Setup the servers and call the event loop
-void	launch_server(std::vector<Server>& servers)
+void	launch_server(std::vector<Server>& servers, int& epfd)
 {
 	// Initialise all servers
 	std::vector<Server>::iterator it = servers.begin();
@@ -158,7 +158,7 @@ void	launch_server(std::vector<Server>& servers)
 		return ;
 
 	// Create epoll instance and initialise it
-	int epfd = init_epoll(servers);
+	epfd = init_epoll(servers);
 	if (epfd == -1)
 		return ;
 

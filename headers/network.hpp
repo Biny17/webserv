@@ -16,7 +16,7 @@
 class Client;
 class Server;
 
-void	launch_server(std::vector<Server>& servers);
+void	launch_server(std::vector<Server>& servers, int& epfd);
 void	event_loop(int epfd);
 void	set_epoll_event(int epfd, Client& client, uint32_t event);
 void	accept_new_client(int sockfd, Server& server);

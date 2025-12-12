@@ -245,7 +245,7 @@ void Client::RequestHandler()
 		if (request.path == "/cookie")
 		{
 			switchCat();
-			request.local_path = "./www";
+			request.local_path = server.root;
 		}
 		get_static_file(request, response);
 	}

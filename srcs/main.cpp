@@ -13,15 +13,17 @@ void	print_servers(std::vector<Server> servers)
 
 int	main(int ac, char **av)
 {
-	if (ac != 2)
+	if (ac > 2)
 	{
 		std::cout << "Invalid amount of arguments, please launch the program with a config file" << std::endl;
 		return (1);
 	}
-
+	std::string conf = "config/server.conf";
+	if (ac == 2)
+		conf = av[1];
 	try {
 		try {
-			parse_conf(av[1], servers);
+			parse_conf(conf, servers);
 		}
 		catch(std::runtime_error& e) {
 			std::cerr << "Parsing error: " << e.what() << '\n';

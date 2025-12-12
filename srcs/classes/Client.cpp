@@ -137,7 +137,7 @@ void Client::Error405(Location& loc)
 			allow += ", ";
 		allow += *it;
 	}
-	response.code = 403;
+	response.code = 405;
 	response.headers.push_back(allow);
 	parser.state = ERROR;
 }
@@ -245,7 +245,7 @@ void Client::RequestHandler()
 		if (request.path == "/cookie")
 		{
 			switchCat();
-			request.local_path = "./www";
+			request.local_path = server.root;
 		}
 		get_static_file(request, response);
 	}

@@ -303,7 +303,7 @@ void Parser::TransferEncoding(const std::string &buff, size_t i)
             std::stringstream ss(chunk_size_str);
             ss >> std::hex >> req.content_len;
 
-            if (ss.fail() || req.content_len < 0) {
+            if (ss.fail()) {
                 Error(400);
                 return;
             }

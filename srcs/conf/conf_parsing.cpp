@@ -192,10 +192,10 @@ void	fill_extension(Server &server) {
 					throw std::runtime_error("invalid cgi_extension or cgi not managed");
 				if (*itl == ".py")
 					(*it).extension[*itl] = "text/python";
-				if (*itl == ".sh")
+				else if (*itl == ".sh")
 					(*it).extension[*itl] = "text/shell";
-				if (*itl == ".rb")
-					(*it).extension[*itl] = "text/ruby";
+				else if (*itl == ".rb")
+					(*it).extension[*itl] = "text/x-ruby";
 			}
 		}
 	}

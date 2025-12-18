@@ -162,6 +162,10 @@ int	launch_cgi(std::string &filename, Server& server, Client& client) {
 		cgi.push_back("sh");
 		cgi.push_back(filename);
 	}
+	else if (filename.substr(filename.find_last_of('.'), filename.size()) == ".rb") {
+		cgi.push_back("ruby");
+		cgi.push_back(filename);
+	}
 	else
 		return (501);
 	return(exec_cgi(cgi, server, client)); // quoi faire avec ce mysterieux fd ?

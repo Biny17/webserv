@@ -20,27 +20,33 @@ std::vector<std::string>	list_file_extension(std::string const &directory, std::
 	return (result);	//retourne un vecteur contenant tout le snom de fichier avec l'extenssion voulu
 }
 
-std::string	cgi_line(std::vector<std::string> const &ext1, std::vector<std::string> const &ext2) {
+std::string	get_available_cgi(Server& server)
+{
+	std::vector<Location>::iterator	bin = find_location(server.cgi_path, server.locations);
+	if (bin == server.locations.end())
+		return ("[]");
+
+	std::vector< std::vector<std::string> >	files;
+
+	std::vector<std::string>::iterator		ext;
+	std::vector<std::string>::iterator		extsEnd = bin->cgi_extension.end();
+
+	for (ext = bin->cgi_extension.begin(); ext != extsEnd; ++ext)
+		files.push_back(list_file_extension(bin->alias, *ext));
 
 	std::string	result;
-
-	std::vector<std::string>::const_iterator	it;
-	std::vector<std::string>::const_iterator	ite = ext1.end();
-
 	result.append("[");
-	for(it = ext1.begin(); it != ite; ++it)
-		result += "\"" + *it + "\", ";
 
-	ite = ext2.end();
-	for(it = ext2.begin(); it != ite; ++it)
-		result += "\"" + *it + "\", ";
+	std::vector< std::vector<std::string> >::iterator	fileIt;
+	for (fileIt = files.begin(); fileIt != files.end(); ++fileIt)
+	{
+		for (ext = fileIt->begin(); ext != fileIt->end(); ++ext)
+			result += "\"" + *ext + "\", ";
+	}
+
 	if (result.size() >= 2)
 		result.erase(result.end() - 2, result.end());
-	result.append("]");
-	return(result);
-}
 
-std::string	get_available_cgi(void)
-{
-	return (cgi_line(list_file_extension("cgi-bin", ".py"), list_file_extension("cgi-bin", ".sh")));
+	result.append("]");
+	return (result);
 }

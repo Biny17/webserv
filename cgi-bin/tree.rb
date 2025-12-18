@@ -95,9 +95,11 @@ def print_custom_tree(height, ornaments: true, snow: false, star: true)
   puts " " * ground_spaces + ground
 end
 
+puts "<p>"
 height = rand(10..30)
 if rand < 0.5
     print_fancy_tree(height)
 else
     print_custom_tree(height, ornaments: [true, false].sample, snow: [true, false].sample, star: [true, false].sample)
 end
+puts "</p>"

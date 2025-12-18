@@ -237,7 +237,7 @@ void Client::RequestHandler()
 		return ;
 	}
 	else if (request.method == "GET" && request.path == "/cgi/list")
-		response.body = get_available_cgi();
+		response.body = get_available_cgi(server);
 	else if (request.method == "GET")
 	{
 		if (request.path == "/cookie")

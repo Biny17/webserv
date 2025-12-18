@@ -14,9 +14,7 @@ class Location {
 		std::vector<std::string>	index;
 		std::string					alias;
 		std::map<int, std::string>	redirect;
-		std::string					cgi_path;
 		std::vector<std::string>	cgi_extension;
-		std::string					upload_dir;
 		std::vector<std::string>	methods;
 		std::map<std::string, std::string>	extension;
 };

@@ -59,6 +59,11 @@ static void	parse_param(std::vector<std::string> const &words, Server &server) {
 		std::pair<int, std::string>	err(std::atoi((*(it + 1)).c_str()), *(it + 2));
 		server.err_page.insert(err);
 	}
+	else if (*it == "cgi_path") {
+		if (size != 2)
+			throw std::runtime_error(*it + " argument error");
+		server.cgi_path = *(it + 1);
+	}
 	else
 		throw std::runtime_error("server unknown command : " + *it);
 }
@@ -95,11 +100,6 @@ static void	parse_param(std::vector<std::string> const &words, Location &locatio
 			if (*it != "GET" && *it != "POST" && *it != "DELETE")
 				throw std::runtime_error(*it + " argument error");
 			location.methods.push_back(*it);
-		}
-	else if (*it == "cgi_path") {
-		if (size != 2)
-			throw std::runtime_error(*it + " argument error");
-		location.cgi_path = *(it + 1);
 	}
 	else if (*it == "cgi_extension") {
 		for (it = words.begin() + 1; it != ite; ++it)
@@ -188,12 +188,14 @@ void	fill_extension(Server &server) {
 
 			for (itl = (*it).cgi_extension.begin(); itl != itle; ++itl)
 			{
-				if (*itl != ".py" && *itl != ".sh")
+				if (*itl != ".py" && *itl != ".sh" && *itl != ".rb")
 					throw std::runtime_error("invalid cgi_extension or cgi not managed");
 				if (*itl == ".py")
 					(*it).extension[*itl] = "text/python";
 				if (*itl == ".sh")
 					(*it).extension[*itl] = "text/shell";
+				if (*itl == ".rb")
+					(*it).extension[*itl] = "text/ruby";
 			}
 		}
 	}

@@ -21,6 +21,7 @@ class Server {
 		std::vector<Location>		locations;
 		std::map<int, std::string>	err_page;
 		int							epfd;
+		std::string					cgi_path;
 
 		std::map<int, Client>	clients;
 

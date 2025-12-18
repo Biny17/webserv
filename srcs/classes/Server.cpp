@@ -72,6 +72,8 @@ std::ostream	&operator<<(std::ostream &o, Server const &serv) {
 	}
 	if (!serv.err_page.empty())
 		o << "error_page amount : " << serv.err_page.size() << std::endl;
+	if (!serv.cgi_path.empty())
+		o << "cgi_path : " << serv.cgi_path << std::endl;
 	if (!serv.locations.empty())
 	{
 		o << "locations amount : " << serv.locations.size() << std::endl;

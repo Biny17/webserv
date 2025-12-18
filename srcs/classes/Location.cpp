@@ -21,8 +21,6 @@ std::ostream	&operator<<(std::ostream &o, Location const &loc) {
 	o << "autoindex : " << loc.autoindex << std::endl;
 	if (!loc.redirect.empty())
 		o << "redirect : " << loc.redirect.begin()->first << " " << loc.redirect.begin()->second << std::endl;
-	if (!loc.upload_dir.empty())
-		o << "upload_dir : " << loc.path << std::endl;
 	if (!loc.index.empty())
 	{
 		o << "index : ";
@@ -30,8 +28,6 @@ std::ostream	&operator<<(std::ostream &o, Location const &loc) {
 			o << *it << " ";
 		o << std::endl;
 	}
-	if (!loc.cgi_path.empty())
-		o << "cgi_path : " << loc.cgi_path << std::endl;
 	if (!loc.extension.empty())
 	{
 		for (std::map<std::string, std::string>::const_iterator it = loc.extension.begin(); it != loc.extension.end(); ++it)

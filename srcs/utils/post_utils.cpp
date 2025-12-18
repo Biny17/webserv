@@ -49,9 +49,10 @@ bool validate_headers(const std::string& body, size_t& cur, size_t& header_end) 
 }
 
 std::string extract_filename(const std::string& body, size_t& cur) {
-    size_t fname_i = body.find("filename=\"", cur) + 10;
+    size_t fname_i = body.find("filename=\"", cur);
     if (fname_i == std::string::npos)
         return "";
+    fname_i += 10;
     size_t closing_quote_i = body.find_first_of('"', fname_i);
     if (closing_quote_i == std::string::npos)
         return "";

@@ -21,7 +21,7 @@ def print_fancy_tree(height)
           line += "*"
         end
       end
-      puts " " * spaces + line
+      puts "<p>" + " " * spaces + line + "</p>"
     end
     current_width += 2
   end
@@ -34,11 +34,11 @@ def print_fancy_tree(height)
       trunk_line += "|" if i == 0 || i == trunk_width - 1
       trunk_line += "#" if i > 0 && i < trunk_width - 1
     end
-    puts " " * trunk_spaces + trunk_line
+    puts "<p>" + " " * trunk_spaces + trunk_line + "</p>"
   end
   ground_width = trunk_width + 4
   ground_spaces = center - (ground_width / 2)
-  puts " " * ground_spaces + "~" * ground_width
+  puts "<p>" + " " * ground_spaces + "~" * ground_width + "</p>"
 end
 
 def print_custom_tree(height, ornaments: true, snow: false, star: true)
@@ -46,7 +46,7 @@ def print_custom_tree(height, ornaments: true, snow: false, star: true)
   total_width = height * 2 + 1
   center = total_width / 2
   if star
-    puts " " * center + "★"
+    puts "<p>" + " " * center + "★" + "</p>"
   end
   num_layers = [height / 3, 3].max
   layer_height = height / num_layers
@@ -68,7 +68,7 @@ def print_custom_tree(height, ornaments: true, snow: false, star: true)
         end
         line += char
       end
-      puts " " * spaces + line
+      puts "<p>" + " " * spaces + line + "</p>"
     end
     current_width += 2
   end
@@ -84,7 +84,7 @@ def print_custom_tree(height, ornaments: true, snow: false, star: true)
         trunk_line += (row + col) % 2 == 0 ? "#" : "█"
       end
     end
-    puts " " * trunk_spaces + trunk_line
+    puts "<p>" + " " * trunk_spaces + trunk_line + "</p>"
   end
   ground_width = trunk_width + 6
   ground_spaces = center - (ground_width / 2)
@@ -92,14 +92,12 @@ def print_custom_tree(height, ornaments: true, snow: false, star: true)
   ground_width.times do |i|
     ground += ["~", "^", "v", "~"].sample
   end
-  puts " " * ground_spaces + ground
+  puts "<p>" + " " * ground_spaces + ground + "</p>"
 end
 
-puts "<p>"
 height = rand(10..30)
 if rand < 0.5
     print_fancy_tree(height)
 else
     print_custom_tree(height, ornaments: [true, false].sample, snow: [true, false].sample, star: [true, false].sample)
 end
-puts "</p>"

@@ -172,6 +172,8 @@ bool Client::MultipartFormData()
 {
     std::string& b = request.body;
 	std::map<std::string, std::string>::iterator ct = request.headers.find("Content-Type");
+	if (ct == request.headers.end() || ct->second.find("boundary=") == std::string::npos)
+		return Error(400);
 	std::string bnd = ct->second.substr(ct->second.find("boundary=") + 9);
 	bnd = bnd.substr(0, bnd.find_first_of("; "));
 	size_t cur = 0;
@@ -197,9 +199,10 @@ bool Client::MultipartFormData()
 		if (access(filename.c_str(), F_OK) == 0)
 			return Error(409);
 		cur = header_end + 4;
-		size_t data_end = b.find(bnd, cur) - 2;
+		size_t data_end = b.find(bnd, cur);
 		if (data_end == std::string::npos)
 			return Error(400);
+		data_end += -2;
 		if (!write_file(filename, b, cur, data_end - 2))
 			return Error(500);
 		cur = data_end;
@@ -258,7 +261,10 @@ void Client::RequestHandler()
 
 void	Client::switchCat(void)
 {
-	if (this->request.headers.find("Cookie") != this->request.headers.end())
+	std::map<std::string, std::string>::iterator cookie;
+
+	cookie = this->request.headers.find("Cookie");
+	if (cookie != this->request.headers.end() && cookie->second.length() > 12)
 		this->cat = this->request.headers["Cookie"].substr(7, 13);
 	this->cat = this->cat == "mouli1" ? "mouli2" : "mouli1";
 }

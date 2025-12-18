@@ -80,6 +80,19 @@ bool	match_location(std::string &srcs, std::vector<Location> &locations)
 	return (false);
 }
 
+Location &find_location(std::string &srcs, std::vector<Location> &locations)
+{
+	std::vector<Location>::iterator	it = locations.begin();
+	std::vector<Location>::iterator	ite = locations.end();
+
+	for (it = locations.begin(); it != ite; ++it)
+	{
+		if ((*it).path == srcs)
+			return (*it);
+	}
+	return (*ite);
+}
+
 bool	is_readable_file(const std::string &path)
 {
 	struct stat statv;

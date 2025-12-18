@@ -72,7 +72,7 @@ std::string	Response::Date(void)
 
 std::string	Response::GetConnection(void)
 {
-	if (this->code != 413 && this->client.request.headers.find("Connection") != this->client.request.headers.end())
+	if ((this->code != 413 && this->code != 403) && this->client.request.headers.find("Connection") != this->client.request.headers.end())
 		return (client.request.headers["Connection"]);
 	return ("close");
 }
@@ -211,7 +211,7 @@ void	Response::Send(void)
 	{
 		client.response.PrintHeader();
 
-		if (this->GetConnection() == "close" || code == 413)
+		if (this->GetConnection() == "close" || code == 413 || code == 403)
 		{
 			this->client.server.removeClient(this->client.fd);
 			return ;

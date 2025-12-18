@@ -21,7 +21,7 @@ static void	parse_param(std::vector<std::string> const &words, Server &server) {
 				if (!std::isdigit((*it)[i]))
 					throw std::runtime_error(*it + " argument error");
 			int port = std::atoi((*it).c_str());
-			if (port > 65535 || port < 0)
+			if (port > 65535 || port < 1)
 				throw std::runtime_error(*it + " argument error");
 			server.listen.push_back(port);
 	}

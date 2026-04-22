@@ -165,17 +165,7 @@ CGI scripts receive request data via environment variables and `stdin`, and retu
 ```
 webserv/
 ├── cgi-bin/                # CGI scripts
-│   ├── python.py
-│   ├── shell.sh
-│   ├── timeout.py
-│   ├── tree.rb
-│   └── upload.py
 ├── config/                 # Configuration files
-│   ├── server.conf
-│   └── server2.conf
-├── error_files/            # Default error pages
-│   ├── 404.html
-│   └── 500.html
 ├── headers/                # Header files (.hpp)
 ├── srcs/                   # Source files (.cpp)
 │   ├── cgi/                # CGI execution (fork, pipe, env)
@@ -185,10 +175,6 @@ webserv/
 │   ├── network/            # Epoll event loop, client handling
 │   └── utils/              # Helpers (autoindex, encoding, path...)
 ├── www/                    # Default web root
-│   ├── css/
-│   ├── html/
-│   ├── images/
-│   └── js/
 ├── Makefile
 └── README.md
 ```
